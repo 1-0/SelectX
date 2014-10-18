@@ -8,7 +8,7 @@ from PyQt4 import QtGui, QtCore
 from PyQt4.QtGui import QIcon
 
 
-__version__ = '''0.2.8'''
+__version__ = '''0.2.10'''
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
 Delete     Deletes the character to the right of the cursor.
@@ -56,7 +56,7 @@ class SelectX(QtGui.QMainWindow):
         self.zoomRate = 0
         self.path=None
         self.initUI()
-        
+        self.openInNewTab = True
         try:
             if len(sys.argv)<3:
                 print 'Try Open This File -> %s' % sys.argv[1]
@@ -75,7 +75,7 @@ class SelectX(QtGui.QMainWindow):
         
         self.statusBar()
         self.setGeometry(100, 100, 400, 400)
-        self.setWindowIcon(QIcon.fromTheme("document-new"))
+        self.setWindowIcon(QIcon.fromTheme("edit-select-all"))
         #self.setWindowIcon(QIcon.fromTheme("document-new", QtCore,QIcon(":/new.png")))
         self.setMinimumSize(200,150)
         self.setWindowTitle('SelectX')
@@ -109,10 +109,12 @@ class SelectX(QtGui.QMainWindow):
         self.toolbar.setMovable(True)
         
         fileMenu = menubar.addMenu('&File')
-        self.addActionParamX('New', 'Ctrl+N', 'Create new file', self.newFile, \
-        fileMenu, 'document-new', self.toolbar)
+        #self.addActionParamX('New', 'Ctrl+N', 'Create new file', self.newFile, \
+        #fileMenu, 'document-new', self.toolbar)
         self.addActionParamX('New Tab', 'Ctrl+T', 'Create new tab', self.newTab, \
         fileMenu, 'tab-new', self.toolbar)
+        #self.addActionParamX('Open in new tab', 'Ctrl+Shift+O', 'Set open a file in new tab', self.setOpenInNewTab, \
+        #fileMenu, 'document-open', checkAble=True)
         self.addActionParamX('Open', 'Ctrl+O', 'Open a file', self.openFile, \
         fileMenu, 'document-open', self.toolbar)
         self.addActionParamX('Save.', 'Ctrl+S', 'Save current file', \
@@ -186,8 +188,12 @@ class SelectX(QtGui.QMainWindow):
         return menubar
         
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
-    TopActLevel, IconName, toolBar=None):
+    TopActLevel, IconName, toolBar=None, checkAble=False):
         MakeAction = QtGui.QAction(QIcon.fromTheme(IconName), ActText, self)
+        if checkAble:
+            MakeAction.setCheckable (True)
+            MakeAction.setChecked (True)
+            
         MakeAction.setIconVisibleInMenu (True)
         MakeAction.setShortcut(ActSortcut)
         MakeAction.setStatusTip(ActTip)
@@ -242,14 +248,20 @@ class SelectX(QtGui.QMainWindow):
         else:
             self.statusBar().showMessage('Stop Save Text')
         
+    def setOpenInNewTab(self):
+        self.openInNewTab = not(self.openInNewTab)
+        print self.openInNewTab
+        
     def openFile(self):
         ###to see http://www.rkblog.rk.edu.pl/w/p/simple-text-editor-pyqt4/
         self.path = QtGui.QFileDialog.getOpenFileName(self, 'Open File', \
         os.getenv('HOME'), \
-         "All Files (*);;Text Files (*.txt *.log);;Python Files (*.py *.py3);;C++ Files (*.cpp *.h)" \
+         "All Files (*);;Text Files (*.txt *.log *.TXT *.LOG);;Python Files (*.py *.PY *.py3 *.PY3);;C++ Files (*.cpp *.h *.CPP *.H *.c *.C)" \
         )
         
         if self.path:
+            if len(self.mainTab.currentWidget().toPlainText()) > 0:
+                self.newTab()
             self.openExistFile(self.path)
         else:
             self.statusBar().showMessage('Stop Open Text')
