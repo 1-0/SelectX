@@ -1,16 +1,14 @@
 #!/usr/bin/env python
-
-#from __future__ import unicode_literals
+'''SelectX - easy eXtable text editor for developers writed on Python. Licensed by GPL3. '''
 
 import sys #, getopt
-
 import os
 from PyQt4 import QtGui, QtCore
 #from PyQt4.QtCore import QString
 from PyQt4.QtGui import QIcon
 
 
-__version__ = '''0.2.5'''
+__version__ = '''0.2.6'''
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
 Delete     Deletes the character to the right of the cursor.
