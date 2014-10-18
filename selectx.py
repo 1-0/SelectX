@@ -8,7 +8,7 @@ from PyQt4 import QtGui, QtCore
 from PyQt4.QtGui import QIcon
 
 
-__version__ = '''0.2.6'''
+__version__ = '''0.2.8'''
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
 Delete     Deletes the character to the right of the cursor.
@@ -85,7 +85,7 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.setMovable(True)
         self.setCentralWidget(self.mainTab)
         self.mainTab.addTab(self.initEdit(), "New Text")
-        self.mainTab.tabCloseRequested.connect(self.removeTab)  
+        self.mainTab.tabCloseRequested.connect(self.closeTab)  
         self.show()
     
     def initEdit(self, fileName=None):
@@ -126,7 +126,7 @@ class SelectX(QtGui.QMainWindow):
         self.filePrint, fileMenu, 'document-print', self.toolbar)
         fileMenu.addSeparator()
         self.addActionParamX('Close Tab', 'Ctrl+Shift+Q', 'Close current tab', \
-        self.removeTab, fileMenu, 'window-close', self.toolbar)
+        self.closeTab, fileMenu, 'window-close', self.toolbar)
         self.addActionParamX('Exit', 'Ctrl+Q', 'Exit SelectX', \
         self.checkExitProgram, fileMenu, 'application-exit', self.toolbar)
         
@@ -201,7 +201,8 @@ class SelectX(QtGui.QMainWindow):
         cursor = self.mainTab.currentWidget().textCursor()
         line = cursor.blockNumber() + 1
         col = cursor.columnNumber()
-        self.statusBar().showMessage("Line: {} | Column: {}".format(line,col))
+        symb = len(self.mainTab.currentWidget().toPlainText())
+        self.statusBar().showMessage("Symbols: {} | Line: {} | Column: {}".format(symb,line,col))
         
     def newFile(self):
         self.mainTab.currentWidget().clear()
@@ -213,7 +214,7 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.addTab(self.initEdit(), "New text tab")
         self.mainTab.setCurrentWidget(self.textEdit)
         
-    def removeTab(self, tabIndex): 
+    def closeTab(self, tabIndex): 
         #print  'tabIndex-%s' % tabIndex
         self.mainTab.removeTab(tabIndex)
         #self.mainTab.setVisible(self.count() > 1)         
@@ -269,6 +270,11 @@ class SelectX(QtGui.QMainWindow):
             self.highlighter = Highlighter(self.mainTab.currentWidget().document(), filePath.split('.')[-1])
             self.mainTab.currentWidget().insertPlainText(text)
             self.statusBar().showMessage('Open Text: %s' % self.path)
+            curtabind = self.mainTab.currentIndex()
+            
+            self.mainTab.setTabToolTip (curtabind, '%s' % self.path)
+            self.mainTab.setTabText(curtabind, '%s' % getFileName(self.path))
+            #elf.currentIndex()
             self.setWindowTitle('SelectX - %s' % self.path)
         else:
             print 'Can Not Open This File -> %s' % self.path
@@ -368,7 +374,7 @@ class SelectX(QtGui.QMainWindow):
         QtGui.QMessageBox.Ok)
 
 
-HILIGHTER_SETUP_CPP = {'keywordPatternsRules' : ["\\bchar\\b", "\\bclass\\b", "\\bconst\\b",
+HILIGHTER_SETUP = {'cpp' : {'keywordPatternsRules' : ["\\bchar\\b", "\\bclass\\b", "\\bconst\\b",
                 "\\bdouble\\b", "\\benum\\b", "\\bexplicit\\b", "\\bfriend\\b",
                 "\\binline\\b", "\\bint\\b", "\\blong\\b", "\\bnamespace\\b",
                 "\\boperator\\b", "\\bprivate\\b", "\\bprotected\\b",
@@ -380,7 +386,20 @@ HILIGHTER_SETUP_CPP = {'keywordPatternsRules' : ["\\bchar\\b", "\\bclass\\b", "\
                 'classFormatRules' : "\\bQ[A-Za-z]+\\b",
                 'quotationFormatRules':"\".*\"",
                 'functionFormatRules':"\\b[A-Za-z0-9_]+(?=\\()",
-                'multiLineCommentFormat' : ["/\\*", "\\*/"],
+                'multiLineCommentFormat' : ["/\\*", "\\*/"]},
+                'py':{'keywordPatternsRules' : ["\\bchar\\b", "\\bclass\\b", "\\bconst\\b",
+                "\\bdouble\\b", "\\benum\\b", "\\bexplicit\\b", "\\bfriend\\b",
+                "\\binline\\b", "\\bint\\b", "\\blong\\b", "\\bnamespace\\b",
+                "\\boperator\\b", "\\bprivate\\b", "\\bprotected\\b",
+                "\\bpublic\\b", "\\bshort\\b", "\\bsignals\\b", "\\bsigned\\b",
+                "\\bslots\\b", "\\bstatic\\b", "\\bstruct\\b",
+                "\\btemplate\\b", "\\btypedef\\b", "\\btypename\\b",
+                "\\bunion\\b", "\\bunsigned\\b", "\\bvirtual\\b", "\\bvoid\\b",
+                "\\bvolatile\\b"],
+                'classFormatRules' : "\\bQ[A-Za-z]+\\b",
+                'quotationFormatRules':"\".*\"",
+                'functionFormatRules':"\\b[A-Za-z0-9_]+(?=\\()",
+                'multiLineCommentFormat' : ["/\\*", "\\*/"]}
                 }
 
 
@@ -430,7 +449,8 @@ class Highlighter(QtGui.QSyntaxHighlighter):
             functionFormat.setForeground(QtCore.Qt.blue)
             self.highlightingRules.append((QtCore.QRegExp("\\b[A-Za-z0-9_]+(?=\\()"),
                     functionFormat))
-    
+            
+            
             self.commentStartExpression = QtCore.QRegExp("/\\*")
             self.commentEndExpression = QtCore.QRegExp("\\*/")
 
@@ -474,6 +494,12 @@ def main():
         print VERSION_INFO % __version__
         sys.exit()
     runWindow()
+
+def getFileName(pathName):
+    if ( '\\' in pathName ) :
+        return pathName.split('\\')[-1]
+    else:
+        return pathName.split('/')[-1]
 
 
 def usage():
