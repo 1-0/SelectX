@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 '''SelectX - easy eXtable text editor for developers writed on Python. Licensed by GPL3.'''
 
-import sys #, getopt
+import sys
 import os
 from PyQt4 import QtGui, QtCore
-#from PyQt4.QtCore import QString
-from PyQt4.QtGui import QIcon
+#from PyQt4.QtGui import QIcon
 
 
-__version__ = '''0.2.10'''
+__version__ = '''0.2.11'''
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
 Delete     Deletes the character to the right of the cursor.
@@ -75,8 +74,8 @@ class SelectX(QtGui.QMainWindow):
         
         self.statusBar()
         self.setGeometry(100, 100, 400, 400)
-        self.setWindowIcon(QIcon.fromTheme("edit-select-all"))
-        #self.setWindowIcon(QIcon.fromTheme("document-new", QtCore,QIcon(":/new.png")))
+        self.setWindowIcon(QtGui.QIcon.fromTheme("edit-select-all"))
+        #self.setWindowIcon(QtGui.QIcon.fromTheme("document-new", QtCore.QIcon(":/new.png")))
         self.setMinimumSize(200,150)
         self.setWindowTitle('SelectX')
         
@@ -189,7 +188,7 @@ class SelectX(QtGui.QMainWindow):
         
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
     TopActLevel, IconName, toolBar=None, checkAble=False):
-        MakeAction = QtGui.QAction(QIcon.fromTheme(IconName), ActText, self)
+        MakeAction = QtGui.QAction(QtGui.QIcon.fromTheme(IconName), ActText, self)
         if checkAble:
             MakeAction.setCheckable (True)
             MakeAction.setChecked (True)
@@ -208,7 +207,8 @@ class SelectX(QtGui.QMainWindow):
         line = cursor.blockNumber() + 1
         col = cursor.columnNumber()
         symb = len(self.mainTab.currentWidget().toPlainText())
-        self.statusBar().showMessage("Symbols: {} | Line: {} | Column: {}".format(symb,line,col))
+        rows = len(self.mainTab.currentWidget().toPlainText().split('\n')) # ;)
+        self.statusBar().showMessage("Rows: {} | Symbols: {} | Line: {} | Column: {}".format(symb,rows,line,col))
         
     def newFile(self):
         self.mainTab.currentWidget().clear()
@@ -243,8 +243,12 @@ class SelectX(QtGui.QMainWindow):
             filedata = self.mainTab.currentWidget().toPlainText()
             f.write(filedata)
             f.close()
+            self.path = filename
             self.statusBar().showMessage('Save Text: %s' % filename)
             self.setWindowTitle('SelectX - %s' % filename)
+            curtabind = self.mainTab.currentIndex()
+            self.mainTab.setTabToolTip (curtabind, '%s' % self.path)
+            self.mainTab.setTabText(curtabind, '%s' % getFileName(self.path))
         else:
             self.statusBar().showMessage('Stop Save Text')
         
@@ -524,32 +528,6 @@ def runWindow():
     selxnotepad = SelectX()
     sys.exit(app.exec_())
 
-
-#def main():
-    #try:
-        #opts, args = getopt.getopt(sys.argv[1:], "h:v", ["help",])
-    #except getopt.GetoptError as err:
-        ## print help information and exit:
-        #print(err) # will print something like "option -a not recognized"
-        #usage()
-        #sys.exit(2)
-    #output = None
-    #verbose = False
-    #for o, a in opts:
-        #if o == "-v":
-            #verbose = True
-            #print 'vvv'
-        #elif o in ("-h", "--help"):
-            #usage()
-            #print 'hhhh'
-            #sys.exit()
-        #else:
-            #assert False, "unhandled option"
-            
-    #app = QtGui.QApplication(sys.argv)
-    #selxnotepad = SelectX()
-    #sys.exit(app.exec_())
-    ## ...
 
 if __name__ == "__main__":
    main()
