@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-'''SelectX - easy eXtable text editor for developers writed on Python. Licensed by GPL3. '''
+'''SelectX - easy eXtable text editor for developers writed on Python. Licensed by GPL3.'''
 
 import sys #, getopt
 import os
