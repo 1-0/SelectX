@@ -10,7 +10,7 @@ from PyQt4.QtCore import QRegExp
 from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.2.14'''
+__version__ = '''0.3.2'''
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
 Delete     Deletes the character to the right of the cursor.
@@ -54,11 +54,14 @@ class SelectX(QtGui.QMainWindow):
 
     def __init__(self):
         super(SelectX, self).__init__()
+        #init class constants
         self.zoomRate = 0
-        self.path=None
+        self.path = os.getenv('HOME')
+        self.selectForCopyByWords = False
+        self.startPath = os.getenv('HOME')
+        
         self.initUI()
         #self.openInNewTab = True
-        self.selectForCopyByWords = False
         try:
             if len(sys.argv)<3:
                 print 'Try Open This File -> %s' % sys.argv[1]
@@ -87,6 +90,7 @@ class SelectX(QtGui.QMainWindow):
         self.setCentralWidget(self.mainTab)
         self.mainTab.addTab(self.initEdit(), "New Text")
         self.mainTab.tabCloseRequested.connect(self.closeTab)
+        self.setHighlighter()
         
         self.show()
     
@@ -212,6 +216,15 @@ class SelectX(QtGui.QMainWindow):
         rows = len(self.mainTab.currentWidget().toPlainText().split('\n')) # ;)
         self.statusBar().showMessage("Rows: {} | Symbols: {} | Line: {} | Column: {}".format(symb,rows,line,col))
         
+    def setHighlighter(self):
+        extention = str(getFileName(self.path, '.')).lower()
+        if extention in ['c', 'cc','cpp', 'c++', 'cxx', 'h', 'hh', 'hpp', 'hxx']:
+            self.highlighter = Highlighter(self.mainTab.currentWidget().document(), extention)
+        elif extention in ['py', 'py3']:
+            self.highlighter = PythonHighlighter(self.mainTab.currentWidget().document())
+        #else:
+            #self.highlighter = PythonHighlighter(self.mainTab.currentWidget().document())
+        
     def newFile(self):
         self.mainTab.currentWidget().clear()
         self.path=None
@@ -221,6 +234,7 @@ class SelectX(QtGui.QMainWindow):
     def newTab(self):
         self.mainTab.addTab(self.initEdit(), "New text tab")
         self.mainTab.setCurrentWidget(self.textEdit)
+        self.setHighlighter()
         
     def closeTab(self, tabIndex): 
         #print  'tabIndex-%s' % tabIndex
@@ -239,18 +253,22 @@ class SelectX(QtGui.QMainWindow):
         
     def saveFileAs(self):
         filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File', \
-        os.getenv('HOME'))
+        self.startPath)
         if filename:
             f = open(filename, 'w')
             filedata = self.mainTab.currentWidget().toPlainText()
             f.write(filedata)
             f.close()
+            self.startPath = self.path[:-len(getFileName(self.path))]
             self.path = filename
             self.statusBar().showMessage('Save Text: %s' % filename)
             self.setWindowTitle('SelectX - %s' % filename)
             curtabind = self.mainTab.currentIndex()
+            
             self.mainTab.setTabToolTip (curtabind, '%s' % self.path)
-            self.mainTab.setTabText(curtabind, '%s' % getFileName(self.path))
+            newFileName =  getFileName(self.path)
+            self.mainTab.setTabText(curtabind, '%s' % newFileName)
+            self.setHighlighter()
         else:
             self.statusBar().showMessage('Stop Save Text')
         
@@ -261,11 +279,12 @@ class SelectX(QtGui.QMainWindow):
     def openFile(self):
         ###to see http://www.rkblog.rk.edu.pl/w/p/simple-text-editor-pyqt4/
         self.path = QtGui.QFileDialog.getOpenFileName(self, 'Open File', \
-        os.getenv('HOME'), \
-         "All Files (*);;Text Files (*.txt *.log *.TXT *.LOG);;Python Files (*.py *.PY *.py3 *.PY3);;C++ Files (*.cpp *.h *.CPP *.H *.c *.C)" \
+        self.startPath, \
+         "All Files (*);;Text Files (*.txt *.log *.TXT *.LOG);;Python Files (*.py *.PY *.py3 *.PY3);;C/C++ Files (*.c *.cc *.cpp *.c++ *.cxx *.h *.hh *.hpp *.hxx *.CPP *.H *.c *.C)" \
         )
         
         if self.path:
+            self.startPath = self.path[:-len(getFileName(self.path))]
             if len(self.mainTab.currentWidget().toPlainText()) > 0:
                 self.newTab()
             self.openExistFile(self.path)
@@ -285,8 +304,9 @@ class SelectX(QtGui.QMainWindow):
                 # Python v2.
                 text = str(text)
             self.mainTab.currentWidget().clear()
+            self.setHighlighter()
             #self.highlighter = Highlighter(self.mainTab.currentWidget().document(), filePath.split('.')[-1])
-            self.highlight = PythonHighlighter(self.mainTab.currentWidget().document())
+            #self.highlight = PythonHighlighter(self.mainTab.currentWidget().document())
             #self.mainTab.currentWidget().insertPlainText(maskSpaces(text))
             self.mainTab.currentWidget().insertPlainText(text)
             self.statusBar().showMessage('Open Text: %s' % self.path)
@@ -420,6 +440,9 @@ class SelectX(QtGui.QMainWindow):
     def keyHelp(self):
         QtGui.QMessageBox.information(self, 'Keys SelectX', KEYS_HELP, \
         QtGui.QMessageBox.Ok)
+
+
+
 
 
 HILIGHTER_SETUP = {'cpp c h' : {'keywordPatternsRules' : ["\\bchar\\b", "\\bclass\\b", "\\bconst\\b",
@@ -727,8 +750,10 @@ def main():
         sys.exit()
     runWindow()
 
-def getFileName(pathName):
-    if ( '\\' in pathName ) :
+def getFileName(pathName, separatorSymbol=None):
+    if separatorSymbol:
+        return pathName.split(separatorSymbol)[-1]
+    elif ( '\\' in pathName ) :
         return pathName.split('\\')[-1]
     else:
         return pathName.split('/')[-1]
