@@ -4,10 +4,9 @@
 import sys
 import os
 from PyQt4 import QtGui, QtCore
-#from PyQt4.QtGui import QIcon
 
 
-__version__ = '''0.2.11'''
+__version__ = '''0.2.12'''
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
 Delete     Deletes the character to the right of the cursor.
@@ -47,7 +46,6 @@ Keys:
 VERSION_INFO = "SelectX. Text editor licenced by GPL3. Ver. %s"
 
 
-
 class SelectX(QtGui.QMainWindow):
 
     def __init__(self):
@@ -55,7 +53,8 @@ class SelectX(QtGui.QMainWindow):
         self.zoomRate = 0
         self.path=None
         self.initUI()
-        self.openInNewTab = True
+        #self.openInNewTab = True
+        self.selectForCopyByWords = False
         try:
             if len(sys.argv)<3:
                 print 'Try Open This File -> %s' % sys.argv[1]
@@ -71,7 +70,6 @@ class SelectX(QtGui.QMainWindow):
         
         self.MenuBar = self.makeMenu()
         
-        
         self.statusBar()
         self.setGeometry(100, 100, 400, 400)
         self.setWindowIcon(QtGui.QIcon.fromTheme("edit-select-all"))
@@ -84,7 +82,8 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.setMovable(True)
         self.setCentralWidget(self.mainTab)
         self.mainTab.addTab(self.initEdit(), "New Text")
-        self.mainTab.tabCloseRequested.connect(self.closeTab)  
+        self.mainTab.tabCloseRequested.connect(self.closeTab)
+        
         self.show()
     
     def initEdit(self, fileName=None):
@@ -147,13 +146,17 @@ class SelectX(QtGui.QMainWindow):
         editMenu, 'edit-paste', self.toolbar)
         editMenu.addSeparator()
         self.addActionParamX('Find', 'Ctrl+F', 'Find text', self.findText, \
-        editMenu, 'edit-find')
+        editMenu, 'edit-find', self.toolbar)
+        #self.addActionParamX('Get formed', 'Ctrl+G', 'Get formed text', self.getFormedText, \
+        #editMenu, 'edit-find', self.toolbar)
         
         self.toolbar = self.addToolBar("Select")
         self.toolbar.setMovable(True)
         selectMenu = menubar.addMenu('&Select')
         self.addActionParamX('SelectAll', 'Ctrl+A', 'Select all text in editor', \
         self.selectSelectAll, selectMenu, 'edit-select-all', self.toolbar)
+        #self.addActionParamX('Select For Copy By Words', 'Ctrl+Shift+A', 'Set Select For Copy By Words', \
+        #self.setSelectByWords, selectMenu, 'edit-select', self.toolbar, checkAble=True)
         
         self.toolbar = self.addToolBar("View")
         self.toolbar.setMovable(True)
@@ -167,7 +170,6 @@ class SelectX(QtGui.QMainWindow):
         viewMenu.addSeparator()
         self.addActionParamX('Font', 'F8', 'Font select dialog', \
         self.viewFont, viewMenu, 'preferences-desktop-font', self.toolbar)
-        #self.addToolBarBreak()
         
         self.toolbar = self.addToolBar("Help")
         self.toolbar.setMovable(True)
@@ -178,20 +180,16 @@ class SelectX(QtGui.QMainWindow):
         helpMenu, 'help-about')
         self.addActionParamX("About &Qt", 'Shift+F9', 'About current QT', QtGui.qApp.aboutQt, \
         helpMenu, 'help-about')
-        #self.toolbar.addToolBarBreak()
         
-    
-      # Makes the next toolbar appear underneath this one
-        #self.addToolBarBreak()
         
         return menubar
         
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
-    TopActLevel, IconName, toolBar=None, checkAble=False):
+    TopActLevel, IconName, toolBar=None, checkAble=False, checkState=False):
         MakeAction = QtGui.QAction(QtGui.QIcon.fromTheme(IconName), ActText, self)
         if checkAble:
             MakeAction.setCheckable (True)
-            MakeAction.setChecked (True)
+            MakeAction.setChecked (checkState)
             
         MakeAction.setIconVisibleInMenu (True)
         MakeAction.setShortcut(ActSortcut)
@@ -284,6 +282,7 @@ class SelectX(QtGui.QMainWindow):
                 text = str(text)
             self.mainTab.currentWidget().clear()
             self.highlighter = Highlighter(self.mainTab.currentWidget().document(), filePath.split('.')[-1])
+            #self.mainTab.currentWidget().insertPlainText(maskSpaces(text))
             self.mainTab.currentWidget().insertPlainText(text)
             self.statusBar().showMessage('Open Text: %s' % self.path)
             curtabind = self.mainTab.currentIndex()
@@ -326,6 +325,12 @@ class SelectX(QtGui.QMainWindow):
         self.statusBar().showMessage('Redo Text')
         
     def copyText(self):
+        if self.selectForCopyByWords:
+        
+            self.cursorMain = self.mainTab.currentWidget().cursorRect()
+            print self.cursorMain
+            print 'self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()'
+            print self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()
         self.mainTab.currentWidget().copy()
         self.statusBar().showMessage('Copy Text')
         
@@ -337,6 +342,25 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.currentWidget().paste()
         self.statusBar().showMessage('Paste Text')
         
+    def getFormedText(self):
+        text_get, get_ok = QtGui.QInputDialog.getText(self, \
+        'Get Formed Text', 'Enter form start_row,start_word_number,number_of_words,end_row')
+        if get_ok:
+            try:
+                params_get = text_get.split(',')
+                print params_get
+                filedata = self.mainTab.currentWidget().toPlainText()
+                filelist = filedata.split('\n')
+                newdata='************************************\n'
+                for row in filelist[int(params_get[0]):int(params_get[-1])]:
+                    for word in row[int(params_get[1]):int(params_get[1])+int(params_get[2])+1]:
+                        newdata=newdata+str(word)+' '
+                    newdata=newdata+'\n'
+                self.mainTab.currentWidget().insertPlainText(filedata+newdata)
+                self.statusBar().showMessage('adde get from') 
+            except IndexError, ValueError:
+                self.statusBar().showMessage('wrong get from')
+       
     def findText(self):
         cursor = self.mainTab.currentWidget().textCursor()
         textSelected = cursor.selectedText()
@@ -355,6 +379,9 @@ class SelectX(QtGui.QMainWindow):
     def selectSelectAll(self):
         self.mainTab.currentWidget().selectAll()
         self.statusBar().showMessage('Select All Text')
+        
+    def setSelectByWords(self):
+        self.selectForCopyByWords = not(self.selectForCopyByWords)
         
     def viewZoomIn(self):
         self.mainTab.currentWidget().zoomIn(1)
@@ -390,7 +417,7 @@ class SelectX(QtGui.QMainWindow):
         QtGui.QMessageBox.Ok)
 
 
-HILIGHTER_SETUP = {'cpp' : {'keywordPatternsRules' : ["\\bchar\\b", "\\bclass\\b", "\\bconst\\b",
+HILIGHTER_SETUP = {'cpp c h' : {'keywordPatternsRules' : ["\\bchar\\b", "\\bclass\\b", "\\bconst\\b",
                 "\\bdouble\\b", "\\benum\\b", "\\bexplicit\\b", "\\bfriend\\b",
                 "\\binline\\b", "\\bint\\b", "\\blong\\b", "\\bnamespace\\b",
                 "\\boperator\\b", "\\bprivate\\b", "\\bprotected\\b",
@@ -403,7 +430,7 @@ HILIGHTER_SETUP = {'cpp' : {'keywordPatternsRules' : ["\\bchar\\b", "\\bclass\\b
                 'quotationFormatRules':"\".*\"",
                 'functionFormatRules':"\\b[A-Za-z0-9_]+(?=\\()",
                 'multiLineCommentFormat' : ["/\\*", "\\*/"]},
-                'py':{'keywordPatternsRules' : ["\\bchar\\b", "\\bclass\\b", "\\bconst\\b",
+                'py py3':{'keywordPatternsRules' : ["\\bchar\\b", "\\bclass\\b", "\\bconst\\b",
                 "\\bdouble\\b", "\\benum\\b", "\\bexplicit\\b", "\\bfriend\\b",
                 "\\binline\\b", "\\bint\\b", "\\blong\\b", "\\bnamespace\\b",
                 "\\boperator\\b", "\\bprivate\\b", "\\bprotected\\b",
@@ -418,6 +445,17 @@ HILIGHTER_SETUP = {'cpp' : {'keywordPatternsRules' : ["\\bchar\\b", "\\bclass\\b
                 'multiLineCommentFormat' : ["/\\*", "\\*/"]}
                 }
 
+def maskSpaces(oldText, oldChars=[' ','\n', '\t'], newChars=[u'\u2022', u'\u21b5\n', u'\u2192']):
+    import re
+    nnn=0
+    newText = oldText
+    for ochar in oldChars:
+        newText = re.sub(ochar, newChars[nnn], newText)
+        nnn += 1
+    return newText
+
+def unMaskSpaces(oldText, newChars=[' ','\n', '\t'], oldChars=[u'\u2022', u'\u21b5\n', u'\u2192']):
+    maskSpaces(oldText, newChars, oldChars)
 
 class Highlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, parent=None, fileExt=''):
