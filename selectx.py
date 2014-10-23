@@ -6,11 +6,11 @@ import os
 from PyQt4 import QtGui, QtCore
 
 
-from PyQt4.QtCore import QRegExp
+from PyQt4.QtCore import QRegExp, QChar
 from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.2'''
+__version__ = '''0.3.3'''
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
 Delete     Deletes the character to the right of the cursor.
@@ -89,10 +89,22 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.setMovable(True)
         self.setCentralWidget(self.mainTab)
         self.mainTab.addTab(self.initEdit(), "New Text")
+        
+        #self.initNonPrintCursor()
+        
         self.mainTab.tabCloseRequested.connect(self.closeTab)
         self.setHighlighter()
         
         self.show()
+    
+    def initNonPrintCursor(self):
+        # to see https://qt-project.org/doc/qt-4.7/richtext-textobject.html
+        cursor = self.mainTab.currentWidget().textCursor()
+        newsymbol=QTextCharFormat(u'\u21b5')
+        newsymbol.setFont(self.qFont)
+        cursor.insertText(QChar.ObjectReplacementCharacter, newsymbol)
+        self.mainTab.currentWidget().setTextCursor(cursor)
+        print 'ns'+str(ns)
     
     def initEdit(self, fileName=None):
         
