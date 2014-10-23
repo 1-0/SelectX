@@ -6,11 +6,11 @@ import os
 from PyQt4 import QtGui, QtCore
 
 
-from PyQt4.QtCore import QRegExp, QChar
+from PyQt4.QtCore import QRegExp, QChar, QObject, QTextObjectInterface
 from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.3'''
+__version__ = '''0.3.4'''
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
 Delete     Deletes the character to the right of the cursor.
@@ -49,8 +49,31 @@ Keys:
 
 VERSION_INFO = "SelectX. Text editor licenced by GPL3. Ver. %s"
 
+class SvgTextObject (QObject, QTextObjectInterface):
+    def __init__(self):
+        super(SvgTextObject, self).__init__()
+        
+    def intrinsicSize():
+        
+ {
+    Q_OBJECT
+    Q_INTERFACES(QTextObjectInterface)
+ 
+public:
+    QSizeF intrinsicSize(QTextDocument *doc, int posInDocument,
+                         const QTextFormat &format);
+    void drawObject(QPainter *painter, const QRectF &rect, QTextDocument *doc,
+                    int posInDocument, const QTextFormat &format);
+};
+
+
 
 class SelectX(QtGui.QMainWindow):
+
+    def __init__(self):
+        super(SelectX, self).__init__()
+
+class SelectX1(QtGui.QMainWindow):
 
     def __init__(self):
         super(SelectX, self).__init__()
@@ -90,7 +113,7 @@ class SelectX(QtGui.QMainWindow):
         self.setCentralWidget(self.mainTab)
         self.mainTab.addTab(self.initEdit(), "New Text")
         
-        #self.initNonPrintCursor()
+        self.initNonPrintCursor()
         
         self.mainTab.tabCloseRequested.connect(self.closeTab)
         self.setHighlighter()
@@ -100,9 +123,9 @@ class SelectX(QtGui.QMainWindow):
     def initNonPrintCursor(self):
         # to see https://qt-project.org/doc/qt-4.7/richtext-textobject.html
         cursor = self.mainTab.currentWidget().textCursor()
-        newsymbol=QTextCharFormat(u'\u21b5')
+        newsymbol=QTextCharFormat() #('\t') #(u'\u21b5')
         newsymbol.setFont(self.qFont)
-        cursor.insertText(QChar.ObjectReplacementCharacter, newsymbol)
+        cursor.insertText(QChar.ObjectReplacementCharacter('\t'), newsymbol)
         self.mainTab.currentWidget().setTextCursor(cursor)
         print 'ns'+str(ns)
     
@@ -784,4 +807,82 @@ def runWindow():
 
 if __name__ == "__main__":
    main()
+
+
+
+
+
+
+
+
+
+
+##from PySide import QtCore, QtGui, QtSvg
+#from PyQt4 import QtCore, QtGui, QtSvg
+
+#class SvgTextObject(QtCore.QObject, QtGui.QTextObjectInterface):
+    #def intrinsicSize(self, doc, posInDocument, format):
+        #renderer = QtSvg.QSvgRenderer(format.property(Window.SvgData).toByteArray())
+        #size = renderer.defaultSize()
+        #if size.height() > 25:
+            #size *= 25.0 / size.height()
+        #return QtCore.QSizeF(size)
+        
+    #def drawObject(self, painter, rect, doc, posInDocument, format):
+        #renderer = QtSvg.QSvgRenderer(format.property(Window.SvgData).toByteArray())
+        #renderer.render(painter, rect)
+        
+#class Window(QtGui.QWidget):
+    
+    #SvgTextFormat = QtGui.QTextFormat.UserObject + 1
+    #SvgData = 1
+    
+    #def __init__(self):
+        #super(Window, self).__init__()
+        #self.setupGui()
+        #self.setupTextObject()
+        #self.setWindowTitle(self.tr("Text Object Example"))
+        
+    #def insertTextObject(self):
+        #fileName = self.fileNameLineEdit.text()
+        #file = QtCore.QFile(fileName)
+        #if not file.open(QtCore.QIODevice.ReadOnly):
+            #QtGui.QMessageBox.warning(self, self.tr("Error Opening File"),
+            #self.tr("Could not open '%1'").arg(fileName))
+        #svgData = file.readAll()
+        #svgCharFormat = QtGui.QTextCharFormat()
+        #svgCharFormat.setObjectType(Window.SvgTextFormat)
+        #svgCharFormat.setProperty(Window.SvgData, svgData)
+        #cursor = self.textEdit.textCursor()
+        #cursor.insertText(u"\uFFFD", svgCharFormat)
+        #self.textEdit.setTextCursor(cursor)
+    #def setupTextObject(self):
+        #svgInterface = SvgTextObject(self)
+        #self.textEdit.document().documentLayout().registerHandler(Window.SvgTextFormat, svgInterface)
+    #def setupGui(self):
+        #fileNameLabel = QtGui.QLabel(self.tr("Svg File Name:"))
+        #self.fileNameLineEdit = QtGui.QLineEdit()
+        #insertTextObjectButton = QtGui.QPushButton(self.tr("Insert Image"))
+        #self.fileNameLineEdit.setText('./files/heart.svg')
+        #QtCore.QObject.connect(insertTextObjectButton, QtCore.SIGNAL('clicked()'), self.insertTextObject)
+        #bottomLayout = QtGui.QHBoxLayout()
+        #bottomLayout.addWidget(fileNameLabel)
+        #bottomLayout.addWidget(self.fileNameLineEdit)
+        #bottomLayout.addWidget(insertTextObjectButton)
+        #self.textEdit = QtGui.QTextEdit()
+        #mainLayout = QtGui.QVBoxLayout()
+        #mainLayout.addWidget(self.textEdit)
+        #mainLayout.addLayout(bottomLayout)
+        #self.setLayout(mainLayout)
+#if __name__ == '__main__':
+    #import sys
+    #app = QtGui.QApplication(sys.argv)
+    #window = Window()
+    #window.show()
+    #sys.exit(app.exec_())
+
+
+
+
+
 
