@@ -6,11 +6,11 @@ import os
 from PyQt4 import QtGui, QtCore
 
 
-from PyQt4.QtCore import QRegExp, QChar, QObject, QTextObjectInterface
+from PyQt4.QtCore import QRegExp, QChar, QObject #, QTextObjectInterface
 from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.4'''
+__version__ = '''0.3.5'''
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
 Delete     Deletes the character to the right of the cursor.
@@ -48,23 +48,6 @@ Keys:
 '''
 
 VERSION_INFO = "SelectX. Text editor licenced by GPL3. Ver. %s"
-
-class SvgTextObject (QObject, QTextObjectInterface):
-    def __init__(self):
-        super(SvgTextObject, self).__init__()
-        
-    def intrinsicSize():
-        
- {
-    Q_OBJECT
-    Q_INTERFACES(QTextObjectInterface)
- 
-public:
-    QSizeF intrinsicSize(QTextDocument *doc, int posInDocument,
-                         const QTextFormat &format);
-    void drawObject(QPainter *painter, const QRectF &rect, QTextDocument *doc,
-                    int posInDocument, const QTextFormat &format);
-};
 
 
 
