@@ -10,7 +10,7 @@ from PyQt4.QtCore import QRegExp, QChar
 from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.3.3'''
+__version__ = '''0.3.3.4'''
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
 Delete     Deletes the character to the right of the cursor.
@@ -55,10 +55,15 @@ class SelectX(QtGui.QMainWindow):
     def __init__(self):
         super(SelectX, self).__init__()
         #init class constants
+        self.nonPrintFlag = False
+        self.nonPrintSymbols = [' ', '\t']
+        self.nonPrintMasks = [u'\u2022', u'\u2192']
         self.zoomRate = 0
         self.path = os.getenv('HOME')
         self.selectForCopyByWords = False
         self.startPath = os.getenv('HOME')
+        
+        
         
         self.initUI()
         #self.openInNewTab = True
@@ -167,8 +172,6 @@ class SelectX(QtGui.QMainWindow):
         editMenu.addSeparator()
         self.addActionParamX('Find', 'Ctrl+F', 'Find text', self.findText, \
         editMenu, 'edit-find', self.toolbar)
-        #self.addActionParamX('Get formed', 'Ctrl+G', 'Get formed text', self.getFormedText, \
-        #editMenu, 'edit-find', self.toolbar)
         
         self.toolbar = self.addToolBar("Select")
         self.toolbar.setMovable(True)
@@ -190,6 +193,9 @@ class SelectX(QtGui.QMainWindow):
         viewMenu.addSeparator()
         self.addActionParamX('Font', 'F8', 'Font select dialog', \
         self.viewFont, viewMenu, 'preferences-desktop-font', self.toolbar)
+        viewMenu.addSeparator()
+        self.addActionParamX('Get formed non-printabale', 'Ctrl+G', 'Get formed non-printabale symbols', self.getFormedText, \
+        viewMenu, 'list-add', self.toolbar, checkAble=True)
         
         self.toolbar = self.addToolBar("Help")
         self.toolbar.setMovable(True)
@@ -223,12 +229,19 @@ class SelectX(QtGui.QMainWindow):
             toolBar.addAction(MakeAction)
     
     def cursorPosition(self):
-        cursor = self.mainTab.currentWidget().textCursor()
+        currentWidget = self.mainTab.currentWidget()
+        cursor = currentWidget.textCursor()
         line = cursor.blockNumber() + 1
         col = cursor.columnNumber()
-        symb = len(self.mainTab.currentWidget().toPlainText())
-        rows = len(self.mainTab.currentWidget().toPlainText().split('\n')) # ;)
+        currentText = currentWidget.toPlainText()
+        symb = len(currentText)
+        allRows = currentText.split('\n') # ;)
+        rows = len(allRows) 
         self.statusBar().showMessage("Rows: {} | Symbols: {} | Line: {} | Column: {}".format(symb,rows,line,col))
+        
+        #if self.nonPrintFlag:
+            #if allRows[][]
+            #self.nonPrintSymbols = 
         
     def setHighlighter(self):
         extention = str(getFileName(self.path, '.')).lower()
@@ -258,7 +271,8 @@ class SelectX(QtGui.QMainWindow):
     def saveFile(self):
         if self.path:
             f = open(self.path, 'w')
-            filedata = self.mainTab.currentWidget().toPlainText()
+            if self.nonPrintFlag:
+                filedata = unMaskSpaces(self.mainTab.currentWidget().toPlainText())
             f.write(filedata)
             f.close()
             self.statusBar().showMessage('Save Text: %s' % self.path)
@@ -276,7 +290,8 @@ class SelectX(QtGui.QMainWindow):
             self.startPath)
         if filename:
             f = open(filename, 'w')
-            filedata = self.mainTab.currentWidget().toPlainText()
+            if self.nonPrintFlag:
+                filedata = unMaskSpaces(self.mainTab.currentWidget().toPlainText())
             f.write(filedata)
             f.close()
             self.path = filename
@@ -324,6 +339,7 @@ class SelectX(QtGui.QMainWindow):
         inFile = QtCore.QFile(self.path)
         if inFile.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
             text = inFile.readAll()
+            inFile.close()
             try:
                 # Python v3.
                 text = str(text, encoding='ascii')
@@ -336,6 +352,8 @@ class SelectX(QtGui.QMainWindow):
             #self.highlighter = Highlighter(self.mainTab.currentWidget().document(), filePath.split('.')[-1])
             #self.highlight = PythonHighlighter(self.mainTab.currentWidget().document())
             #self.mainTab.currentWidget().insertPlainText(maskSpaces(text))
+            if self.nonPrintFlag:
+                text = maskSpaces(text)
             self.mainTab.currentWidget().insertPlainText(text)
             self.statusBar().showMessage('Open Text: %s' % self.path)
             curtabind = self.mainTab.currentIndex()
@@ -396,6 +414,9 @@ class SelectX(QtGui.QMainWindow):
         self.statusBar().showMessage('Paste Text')
         
     def getFormedText(self):
+        self.nonPrintFlag = not(self.nonPrintFlag)
+        
+    def getFormedText____old(self):
         text_get, get_ok = QtGui.QInputDialog.getText(self, \
         'Get Formed Text', 'Enter form start_row,start_word_number,number_of_words,end_row')
         if get_ok:
@@ -501,7 +522,9 @@ HILIGHTER_SETUP = {'cpp c h' : {'keywordPatternsRules' : ["\\bchar\\b", "\\bclas
                 'multiLineCommentFormat' : ["/\\*", "\\*/"]}
                 }
 
-def maskSpaces(oldText, oldChars=[' ','\n', '\t'], newChars=[u'\u2022', u'\u21b5\n', u'\u2192']):
+#def maskSpaces(oldText, oldChars=[' ','\n', '\t'], newChars=[u'\u2022', u'\u21b5\n', u'\u2192']):
+def maskSpaces(oldText, oldChars=[' ', '\t'], newChars=[u'\u2022', u'\u2192']):
+    #print oldText
     import re
     nnn=0
     newText = oldText
@@ -509,8 +532,17 @@ def maskSpaces(oldText, oldChars=[' ','\n', '\t'], newChars=[u'\u2022', u'\u21b5
         newText = re.sub(ochar, newChars[nnn], newText)
         nnn += 1
     return newText
+    #nnn=0
+    #for ochar in oldChars:
+        #oldText.replace(ochar, newChars[nnn])
+        #print ochar, newChars[nnn]
+        #print oldText
+        #nnn += 1
+    
+    #return oldText
 
-def unMaskSpaces(oldText, newChars=[' ','\n', '\t'], oldChars=[u'\u2022', u'\u21b5\n', u'\u2192']):
+#def unMaskSpaces(oldText, newChars=[' ','\n', '\t'], oldChars=[u'\u2022', u'\u21b5\n', u'\u2192']):
+def unMaskSpaces(oldText, newChars=[' ', '\t'], oldChars=[u'\u2022', u'\u2192']):
     maskSpaces(oldText, newChars, oldChars)
 
 class Highlighter(QtGui.QSyntaxHighlighter):
