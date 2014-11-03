@@ -6,19 +6,21 @@ import os
 
 try:
     from PySide import QtGui, QtCore
+    LIB_USE = "PySide"
 except ImportError:
     print """Try to use PyQt4
 (license - http://www.riverbankcomputing.co.uk/software/pyqt/license )
 instead of PySide
 (license - LGPL - http://www.gnu.org/copyleft/lesser.html )"""
     from PyQt4 import QtGui, QtCore
+    LIB_USE = "PyQt4"
 
 
 #from PyQt4.QtCore import QRegExp, QChar
 #from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.7.4'''
+__version__ = '''0.3.7.5'''
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
 Delete     Deletes the character to the right of the cursor.
@@ -424,19 +426,21 @@ class SelectX(QtGui.QMainWindow):
             
     def getNewIcon(self, IconName):
         newIcon = QtGui.QIcon.fromTheme(IconName)
-        if self.useThemeIcons:
+        if self.useThemeIcons and newIcon.hasThemeIcon(IconName):
         #if False:
             #print 'has in theme '+IconName #debug prints to find missing icons
             pass
         else:
             if IconName in TANGO_ICONS:
                 newPixmap = QtGui.QPixmap()
+                #print TANGO_ICONS[IconName]
                 newPixmap.loadFromData(TANGO_ICONS[IconName])
                 newIcon = QtGui.QIcon(newPixmap)
                 #print 'has in file '+IconName
             else:
                 #print 'has not '+IconName
                 pass
+        #print 'newIcon - '+str(newIcon)
         return newIcon
             
                 
@@ -526,6 +530,8 @@ class SelectX(QtGui.QMainWindow):
         
     def openFile(self):
         ###to see http://www.rkblog.rk.edu.pl/w/p/simple-text-editor-pyqt4/
+        
+        
         if self.startPath:
             self.path = QtGui.QFileDialog.getOpenFileName(self, 'Open File', \
             self.startPath, \
@@ -540,6 +546,10 @@ class SelectX(QtGui.QMainWindow):
             )
         
         if self.path:
+            if type(self.path) is tuple: #for PySide
+                self.path = self.path[0]
+                print self.path
+        
             self.startPath = self.path[:-len(getFileName(self.path))]
             if len(self.mainTab.currentWidget().toPlainText()) > 0:
                 self.newTab()
@@ -958,7 +968,9 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
             while index >= 0:
                 # We actually want the index of the nth match
                 index = expression.pos(nth)
-                length = expression.cap(nth).length()
+                #print 'index - '+str(index)
+                #length = expression.cap(nth).length() # pyside fix
+                length = len(expression.cap(nth))
                 self.setFormat(index, length, format)
                 index = expression.indexIn(text, index + length)
 
