@@ -20,7 +20,7 @@ instead of PySide
 #from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.7.5'''
+__version__ = '''0.3.7.6'''
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
 Delete     Deletes the character to the right of the cursor.
@@ -548,7 +548,7 @@ class SelectX(QtGui.QMainWindow):
         if self.path:
             if type(self.path) is tuple: #for PySide
                 self.path = self.path[0]
-                print self.path
+                #print self.path
         
             self.startPath = self.path[:-len(getFileName(self.path))]
             if len(self.mainTab.currentWidget().toPlainText()) > 0:
@@ -1010,7 +1010,8 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
             # No; multi-line string
             else:
                 self.setCurrentBlockState(in_state)
-                length = text.length() - start + add
+                length = len(text) - start + add
+                #length = text.length() - start + add
             # Apply formatting
             self.setFormat(start, length, style)
             # Look for the next match
