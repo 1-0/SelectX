@@ -6,6 +6,7 @@ import os
 
 try:
     from PySide import QtGui, QtCore
+    
     LIB_USE = "PySide"
 except ImportError:
     print """Try to use PyQt4
@@ -13,14 +14,17 @@ except ImportError:
 instead of PySide
 (license - LGPL - http://www.gnu.org/copyleft/lesser.html )"""
     from PyQt4 import QtGui, QtCore
+    
     LIB_USE = "PyQt4"
 
+#from PyQt4 import QtGui, QtCore
 
 #from PyQt4.QtCore import QRegExp, QChar
 #from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.7.6'''
+__version__ = '''0.3.7.7'''
+
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
 Delete     Deletes the character to the right of the cursor.
@@ -240,7 +244,6 @@ static char *edit-copy_xpm[] = {
 """,    }
 
 
-
 class SelectX(QtGui.QMainWindow):
 
     def __init__(self, ForseEmbededIcons = None):
@@ -271,6 +274,11 @@ class SelectX(QtGui.QMainWindow):
         except IndexError:
             #print 'not open File'
             pass
+
+    #def keyPressEvent(self,event):
+        #if event.key()==Qt.Key_Tab:
+            #print 'tab'
+            #self.mainTab.currentWidget()
     
     def initUI(self):
         
@@ -317,7 +325,41 @@ class SelectX(QtGui.QMainWindow):
         #self.textEdit.setStyleSheet("QTextEdit {font-family: Sans-serif;}")
         
         self.textEdit.cursorPositionChanged.connect(self.cursorPosition)
+        
+        
+        #self.textEdit.installEventFilter(self)
+        
         return self.textEdit
+        
+    def keyReleaseEvent(self, event):
+        print 'event - '+str(event)
+        print 'key - '+str(event.key())
+        if (event.key()==QtCore.Qt.Key_Tab):
+            print 'event - tab'
+            #event.ignore()
+            return 
+        return 
+        
+        
+    #def keyPressEvent(self, event):
+        
+        #print 'event - '+str(event)
+        #print 'key - '+str(event.key())
+        #if (event.key()==QtCore.Qt.Key_Tab):
+            #print 'event - tab'
+            #event.ignore()
+            #return True
+        #return True
+        #event.ignore()
+
+    #def eventFilter(self, receiver, event):
+        #if (event.type() == QtCore.QEvent.KeyPress):
+            #if (event.key()==QtCore.Qt.Key_Tab):
+                ## do some stuff ...
+                #print 'tab'
+            #return True # means stop event propagation
+        #else:
+            #return QtGui.QDialog.eventFilter(self, event)
 
     def makeMenu(self):
         menubar = self.menuBar()
