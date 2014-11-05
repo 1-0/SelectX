@@ -17,13 +17,13 @@ instead of PySide
     
     LIB_USE = "PyQt4"
 
-#from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui, QtCore
 
 #from PyQt4.QtCore import QRegExp, QChar
 #from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.7.8'''
+__version__ = '''0.3.8.1'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -249,9 +249,9 @@ class SelectX(QtGui.QMainWindow):
     def __init__(self, ForseEmbededIcons = None):
         super(SelectX, self).__init__()
         #init class constants
-        self.nonPrintFlag = False
-        self.nonPrintSymbols = [' ', '\t']
-        self.nonPrintMasks = [u'\u2022', u'\u2192']
+        self.nonPrintFlag = True
+        #self.nonPrintSymbols = [' ', '\t']
+        #self.nonPrintMasks = [u'\u2022', u'\u2192']
         self.zoomRate = 0
         self.path = os.getenv('HOME')
         self.selectForCopyByWords = False
@@ -320,14 +320,22 @@ class SelectX(QtGui.QMainWindow):
         self.qFont.setFixedPitch(True)
         self.qFont.setPointSize(14)
         
+        doc = QtGui.QTextDocument()
+        option = QtGui.QTextOption()
+        #if settings.SHOW_TABS_AND_SPACES:
+        option.setFlags(QtGui.QTextOption.ShowTabsAndSpaces)
+        #option.setFlags(QtGui.QTextOption.ShowLineAndParagraphSeparators)
+        doc.setDefaultTextOption(option)
+        
         self.textEdit = QtGui.QTextEdit(self)
-        self.textEdit.setFont(self.qFont)
         #self.textEdit.setStyleSheet("QTextEdit {font-family: Sans-serif;}")
         
+        self.textEdit.setDocument(doc)
+        self.textEdit.setFont(self.qFont)
         self.textEdit.cursorPositionChanged.connect(self.cursorPosition)
         
         
-        self.textEdit.installEventFilter(self)
+        #self.textEdit.installEventFilter(self)
         
         return self.textEdit
         
@@ -433,8 +441,8 @@ class SelectX(QtGui.QMainWindow):
         self.addActionParamX('Font', 'F8', 'Font select dialog', \
         self.viewFont, viewMenu, 'preferences-desktop-font', self.toolbar)
         viewMenu.addSeparator()
-        self.addActionParamX('Get formed non-printabale', 'Ctrl+G', 'Get formed non-printabale symbols', self.getFormedText, \
-        viewMenu, 'list-add', self.toolbar, checkAble=True)
+        self.addActionParamX('Show/Hide non-printabale', 'Ctrl+H', 'Show/Hide non-printabale symbols', self.inverseNonPrintabale, \
+        viewMenu, 'list-add', self.toolbar)
         
         self.toolbar = self.addToolBar("Help")
         self.toolbar.setMovable(True)
@@ -620,8 +628,8 @@ class SelectX(QtGui.QMainWindow):
             #self.highlighter = Highlighter(self.mainTab.currentWidget().document(), filePath.split('.')[-1])
             #self.highlight = PythonHighlighter(self.mainTab.currentWidget().document())
             #self.mainTab.currentWidget().insertPlainText(maskSpaces(text))
-            if self.nonPrintFlag:
-                text = maskSpaces(text)
+            #if self.nonPrintFlag:
+            #    text = maskSpaces(text)
             self.mainTab.currentWidget().insertPlainText(text)
             self.statusBar().showMessage('Open Text: %s' % self.path)
             curtabind = self.mainTab.currentIndex()
@@ -681,8 +689,17 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.currentWidget().paste()
         self.statusBar().showMessage('Paste Text')
         
-    def getFormedText(self):
-        self.nonPrintFlag = not(self.nonPrintFlag)
+    def inverseNonPrintabale(self):
+        edit = self.mainTab.currentWidget()
+        doc = edit.document()
+        #print int(doc.defaultTextOption().flags())
+        option = QtGui.QTextOption()
+        if doc.defaultTextOption().flags():
+            option.setFlags(QtGui.QTextOption.Flag())
+        else:
+            option.setFlags(QtGui.QTextOption.ShowTabsAndSpaces)
+        doc.setDefaultTextOption(option)
+        
         
     def getFormedText____old(self):
         text_get, get_ok = QtGui.QInputDialog.getText(self, \
@@ -789,29 +806,6 @@ HILIGHTER_SETUP = {'cpp c h' : {'keywordPatternsRules' : ["\\bchar\\b", "\\bclas
                 'functionFormatRules':"\\b[A-Za-z0-9_]+(?=\\()",
                 'multiLineCommentFormat' : ["/\\*", "\\*/"]}
                 }
-
-#def maskSpaces(oldText, oldChars=[' ','\n', '\t'], newChars=[u'\u2022', u'\u21b5\n', u'\u2192']):
-def maskSpaces(oldText, oldChars=[' ', '\t'], newChars=[u'\u2022', u'\u2192']):
-    #print oldText
-    import re
-    nnn=0
-    newText = oldText
-    for ochar in oldChars:
-        newText = re.sub(ochar, newChars[nnn], newText)
-        nnn += 1
-    return newText
-    #nnn=0
-    #for ochar in oldChars:
-        #oldText.replace(ochar, newChars[nnn])
-        #print ochar, newChars[nnn]
-        #print oldText
-        #nnn += 1
-    
-    #return oldText
-
-#def unMaskSpaces(oldText, newChars=[' ','\n', '\t'], oldChars=[u'\u2022', u'\u21b5\n', u'\u2192']):
-def unMaskSpaces(oldText, newChars=[' ', '\t'], oldChars=[u'\u2022', u'\u2192']):
-    maskSpaces(oldText, newChars, oldChars)
 
 class Highlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, parent=None, fileExt=''):
@@ -965,6 +959,7 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
         self.tri_double = (QtCore.QRegExp('"""'), 2, STYLES['string2'])
 
         rules = []
+        
 
         # Keyword, operator, and brace rules
         rules += [(r'\b%s\b' % w, 0, STYLES['keyword'])
