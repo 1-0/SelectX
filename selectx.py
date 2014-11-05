@@ -23,7 +23,7 @@ instead of PySide
 #from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.7.7'''
+__version__ = '''0.3.7.8'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -327,18 +327,18 @@ class SelectX(QtGui.QMainWindow):
         self.textEdit.cursorPositionChanged.connect(self.cursorPosition)
         
         
-        #self.textEdit.installEventFilter(self)
+        self.textEdit.installEventFilter(self)
         
         return self.textEdit
         
-    def keyReleaseEvent(self, event):
-        print 'event - '+str(event)
-        print 'key - '+str(event.key())
-        if (event.key()==QtCore.Qt.Key_Tab):
-            print 'event - tab'
-            #event.ignore()
-            return 
-        return 
+    #def keyReleaseEvent(self, event):
+        #print 'event - '+str(event)
+        #print 'key - '+str(event.key())
+        #if (event.key()==QtCore.Qt.Key_Tab):
+            #print 'event - tab'
+            ##event.ignore()
+            #return 
+        #return 
         
         
     #def keyPressEvent(self, event):
@@ -352,14 +352,17 @@ class SelectX(QtGui.QMainWindow):
         #return True
         #event.ignore()
 
-    #def eventFilter(self, receiver, event):
-        #if (event.type() == QtCore.QEvent.KeyPress):
-            #if (event.key()==QtCore.Qt.Key_Tab):
-                ## do some stuff ...
-                #print 'tab'
-            #return True # means stop event propagation
-        #else:
-            #return QtGui.QDialog.eventFilter(self, event)
+    def eventFilter(self, receiver, event):
+        if (event.type() == QtCore.QEvent.KeyPress):
+            if (event.key()==QtCore.Qt.Key_Tab):
+                # do some stuff ...
+                print 'tab'
+            else:
+                print str(event.key())
+            print receiver
+            return False # means stop event propagation
+        else:
+            return QtGui.QTextEdit.eventFilter(self, receiver, event)
 
     def makeMenu(self):
         menubar = self.menuBar()
