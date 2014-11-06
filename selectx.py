@@ -17,13 +17,13 @@ instead of PySide
     
     LIB_USE = "PyQt4"
 
-from PyQt4 import QtGui, QtCore
+#from PyQt4 import QtGui, QtCore
 
 #from PyQt4.QtCore import QRegExp, QChar
 #from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.8.1'''
+__version__ = '''0.3.8.2'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -300,6 +300,7 @@ class SelectX(QtGui.QMainWindow):
         #self.initNonPrintCursor()
         
         self.mainTab.tabCloseRequested.connect(self.closeTab)
+        self.mainTab.tabCloseRequested.connect(self.closeTab)
         self.setHighlighter()
         
         self.show()
@@ -360,17 +361,38 @@ class SelectX(QtGui.QMainWindow):
         #return True
         #event.ignore()
 
-    def eventFilter(self, receiver, event):
-        if (event.type() == QtCore.QEvent.KeyPress):
-            if (event.key()==QtCore.Qt.Key_Tab):
-                # do some stuff ...
-                print 'tab'
+    def wheelEvent(self, event):
+        if event.modifiers()==QtCore.Qt.CTRL:
+            if event.delta()>0:
+                self.viewZoomIn()
+                event.ignore()
             else:
-                print str(event.key())
-            print receiver
-            return False # means stop event propagation
-        else:
-            return QtGui.QTextEdit.eventFilter(self, receiver, event)
+                self.viewZoomOut()
+                event.ignore()
+        
+        
+        
+    def eventFilter(self, receiver, event):
+        #if event.type() == QtCore.QEvent.KeyPress:
+            #if event.key()==QtCore.Qt.Key_Tab:
+                ## do some stuff ...
+                #print 'tab'
+            #else:
+                #print str(event.key())
+            #print receiver
+            #return False # means stop event propagation
+        #if event.type() == QtCore.QEvent.Wheel and event.modifiers()==QtCore.Qt.ControlModifier:
+            #if event.delta()>0:
+                #self.viewZoomIn()
+                #event.ignore()
+                #return True
+            #else:
+                #self.viewZoomOut()
+                #event.ignore()
+                #return True
+        #else:
+            #return QtGui.QTextEdit.eventFilter(self, receiver, event)
+        pass
 
     def makeMenu(self):
         menubar = self.menuBar()
@@ -540,9 +562,12 @@ class SelectX(QtGui.QMainWindow):
         
     def saveFile(self):
         if self.path:
-            f = open(self.path, 'w')
-            if self.nonPrintFlag:
-                filedata = unMaskSpaces(self.mainTab.currentWidget().toPlainText())
+            #f = open(self.path, 'w')
+            try:
+                f = open(self.path, 'w')
+            except IOError:
+                self.saveFileAs()
+            filedata = self.mainTab.currentWidget().toPlainText()
             f.write(filedata)
             f.close()
             self.statusBar().showMessage('Save Text: %s' % self.path)
@@ -559,9 +584,11 @@ class SelectX(QtGui.QMainWindow):
             filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File', \
             self.startPath)
         if filename:
-            f = open(filename, 'w')
-            if self.nonPrintFlag:
-                filedata = unMaskSpaces(self.mainTab.currentWidget().toPlainText())
+            try:
+                f = open(self.path, 'w')
+            except IOError:
+                return
+            filedata = self.mainTab.currentWidget().toPlainText()
             f.write(filedata)
             f.close()
             self.path = filename
