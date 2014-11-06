@@ -23,7 +23,7 @@ instead of PySide
 #from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.8.2'''
+__version__ = '''0.3.8.3'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -723,30 +723,13 @@ class SelectX(QtGui.QMainWindow):
         option = QtGui.QTextOption()
         if doc.defaultTextOption().flags():
             option.setFlags(QtGui.QTextOption.Flag())
+            self.statusBar().showMessage('Hide Non Printabale')
         else:
             option.setFlags(QtGui.QTextOption.ShowTabsAndSpaces)
+            self.statusBar().showMessage('Show Non Printabale')
         doc.setDefaultTextOption(option)
         
         
-    def getFormedText____old(self):
-        text_get, get_ok = QtGui.QInputDialog.getText(self, \
-        'Get Formed Text', 'Enter form start_row,start_word_number,number_of_words,end_row')
-        if get_ok:
-            try:
-                params_get = text_get.split(',')
-                print params_get
-                filedata = self.mainTab.currentWidget().toPlainText()
-                filelist = filedata.split('\n')
-                newdata='************************************\n'
-                for row in filelist[int(params_get[0]):int(params_get[-1])]:
-                    for word in row[int(params_get[1]):int(params_get[1])+int(params_get[2])+1]:
-                        newdata=newdata+str(word)+' '
-                    newdata=newdata+'\n'
-                self.mainTab.currentWidget().insertPlainText(filedata+newdata)
-                self.statusBar().showMessage('adde get from') 
-            except IndexError, ValueError:
-                self.statusBar().showMessage('wrong get from')
-       
     def findText(self):
         cursor = self.mainTab.currentWidget().textCursor()
         textSelected = cursor.selectedText()
