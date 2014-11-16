@@ -23,7 +23,7 @@ instead of PySide
 #from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.8.3'''
+__version__ = '''0.3.9.1'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -300,7 +300,7 @@ class SelectX(QtGui.QMainWindow):
         #self.initNonPrintCursor()
         
         self.mainTab.tabCloseRequested.connect(self.closeTab)
-        self.mainTab.tabCloseRequested.connect(self.closeTab)
+        #self.mainTab.tabCloseRequested.connect(self.closeTab)
         self.setHighlighter()
         
         self.show()
@@ -557,7 +557,14 @@ class SelectX(QtGui.QMainWindow):
         
     def closeTab(self, tabIndex): 
         #print  'tabIndex-%s' % tabIndex
-        self.mainTab.removeTab(tabIndex)
+        #print 1
+        if self.checkNotEmptyText():
+            #print 2
+            if self.checkCloseTab(tabIndex):
+                #print 3
+                self.mainTab.removeTab(tabIndex)
+        else:
+            self.mainTab.removeTab(tabIndex)
         #self.mainTab.setVisible(self.count() > 1)         
         
     def saveFile(self):
@@ -625,17 +632,38 @@ class SelectX(QtGui.QMainWindow):
              "All Files (*);;Text Files (*.txt *.log *.TXT *.LOG);;Python Files (*.py *.PY *.py3 *.PY3);;C/C++ Files (*.c *.cc *.cpp *.c++ *.cxx *.h *.hh *.hpp *.hxx *.CPP *.H *.c *.C)" \
             )
         
+        
         if self.path:
             if type(self.path) is tuple: #for PySide
                 self.path = self.path[0]
                 #print self.path
         
             self.startPath = self.path[:-len(getFileName(self.path))]
-            if len(self.mainTab.currentWidget().toPlainText()) > 0:
+            #if len(self.mainTab.currentWidget().toPlainText()) > 0:
+            if self.checkNotEmptyText() and self.path:
+                #print 'new tab + path -'+str(self.path)
                 self.newTab()
             self.openExistFile(self.path)
         else:
             self.statusBar().showMessage('Stop Open Text')
+        #if self.path:
+            #print 
+            #if type(self.path) is tuple: #for PySide
+                #if self.checkNotEmptyText():
+                    #self.path = self.path[0]
+                ##print self.path
+        
+            #self.startPath = self.path[:-len(getFileName(self.path))]
+            #if self.checkNotEmptyText():
+                #self.newTab()
+            #self.openExistFile(self.path)
+        #else:
+            #self.statusBar().showMessage('Stop Open Text')
+                
+    def checkNotEmptyText(self):
+        if len(self.mainTab.currentWidget().toPlainText()) > 0:
+            return True
+        return False
                 
     def openExistFile(self, filePath):
         self.path = filePath
@@ -689,6 +717,15 @@ class SelectX(QtGui.QMainWindow):
         if reply_exit==QtGui.QMessageBox.Yes:
             self.close()
         self.statusBar().showMessage('Close Stoped')
+        
+    def checkCloseTab(self, idTab=None):
+        reply_exit = QtGui.QMessageBox.question(self, 'Confirm Close Tab', \
+        "Are you sure to Close Tab?", QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, \
+        QtGui.QMessageBox.No)
+        print 1
+        if reply_exit==QtGui.QMessageBox.Yes:
+            return True
+        return False
         
     def undoText(self):
         self.mainTab.currentWidget().undo()
@@ -1089,7 +1126,7 @@ def main():
     runWindow()
 
 def getFileName(pathName, separatorSymbol=None):
-    #print pathName
+    #print 'path-'+str(pathName)
     if separatorSymbol:
         try:
             return pathName.split(separatorSymbol)[-1]
