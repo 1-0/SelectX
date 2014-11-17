@@ -23,7 +23,7 @@ instead of PySide
 #from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.9.2'''
+__version__ = '''0.3.9.4'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -297,8 +297,6 @@ class SelectX(QtGui.QMainWindow):
         self.setCentralWidget(self.mainTab)
         self.mainTab.addTab(self.initEdit(), "New Text")
         
-        #self.initNonPrintCursor()
-        
         self.mainTab.tabCloseRequested.connect(self.closeTab)
         #self.mainTab.tabCloseRequested.connect(self.removeTab)
         #self.mainTab.tabCloseRequested.connect(self.closeTab)
@@ -311,15 +309,6 @@ class SelectX(QtGui.QMainWindow):
         if widget is not None:
             widget.deleteLater()
         self.mainTab.removeTab(index)
-    
-    def initNonPrintCursor(self):
-        # to see https://qt-project.org/doc/qt-4.7/richtext-textobject.html
-        cursor = self.mainTab.currentWidget().textCursor()
-        newsymbol = QtGui.QTextCharFormat(u'\u21b5')
-        newsymbol.setFont(self.qFont)
-        cursor.insertText(QtCore.QChar.ObjectReplacementCharacter, newsymbol)
-        self.mainTab.currentWidget().setTextCursor(cursor)
-        print 'ns'+str(ns)
     
     def initEdit(self, fileName=None):
         
@@ -341,10 +330,11 @@ class SelectX(QtGui.QMainWindow):
         self.textEdit.setDocument(doc)
         self.textEdit.setFont(self.qFont)
         self.textEdit.cursorPositionChanged.connect(self.cursorPosition)
+        self.textEdit.setAcceptRichText (False)
         
-        
+        self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(QtGui.QTextOption.WrapMode.NoWrap))
         #self.textEdit.installEventFilter(self)
-        
+        #print 'QTextEdit.lineWrapMode (self)-'+str(self.textEdit.lineWrapMode())
         return self.textEdit
         
     #def keyReleaseEvent(self, event):
