@@ -23,7 +23,7 @@ instead of PySide
 #from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.9.4'''
+__version__ = '''0.3.9.5'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -553,9 +553,12 @@ class SelectX(QtGui.QMainWindow):
         self.setHighlighter()
         
     def closeTab(self, tabIndex): 
+        #print 'self.mainTab.widget(tabIndex)-'+str(self.mainTab.widget(tabIndex))
+        #print 'self.mainTab.widget(tabIndex).QTextDocument().isModified()-'+str(self.mainTab.widget(tabIndex).document ().isModified())
         #print  'tabIndex-%s' % tabIndex
         #print 1
-        if self.checkNotEmptyText():
+        #if self.mainTab.widget(tabIndex).document().isModified():
+        if self.mainTab.widget(tabIndex).document().isModified():
             #print 2
             if self.checkCloseTab(tabIndex):
                 #print 3
@@ -719,7 +722,7 @@ class SelectX(QtGui.QMainWindow):
         reply_exit = QtGui.QMessageBox.question(self, 'Confirm Close Tab', \
         "Are you sure to Close Tab?", QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, \
         QtGui.QMessageBox.No)
-        print 1
+        #print 1
         if reply_exit==QtGui.QMessageBox.Yes:
             return True
         return False
