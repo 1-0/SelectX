@@ -23,7 +23,7 @@ instead of PySide
 #from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 
-__version__ = '''0.3.9.1'''
+__version__ = '''0.3.9.2'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -300,10 +300,17 @@ class SelectX(QtGui.QMainWindow):
         #self.initNonPrintCursor()
         
         self.mainTab.tabCloseRequested.connect(self.closeTab)
+        #self.mainTab.tabCloseRequested.connect(self.removeTab)
         #self.mainTab.tabCloseRequested.connect(self.closeTab)
         self.setHighlighter()
         
         self.show()
+
+    def removeTab(self, index):
+        widget = self.mainTab.widget(index)
+        if widget is not None:
+            widget.deleteLater()
+        self.mainTab.removeTab(index)
     
     def initNonPrintCursor(self):
         # to see https://qt-project.org/doc/qt-4.7/richtext-textobject.html
@@ -562,9 +569,9 @@ class SelectX(QtGui.QMainWindow):
             #print 2
             if self.checkCloseTab(tabIndex):
                 #print 3
-                self.mainTab.removeTab(tabIndex)
+                self.removeTab(tabIndex)
         else:
-            self.mainTab.removeTab(tabIndex)
+            self.removeTab(tabIndex)
         #self.mainTab.setVisible(self.count() > 1)         
         
     def saveFile(self):
