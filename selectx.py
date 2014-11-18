@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 '''SelectX - easy eXtendable text editor for developers writed on Python. Licensed by GPL3.'''
 
-import sys
-import os
+import sys, os, re
 
 try:
     from PySide import QtGui, QtCore
@@ -17,13 +16,8 @@ instead of PySide
     
     LIB_USE = "PyQt4"
 
-#from PyQt4 import QtGui, QtCore
 
-#from PyQt4.QtCore import QRegExp, QChar
-#from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
-
-
-__version__ = '''0.3.9.5'''
+__version__ = '''0.3.10.3'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -298,8 +292,6 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.addTab(self.initEdit(), "New Text")
         
         self.mainTab.tabCloseRequested.connect(self.closeTab)
-        #self.mainTab.tabCloseRequested.connect(self.removeTab)
-        #self.mainTab.tabCloseRequested.connect(self.closeTab)
         self.setHighlighter()
         
         self.show()
@@ -333,30 +325,8 @@ class SelectX(QtGui.QMainWindow):
         self.textEdit.setAcceptRichText (False)
         
         self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(QtGui.QTextOption.WrapMode.NoWrap))
-        #self.textEdit.installEventFilter(self)
-        #print 'QTextEdit.lineWrapMode (self)-'+str(self.textEdit.lineWrapMode())
         return self.textEdit
         
-    #def keyReleaseEvent(self, event):
-        #print 'event - '+str(event)
-        #print 'key - '+str(event.key())
-        #if (event.key()==QtCore.Qt.Key_Tab):
-            #print 'event - tab'
-            ##event.ignore()
-            #return 
-        #return 
-        
-        
-    #def keyPressEvent(self, event):
-        
-        #print 'event - '+str(event)
-        #print 'key - '+str(event.key())
-        #if (event.key()==QtCore.Qt.Key_Tab):
-            #print 'event - tab'
-            #event.ignore()
-            #return True
-        #return True
-        #event.ignore()
 
     def wheelEvent(self, event):
         if event.modifiers()==QtCore.Qt.CTRL:
@@ -436,7 +406,9 @@ class SelectX(QtGui.QMainWindow):
         self.addActionParamX('Paste', 'Ctrl+V', 'Paste text', self.pasteText, \
         editMenu, 'edit-paste', self.toolbar)
         editMenu.addSeparator()
-        self.addActionParamX('Find', 'Ctrl+F', 'Find text', self.findText, \
+        #self.addActionParamX('Find', 'Ctrl+Shift+F', 'Find text', self.findText, \
+        #editMenu, 'edit-find', self.toolbar)
+        self.addActionParamX('Find and replace', 'Ctrl+F', 'Find and replace words in your document', Find(self).show, \
         editMenu, 'edit-find', self.toolbar)
         
         self.toolbar = self.addToolBar("Select")
@@ -528,10 +500,6 @@ class SelectX(QtGui.QMainWindow):
         rows = len(allRows) 
         self.statusBar().showMessage("Rows: {} | Symbols: {} | Line: {} | Column: {}".format(symb,rows,line,col))
         
-        #if self.nonPrintFlag:
-            #if allRows[][]
-            #self.nonPrintSymbols = 
-        
     def setHighlighter(self):
         extention = str(getFileName(self.path, '.')).lower()
         if extention in ['c', 'cc','cpp', 'c++', 'cxx', 'h', 'hh', 'hpp', 'hxx']:
@@ -553,19 +521,11 @@ class SelectX(QtGui.QMainWindow):
         self.setHighlighter()
         
     def closeTab(self, tabIndex): 
-        #print 'self.mainTab.widget(tabIndex)-'+str(self.mainTab.widget(tabIndex))
-        #print 'self.mainTab.widget(tabIndex).QTextDocument().isModified()-'+str(self.mainTab.widget(tabIndex).document ().isModified())
-        #print  'tabIndex-%s' % tabIndex
-        #print 1
-        #if self.mainTab.widget(tabIndex).document().isModified():
         if self.mainTab.widget(tabIndex).document().isModified():
-            #print 2
             if self.checkCloseTab(tabIndex):
-                #print 3
                 self.removeTab(tabIndex)
         else:
             self.removeTab(tabIndex)
-        #self.mainTab.setVisible(self.count() > 1)         
         
     def saveFile(self):
         if self.path:
@@ -680,11 +640,6 @@ class SelectX(QtGui.QMainWindow):
                 text = str(text)
             self.mainTab.currentWidget().clear()
             self.setHighlighter()
-            #self.highlighter = Highlighter(self.mainTab.currentWidget().document(), filePath.split('.')[-1])
-            #self.highlight = PythonHighlighter(self.mainTab.currentWidget().document())
-            #self.mainTab.currentWidget().insertPlainText(maskSpaces(text))
-            #if self.nonPrintFlag:
-            #    text = maskSpaces(text)
             self.mainTab.currentWidget().insertPlainText(text)
             self.statusBar().showMessage('Open Text: %s' % self.path)
             curtabind = self.mainTab.currentIndex()
@@ -756,7 +711,6 @@ class SelectX(QtGui.QMainWindow):
     def inverseNonPrintabale(self):
         edit = self.mainTab.currentWidget()
         doc = edit.document()
-        #print int(doc.defaultTextOption().flags())
         option = QtGui.QTextOption()
         if doc.defaultTextOption().flags():
             option.setFlags(QtGui.QTextOption.Flag())
@@ -1110,6 +1064,196 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
         else:
             return False
 
+
+class Find(QtGui.QDialog):
+    '''Extended find/replase dialouge based on http://www.binpress.com/tutorial/building-a-text-editor-with-pyqt-part-3/147'''
+    def __init__(self, parent = None):
+
+        QtGui.QDialog.__init__(self, parent)
+        
+        self.setModal(True)
+
+        self.parent = parent
+
+        self.lastMatch = None
+
+        self.initUI()
+
+    def initUI(self):
+
+        # Button to search the document for something
+        findButton = QtGui.QPushButton("Find",self)
+        findButton.clicked.connect(self.find)
+
+        # Button to replace the last finding
+        replaceButton = QtGui.QPushButton("Replace",self)
+        replaceButton.clicked.connect(self.replace)
+
+        # Button to remove all findings
+        allButton = QtGui.QPushButton("Replace all",self)
+        allButton.clicked.connect(self.replaceAll)
+
+        # Normal mode - radio button
+        self.normalRadio = QtGui.QRadioButton("Normal",self)
+        self.normalRadio.toggled.connect(self.normalMode)
+
+        # Regular Expression Mode - radio button
+        self.regexRadio = QtGui.QRadioButton("RegEx",self)
+        self.regexRadio.toggled.connect(self.regexMode)
+
+        # The field into which to type the query
+        self.findField = QtGui.QTextEdit(self)
+        self.findField.resize(250,50)
+
+        # The field into which to type the text to replace the
+        # queried text
+        self.replaceField = QtGui.QTextEdit(self)
+        self.replaceField.resize(250,50)
+
+        optionsLabel = QtGui.QLabel("Options: ",self)
+
+        # Case Sensitivity option
+        self.caseSens = QtGui.QCheckBox("Case sensitive",self)
+
+        # Whole Words option
+        self.wholeWords = QtGui.QCheckBox("Whole words",self)
+
+        # Layout the objects on the screen
+        layout = QtGui.QGridLayout()
+
+        layout.addWidget(self.findField,1,0,1,4)
+        layout.addWidget(self.normalRadio,2,2)
+        layout.addWidget(self.regexRadio,2,3)
+        layout.addWidget(findButton,2,0,1,2)
+
+        layout.addWidget(self.replaceField,3,0,1,4)
+        layout.addWidget(replaceButton,4,0,1,2)
+        layout.addWidget(allButton,4,2,1,2)
+
+        # Add some spacing
+        spacer = QtGui.QWidget(self)
+
+        spacer.setFixedSize(0,10)
+
+        layout.addWidget(spacer,5,0)
+
+        layout.addWidget(optionsLabel,6,0)
+        layout.addWidget(self.caseSens,6,1)
+        layout.addWidget(self.wholeWords,6,2)
+
+        self.setGeometry(300,300,360,250)
+        self.setWindowTitle("Find and Replace")
+        self.setLayout(layout)
+
+        # By default the normal mode is activated
+        self.normalRadio.setChecked(True)
+
+    def find(self):
+
+        # Grab the parent's text
+        text = self.parent.mainTab.currentWidget().toPlainText()
+
+        # And the text to find
+        query = self.findField.toPlainText()
+
+        # If the 'Whole Words' checkbox is checked, we need to append
+        # and prepend a non-alphanumeric character
+        if self.wholeWords.isChecked():
+            query = r'\W' + query + r'\W'
+
+        # By default regexes are case sensitive but usually a search isn't
+        # case sensitive by default, so we need to switch this around here
+        flags = 0 if self.caseSens.isChecked() else re.I
+
+        # Compile the pattern
+        pattern = re.compile(query,flags)
+
+        # If the last match was successful, start at position after the last
+        # match's start, else at 0
+        start = self.lastMatch.start() + 1 if self.lastMatch else 0
+
+        # The actual search
+        self.lastMatch = pattern.search(text,start)
+
+        if self.lastMatch:
+
+            start = self.lastMatch.start()
+            end = self.lastMatch.end()
+
+            # If 'Whole words' is checked, the selection would include the two
+            # non-alphanumeric characters we included in the search, which need
+            # to be removed before marking them.
+            if self.wholeWords.isChecked():
+                start += 1
+                end -= 1
+
+            self.moveCursor(start,end)
+
+        else:
+
+            # We set the cursor to the end if the search was unsuccessful
+            self.parent.mainTab.currentWidget().moveCursor(QtGui.QTextCursor.End)
+
+    def replace(self):
+
+        # Grab the text cursor
+        cursor = self.parent.mainTab.currentWidget().textCursor()
+
+        # Security
+        if self.lastMatch and cursor.hasSelection():
+
+            # We insert the new text, which will override the selected
+            # text
+            cursor.insertText(self.replaceField.toPlainText())
+
+            # And set the new cursor
+            self.parent.mainTab.currentWidget().setTextCursor(cursor)
+
+    def replaceAll(self):
+
+        # Set lastMatch to None so that the search
+        # starts from the beginning of the document
+        self.lastMatch = None
+
+        # Initial find() call so that lastMatch is
+        # potentially not None anymore
+        self.find()
+
+        # Replace and find until find is None again
+        while self.lastMatch:
+            self.replace()
+            self.find()
+
+    def regexMode(self):
+
+        # First uncheck the checkboxes
+        self.caseSens.setChecked(False)
+        self.wholeWords.setChecked(False)
+
+        # Then disable them (gray them out)
+        self.caseSens.setEnabled(False)
+        self.wholeWords.setEnabled(False)
+
+    def normalMode(self):
+
+        # Enable checkboxes (un-gray them)
+        self.caseSens.setEnabled(True)
+        self.wholeWords.setEnabled(True)
+
+    def moveCursor(self,start,end):
+
+        # We retrieve the QTextCursor object from the parent's QTextEdit
+        cursor = self.parent.mainTab.currentWidget().textCursor()
+
+        # Then we set the position to the beginning of the last match
+        cursor.setPosition(start)
+
+        # Next we move the Cursor by over the match and pass the KeepAnchor parameter
+        # which will make the cursor select the the match's text
+        cursor.movePosition(QtGui.QTextCursor.Right,QtGui.QTextCursor.KeepAnchor,end - start)
+
+        # And finally we set this new cursor as the parent's
+        self.parent.mainTab.currentWidget().setTextCursor(cursor)
 
 
 def main():
