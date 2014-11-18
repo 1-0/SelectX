@@ -17,7 +17,7 @@ instead of PySide
     LIB_USE = "PyQt4"
 
 
-__version__ = '''0.3.10.4'''
+__version__ = '''0.3.10.6'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -245,6 +245,9 @@ class SelectX(QtGui.QMainWindow):
 
     def __init__(self, ForseEmbededIcons = None):
         super(SelectX, self).__init__()
+        pixmap = QtGui.QPixmap()
+        pixmap.loadFromData(TANGO_ICONS["edit-select-all"])
+        splashScreen = QtGui.QSplashScreen(pixmap)
         #init class constants
         self.nonPrintFlag = True
         #self.nonPrintSymbols = [' ', '\t']
@@ -271,6 +274,8 @@ class SelectX(QtGui.QMainWindow):
         except IndexError:
             #print 'not open File'
             pass
+        
+        splashScreen.close()
 
     #def keyPressEvent(self,event):
         #if event.key()==Qt.Key_Tab:
@@ -1018,9 +1023,12 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
         self.setCurrentBlockState(0)
 
         # Do multi-line strings
-        in_multiline = self.match_multiline(text, *self.tri_single)
-        if not in_multiline:
-            in_multiline = self.match_multiline(text, *self.tri_double)
+        #in_multiline1 = self.match_multiline(text, *self.tri_single)
+        #if not in_multiline1:
+            #in_multiline1 = self.match_multiline(text, *self.tri_double)
+        #in_multiline2 = self.match_multiline(text, *self.tri_double)
+        #if not in_multiline2:
+            #in_multiline2 = self.match_multiline(text, *self.tri_single)
 
 
     def match_multiline(self, text, delimiter, in_state, style):
@@ -1103,12 +1111,14 @@ class Find(QtGui.QDialog):
 
         # The field into which to type the query
         self.findField = QtGui.QTextEdit(self)
-        self.findField.resize(250,50)
+        self.findField.setAcceptRichText(False)
+        #self.findField.resize(250,50)
 
         # The field into which to type the text to replace the
         # queried text
         self.replaceField = QtGui.QTextEdit(self)
-        self.replaceField.resize(250,50)
+        self.replaceField.setAcceptRichText(False)
+        #self.replaceField.resize(250,50)
 
         optionsLabel = QtGui.QLabel("Options: ",self)
 
@@ -1141,7 +1151,7 @@ class Find(QtGui.QDialog):
         layout.addWidget(self.caseSens,6,1)
         layout.addWidget(self.wholeWords,6,2)
 
-        self.setGeometry(300,300,360,250)
+        #self.setGeometry(300,300,360,250)
         self.setWindowTitle("Find and Replace")
         self.setLayout(layout)
 
