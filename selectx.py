@@ -17,7 +17,7 @@ instead of PySide
     LIB_USE = "PyQt4"
 
 
-__version__ = '''0.3.10.9'''
+__version__ = '''0.3.10.10'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -252,6 +252,7 @@ class SelectX(QtGui.QMainWindow):
         self.nonPrintFlag = True
         #self.nonPrintSymbols = [' ', '\t']
         #self.nonPrintMasks = [u'\u2022', u'\u2192']
+        self.newDocNumber = 0
         self.zoomRate = 0
         self.path = os.getenv('HOME')
         self.selectForCopyByWords = False
@@ -528,7 +529,8 @@ class SelectX(QtGui.QMainWindow):
         self.setWindowTitle('SelectX')
         
     def newTab(self):
-        self.mainTab.addTab(self.initEdit(), "New text tab")
+        self.newDocNumber += 1
+        self.mainTab.addTab(self.initEdit(), "New text - %s"%self.newDocNumber)
         self.mainTab.setCurrentWidget(self.textEdit)
         self.setHighlighter()
         
