@@ -17,7 +17,7 @@ instead of PySide
     LIB_USE = "PyQt4"
 
 
-__version__ = '''0.3.10.6'''
+__version__ = '''0.3.10.7'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -496,14 +496,17 @@ class SelectX(QtGui.QMainWindow):
     
     def cursorPosition(self):
         currentWidget = self.mainTab.currentWidget()
+        currentDoc = currentWidget.document()
         cursor = currentWidget.textCursor()
         line = cursor.blockNumber() + 1
         col = cursor.columnNumber()
-        currentText = currentWidget.toPlainText()
-        symb = len(currentText)
-        allRows = currentText.split('\n') # ;)
-        rows = len(allRows) 
-        self.statusBar().showMessage("Rows: {} | Symbols: {} | Line: {} | Column: {}".format(symb,rows,line,col))
+        #currentText = currentWidget.toPlainText()
+        #symb = len(currentText)
+        symb = currentDoc.characterCount()-1
+        #allRows = currentText.split('\n') # ;)
+        #rows = len(allRows) 
+        rows = currentDoc.lineCount()
+        self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
         
     def setHighlighter(self):
         extention = str(getFileName(self.path, '.')).lower()
