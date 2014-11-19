@@ -17,7 +17,7 @@ instead of PySide
     LIB_USE = "PyQt4"
 
 
-__version__ = '''0.3.10.8'''
+__version__ = '''0.3.10.9'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -506,9 +506,11 @@ class SelectX(QtGui.QMainWindow):
         #allRows = currentText.split('\n') # ;)
         #rows = len(allRows) 
         rows = currentDoc.lineCount()
-        #block = cursor.selectionEnd() - cursor.selectionStart()
-        #self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}".format(symb, rows, line, col, block))
-        self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
+        if  cursor.hasSelection():
+            block = cursor.selectionEnd() - cursor.selectionStart()
+            self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}".format(symb, rows, line, col, block))
+        else:
+            self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
         
     def setHighlighter(self):
         extention = str(getFileName(self.path, '.')).lower()
@@ -748,8 +750,8 @@ class SelectX(QtGui.QMainWindow):
         
     def selectAll(self):
         self.mainTab.currentWidget().selectAll()
-        self.statusBar().showMessage('Select All Text')
-        #self.cursorPosition()
+        #self.statusBar().showMessage('Select All Text')
+        self.cursorPosition()
         
     def setSelectByWords(self):
         self.selectForCopyByWords = not(self.selectForCopyByWords)
