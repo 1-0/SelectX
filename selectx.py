@@ -17,7 +17,7 @@ instead of PySide
     LIB_USE = "PyQt4"
 
 
-__version__ = '''0.3.10.7'''
+__version__ = '''0.3.10.8'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -420,7 +420,7 @@ class SelectX(QtGui.QMainWindow):
         self.toolbar.setMovable(True)
         selectMenu = menubar.addMenu('&Select')
         self.addActionParamX('SelectAll', 'Ctrl+A', 'Select all text in editor', \
-        self.selectSelectAll, selectMenu, 'edit-select-all', self.toolbar)
+        self.selectAll, selectMenu, 'edit-select-all', self.toolbar)
         #self.addActionParamX('Select For Copy By Words', 'Ctrl+Shift+A', 'Set Select For Copy By Words', \
         #self.setSelectByWords, selectMenu, 'edit-select', self.toolbar, checkAble=True)
         
@@ -506,6 +506,8 @@ class SelectX(QtGui.QMainWindow):
         #allRows = currentText.split('\n') # ;)
         #rows = len(allRows) 
         rows = currentDoc.lineCount()
+        #block = cursor.selectionEnd() - cursor.selectionStart()
+        #self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}".format(symb, rows, line, col, block))
         self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
         
     def setHighlighter(self):
@@ -744,9 +746,10 @@ class SelectX(QtGui.QMainWindow):
             return
         self.statusBar().showMessage('Find Canseled')
         
-    def selectSelectAll(self):
+    def selectAll(self):
         self.mainTab.currentWidget().selectAll()
         self.statusBar().showMessage('Select All Text')
+        #self.cursorPosition()
         
     def setSelectByWords(self):
         self.selectForCopyByWords = not(self.selectForCopyByWords)
