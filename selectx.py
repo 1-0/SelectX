@@ -18,7 +18,7 @@ instead of PySide
 
 from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.4.1.4'''
+__version__ = '''0.4.1.6'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -301,13 +301,13 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.setTabsClosable(True)
         self.mainTab.setMovable(True)
         self.setCentralWidget(self.mainTab)
-        self.mainTab.addTab(self.initEdit(), "New Text")
+        tabId = self.mainTab.addTab(self.initEdit(), "New Text")
         
         self.mainTab.tabCloseRequested.connect(self.closeTab)
         self.mainTab.currentChanged.connect(self.changeTab)
         
         self.setHighlighter()
-        
+        self.changeTab(tabId)
         self.show()
 
     def removeTab(self, index):
@@ -451,8 +451,9 @@ class SelectX(QtGui.QMainWindow):
         self.addActionParamX('Font', 'F8', 'Font select dialog', \
         self.viewFont, viewMenu, 'preferences-desktop-font', self.toolbar)
         viewMenu.addSeparator()
-        self.addActionParamX('Show/Hide non-printabale', 'Ctrl+H', 'Show/Hide non-printabale symbols', self.inverseNonPrintabale, \
-        viewMenu, 'list-add', self.toolbar)
+        #self.nonPrintOn = True
+        self.nonPrintOn = self.addActionParamX('Show/Hide non-printabale', 'Ctrl+H', 'Show/Hide non-printabale symbols', self.inverseNonPrintabale, \
+        viewMenu, 'list-add', self.toolbar, checkAble=True, returnName=True)
         
         self.toolbar = self.addToolBar("Help")
         self.toolbar.setMovable(True)
@@ -468,9 +469,11 @@ class SelectX(QtGui.QMainWindow):
         return menubar
         
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
-    TopActLevel, IconName, toolBar=None, checkAble=False, checkState=False):
+    TopActLevel, IconName, toolBar=None, checkAble=False, \
+    checkState=False, returnName=None):
         newIcon =  self.getNewIcon(IconName)
         MakeAction = QtGui.QAction(newIcon, ActText, self)
+        
         if checkAble:
             MakeAction.setCheckable (True)
             MakeAction.setChecked (checkState)
@@ -487,6 +490,10 @@ class SelectX(QtGui.QMainWindow):
         if toolBar:
             toolBar.addAction(MakeAction)
             
+        if returnName:
+            return MakeAction
+        
+        
     def getNewIcon(self, IconName):
         newIcon = QtGui.QIcon.fromTheme(IconName)
         if self.useThemeIcons and newIcon.hasThemeIcon(IconName):
@@ -582,20 +589,36 @@ class SelectX(QtGui.QMainWindow):
         
     def newTab(self):
         self.newDocNumber += 1
-        self.mainTab.addTab(self.initEdit(), "New text - %s"%self.newDocNumber)
+        tabId = self.mainTab.addTab(self.initEdit(), "New text - %s"%self.newDocNumber)
         self.mainTab.setCurrentWidget(self.textEdit)
         self.setHighlighter()
+        self.changeTab(tabId)
         
     def changeTab(self, tabIndex):
-        print 'changeTab-'+str(tabIndex)
+        edit = self.mainTab.currentWidget()
+        doc = edit.document()
+        #print 'changeTab-'+str(tabIndex)
+        if doc.defaultTextOption().flags():
+            self.nonPrintOn.setChecked(True)
+            #print 'doc.defaultTextOption().flags()'
+            #option.setFlags(QtGui.QTextOption.Flag())
+        else:
+            self.nonPrintOn.setChecked(False)
+            #print 'not doc.defaultTextOption().flags()'
+        
         pass
         
-    def closeTab(self, tabIndex): 
+    def closeTab(self, tabIndex):
+        if self.mainTab.count()==1:
+            return -1
         if self.mainTab.widget(tabIndex).document().isModified():
             if self.checkCloseTab(tabIndex):
                 self.removeTab(tabIndex)
+                return tabIndex
         else:
             self.removeTab(tabIndex)
+            return tabIndex
+        
         
     def saveFile(self):
         if self.path:
