@@ -18,7 +18,7 @@ instead of PySide
 
 from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.4.1.2'''
+__version__ = '''0.4.1.4'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -246,9 +246,9 @@ class SelectX(QtGui.QMainWindow):
 
     def __init__(self, ForseEmbededIcons = None):
         super(SelectX, self).__init__()
-        pixmap = QtGui.QPixmap()
-        pixmap.loadFromData(TANGO_ICONS["edit-select-all"])
-        splashScreen = QtGui.QSplashScreen(pixmap)
+        #pixmap = QtGui.QPixmap()
+        #pixmap.loadFromData(TANGO_ICONS["edit-select-all"])
+        #splashScreen = QtGui.QSplashScreen(pixmap)
         #init class constants
         self.nonPrintFlag = True
         #self.nonPrintSymbols = [' ', '\t']
@@ -277,8 +277,9 @@ class SelectX(QtGui.QMainWindow):
             #print 'not open File'
             pass
         
-        splashScreen.close()
-
+        #splashScreen.close()
+        #self.installEventFilter(self)
+        
     #def keyPressEvent(self,event):
         #if event.key()==Qt.Key_Tab:
             #print 'tab'
@@ -296,12 +297,15 @@ class SelectX(QtGui.QMainWindow):
         self.setWindowTitle('SelectX')
         
         self.mainTab = QtGui.QTabWidget(self)
+        #self.mainTab = QtGui.QTabBar(self)
         self.mainTab.setTabsClosable(True)
         self.mainTab.setMovable(True)
         self.setCentralWidget(self.mainTab)
         self.mainTab.addTab(self.initEdit(), "New Text")
         
         self.mainTab.tabCloseRequested.connect(self.closeTab)
+        self.mainTab.currentChanged.connect(self.changeTab)
+        
         self.setHighlighter()
         
         self.show()
@@ -549,18 +553,24 @@ class SelectX(QtGui.QMainWindow):
         #if lineblock.text()=='kkk':
             #lineblock.setUserData('+++')
             #print 'kkk'
-        if linetext[0]=='\t':
-            if linetext.rstrip()[-1] == ':':
-                currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+1)*'\t'
+        if len(linetext)>1:
+            if len(linetext.rstrip()) > 0:
+                if linetext[0]=='\t':
+                    if linetext.rstrip()[-1] == ':':
+                        currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+1)*'\t'
+                    else:
+                        currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*'\t'
+                    currentWidget.enterPressed=True
+                elif linetext[0]==' ':
+                    if linetext.rstrip()[-1] == ':':
+                        currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+4)*' '
+                    else:
+                        currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*' '
+                    currentWidget.enterPressed=True
             else:
-                currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*'\t'
-            currentWidget.enterPressed=True
-        elif linetext[0]==' ':
-            if linetext.rstrip()[-1] == ':':
-                currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+4)*' '
-            else:
-                currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*' '
-            currentWidget.enterPressed=True
+                #print 'linetext-"'+linetext+'"'
+                currentWidget.insertSpace = linetext
+                currentWidget.enterPressed=True
         #currentWidget.insertSpace = '    '
         #currentWidget.insertPlainText ('    ')
 
@@ -575,6 +585,10 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.addTab(self.initEdit(), "New text - %s"%self.newDocNumber)
         self.mainTab.setCurrentWidget(self.textEdit)
         self.setHighlighter()
+        
+    def changeTab(self, tabIndex):
+        print 'changeTab-'+str(tabIndex)
+        pass
         
     def closeTab(self, tabIndex): 
         if self.mainTab.widget(tabIndex).document().isModified():
