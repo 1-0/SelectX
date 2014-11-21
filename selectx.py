@@ -16,8 +16,9 @@ instead of PySide
     
     LIB_USE = "PyQt4"
 
+from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.3.10.10'''
+__version__ = '''0.3.10.11'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -333,7 +334,10 @@ class SelectX(QtGui.QMainWindow):
         self.textEdit.cursorPositionChanged.connect(self.cursorPosition)
         self.textEdit.setAcceptRichText (False)
         
-        self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(QtGui.QTextOption.WrapMode.NoWrap))
+        self.textEdit.installEventFilter(self)
+        
+        self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(0))
+        #self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(QtGui.QTextOption.WrapMode.NoWrap))
         return self.textEdit
         
     def wheelEvent(self, event):
@@ -346,10 +350,11 @@ class SelectX(QtGui.QMainWindow):
                 event.ignore()
         
     def eventFilter(self, receiver, event):
-        #if event.type() == QtCore.QEvent.KeyPress:
-            #if event.key()==QtCore.Qt.Key_Tab:
+        if event.type() == QtCore.QEvent.KeyPress:
+            #print 'receiver, event, event.key()'+str(QtCore.Qt.Key_Enter)+str(receiver)+str(event)+str(event.key())
+            if event.key()==QtCore.Qt.Key_Enter or event.key()==16777220:
                 ## do some stuff ...
-                #print 'tab'
+                print 'Key_Enter'
             #else:
                 #print str(event.key())
             #print receiver
@@ -358,14 +363,15 @@ class SelectX(QtGui.QMainWindow):
             #if event.delta()>0:
                 #self.viewZoomIn()
                 #event.ignore()
-                #return True
+                return False
             #else:
                 #self.viewZoomOut()
                 #event.ignore()
                 #return True
-        #else:
+        else:
+            return False
             #return QtGui.QTextEdit.eventFilter(self, receiver, event)
-        pass
+        return False
 
     def makeMenu(self):
         menubar = self.menuBar()
