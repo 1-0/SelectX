@@ -18,7 +18,7 @@ instead of PySide
 
 from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.4.1.6'''
+__version__ = '''0.4.1.9'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -341,7 +341,8 @@ class SelectX(QtGui.QMainWindow):
         self.textEdit.installEventFilter(self)
         
         self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(0))
-        self.textEdit.enterPressed=False
+        self.textEdit.pythonicEnterOn = True
+        self.textEdit.enterPressed = False
         self.textEdit.insertSpace = ''
         #self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(QtGui.QTextOption.WrapMode.NoWrap))
         return self.textEdit
@@ -359,8 +360,6 @@ class SelectX(QtGui.QMainWindow):
         if event.type() == QtCore.QEvent.KeyPress:
             #print 'receiver, event, event.key()'+str(QtCore.Qt.Key_Enter)+str(receiver)+str(event)+str(event.key())
             if event.key()==QtCore.Qt.Key_Enter or event.key()==16777220:
-                ## do some stuff ...
-                #print 'Key_Enter'
                 self.pythonEnter()
             #else:
                 #print str(event.key())
@@ -454,6 +453,8 @@ class SelectX(QtGui.QMainWindow):
         #self.nonPrintOn = True
         self.nonPrintOn = self.addActionParamX('Show/Hide non-printabale', 'Ctrl+H', 'Show/Hide non-printabale symbols', self.inverseNonPrintabale, \
         viewMenu, 'list-add', self.toolbar, checkAble=True, returnName=True)
+        self.nonPyEnter = self.addActionParamX('Pythonic Enter', 'Ctrl+Shift+P', 'On/Off Pythonic Enter Style', self.inversePyEnter, \
+        viewMenu, 'list-add', self.toolbar, checkAble=True, returnName=True)
         
         self.toolbar = self.addToolBar("Help")
         self.toolbar.setMovable(True)
@@ -493,6 +494,12 @@ class SelectX(QtGui.QMainWindow):
         if returnName:
             return MakeAction
         
+    def inversePyEnter(self):
+        currentWidget = self.mainTab.currentWidget()
+        if currentWidget.pythonicEnterOn:
+            currentWidget.pythonicEnterOn = False
+        else:
+            currentWidget.pythonicEnterOn = True
         
     def getNewIcon(self, IconName):
         newIcon = QtGui.QIcon.fromTheme(IconName)
@@ -548,38 +555,34 @@ class SelectX(QtGui.QMainWindow):
         
     def pythonEnter(self):
         currentWidget = self.mainTab.currentWidget()
-        currentDoc = currentWidget.document()
-        cursor = currentWidget.textCursor()
-        line = cursor.blockNumber()
-        #col = cursor.columnNumber()
-        #cur = cursor.selectionStart()
-        #print 'line-'+str(line)+' col-'+str(col)+' cur-'+str(cur)
-        lineblock = currentDoc.findBlockByLineNumber(line)
-        linetext = str(lineblock.text())
-        #print 'lineblock-'+linetext
-        #if lineblock.text()=='kkk':
-            #lineblock.setUserData('+++')
-            #print 'kkk'
-        if len(linetext)>1:
-            if len(linetext.rstrip()) > 0:
-                if linetext[0]=='\t':
-                    if linetext.rstrip()[-1] == ':':
-                        currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+1)*'\t'
-                    else:
-                        currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*'\t'
+        if currentWidget.pythonicEnterOn:
+            currentDoc = currentWidget.document()
+            cursor = currentWidget.textCursor()
+            line = cursor.blockNumber()
+            lineblock = currentDoc.findBlockByLineNumber(line)
+            linetext = str(lineblock.text())
+            #print 'linetext0-'+str(linetext)+'-linetext0'
+            if len(linetext)>0:
+            #if len(linetext)>1 or linetext=='\t':
+                #print 'linetext1-'+str(linetext)+'-linetext1'
+                if len(linetext.rstrip()) > 0:
+                    #print 'linetext.rstrip()-'+str(linetext.rstrip())+'-linetext.rstrip()'
+                    if linetext[0]=='\t':
+                        if linetext.rstrip()[-1] == ':':
+                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+1)*'\t'
+                        else:
+                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*'\t'
+                        currentWidget.enterPressed=True
+                    elif linetext[0]==' ':
+                        if linetext.rstrip()[-1] == ':':
+                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+4)*' '
+                        else:
+                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*' '
+                        currentWidget.enterPressed=True
+                else:
+                    #print 'linetext2-'+str(linetext)+'-linetext2'
+                    currentWidget.insertSpace = linetext
                     currentWidget.enterPressed=True
-                elif linetext[0]==' ':
-                    if linetext.rstrip()[-1] == ':':
-                        currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+4)*' '
-                    else:
-                        currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*' '
-                    currentWidget.enterPressed=True
-            else:
-                #print 'linetext-"'+linetext+'"'
-                currentWidget.insertSpace = linetext
-                currentWidget.enterPressed=True
-        #currentWidget.insertSpace = '    '
-        #currentWidget.insertPlainText ('    ')
 
     def newFile(self):
         self.mainTab.currentWidget().clear()
@@ -600,12 +603,12 @@ class SelectX(QtGui.QMainWindow):
         #print 'changeTab-'+str(tabIndex)
         if doc.defaultTextOption().flags():
             self.nonPrintOn.setChecked(True)
-            #print 'doc.defaultTextOption().flags()'
-            #option.setFlags(QtGui.QTextOption.Flag())
         else:
             self.nonPrintOn.setChecked(False)
-            #print 'not doc.defaultTextOption().flags()'
-        
+        if edit.pythonicEnterOn:
+            self.nonPyEnter.setChecked(True)
+        else:
+            self.nonPyEnter.setChecked(False)
         pass
         
     def closeTab(self, tabIndex):
