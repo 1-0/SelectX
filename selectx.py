@@ -18,7 +18,7 @@ instead of PySide
 
 from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.3.10.11'''
+__version__ = '''0.4.1.2'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -337,6 +337,8 @@ class SelectX(QtGui.QMainWindow):
         self.textEdit.installEventFilter(self)
         
         self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(0))
+        self.textEdit.enterPressed=False
+        self.textEdit.insertSpace = ''
         #self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(QtGui.QTextOption.WrapMode.NoWrap))
         return self.textEdit
         
@@ -354,7 +356,8 @@ class SelectX(QtGui.QMainWindow):
             #print 'receiver, event, event.key()'+str(QtCore.Qt.Key_Enter)+str(receiver)+str(event)+str(event.key())
             if event.key()==QtCore.Qt.Key_Enter or event.key()==16777220:
                 ## do some stuff ...
-                print 'Key_Enter'
+                #print 'Key_Enter'
+                self.pythonEnter()
             #else:
                 #print str(event.key())
             #print receiver
@@ -518,6 +521,10 @@ class SelectX(QtGui.QMainWindow):
             self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}".format(symb, rows, line, col, block))
         else:
             self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
+            
+        if currentWidget.enterPressed:
+            currentWidget.enterPressed=False
+            currentWidget.insertPlainText (currentWidget.insertSpace)
         
     def setHighlighter(self):
         extention = str(getFileName(self.path, '.')).lower()
@@ -528,6 +535,35 @@ class SelectX(QtGui.QMainWindow):
         #else:
             #self.highlighter = PythonHighlighter(self.mainTab.currentWidget().document())
         
+    def pythonEnter(self):
+        currentWidget = self.mainTab.currentWidget()
+        currentDoc = currentWidget.document()
+        cursor = currentWidget.textCursor()
+        line = cursor.blockNumber()
+        #col = cursor.columnNumber()
+        #cur = cursor.selectionStart()
+        #print 'line-'+str(line)+' col-'+str(col)+' cur-'+str(cur)
+        lineblock = currentDoc.findBlockByLineNumber(line)
+        linetext = str(lineblock.text())
+        #print 'lineblock-'+linetext
+        #if lineblock.text()=='kkk':
+            #lineblock.setUserData('+++')
+            #print 'kkk'
+        if linetext[0]=='\t':
+            if linetext.rstrip()[-1] == ':':
+                currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+1)*'\t'
+            else:
+                currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*'\t'
+            currentWidget.enterPressed=True
+        elif linetext[0]==' ':
+            if linetext.rstrip()[-1] == ':':
+                currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+4)*' '
+            else:
+                currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*' '
+            currentWidget.enterPressed=True
+        #currentWidget.insertSpace = '    '
+        #currentWidget.insertPlainText ('    ')
+
     def newFile(self):
         self.mainTab.currentWidget().clear()
         self.path=None
