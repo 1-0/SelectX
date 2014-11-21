@@ -18,7 +18,7 @@ instead of PySide
 
 from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.4.1.9'''
+__version__ = '''0.4.2.2'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -60,7 +60,15 @@ Keys:
 VERSION_INFO = "SelectX. Text editor licenced by GPL3. Ver. %s"
 
 #icon theme for very soft and very micro os ;) (based on http://tango.freedesktop.org/Tango_Icon_Library)
-TANGO_ICONS = {'edit-find-replace':"""/* XPM */
+TANGO_ICONS = {'media_record':"""/* XPM */
+static char * media_record_xpm[] = {
+"16 16 104 2","  	c None",". 	c #CE0000","+ 	c #CB0000","@ 	c #D00E0E","# 	c #E96363","$ 	c #F38C8C","% 	c #F59898","& 	c #EE7878","* 	c #DD3939","= 	c #CD0000","- 	c #DB2D2D","; 	c #F8A1A1","> 	c #F49A9A",", 	c #F08888","' 	c #EE8181",") 	c #F18A8A","! 	c #F7A2A2","~ 	c #EE6F6F","{ 	c #CD0505","] 	c #CF0F0F","^ 	c #F79A9A","/ 	c #EE7C7C","( 	c #EB6E6E","_ 	c #EB6D6D",": 	c #EB6C6C","< 	c #EB6A6A","[ 	c #EB6767","} 	c #F49191","| 	c #E75454","1 	c #EA5D5D","2 	c #F28686","3 	c #EA6262","4 	c #EB6363","5 	c #EB6464","6 	c #EB6262","7 	c #EB5F5F","8 	c #EA5C5C","9 	c #EA5F5F","0 	c #F89393","a 	c #D20E0E","b 	c #F27979","c 	c #EA5757","d 	c #E73F3F","e 	c #E84545","f 	c #EB5757","g 	c #EC5858","h 	c #EC5656","i 	c #EB5353","j 	c #E94F4F","k 	c #F48383","l 	c #DA2B2B","m 	c #CD0101","n 	c #F57676","o 	c #E42525","p 	c #E31C1C","q 	c #E51E1E","r 	c #E72121","s 	c #E92E2E","t 	c #EA3B3B","u 	c #EA4242","v 	c #E83B3B","w 	c #F16868","x 	c #E03A3A","y 	c #CA0000","z 	c #EF6161","A 	c #E93939","B 	c #E51D1D","C 	c #E72020","D 	c #E92222","E 	c #EA2323","F 	c #E82121","G 	c #E61F1F","H 	c #F36969","I 	c #D81F1F","J 	c #E13A3A","K 	c #F16464","L 	c #E61E1E","M 	c #EB2424","N 	c #ED2626","O 	c #EC2525","P 	c #EB3737","Q 	c #F47171","R 	c #CE0707","S 	c #CE0303","T 	c #F06565","U 	c #F05454","V 	c #EA2424","W 	c #EB2525","X 	c #EE2727","Y 	c #EC2626","Z 	c #EC3535","` 	c #F57171"," .	c #DA2727","..	c #D10C0C","+.	c #ED5959","@.	c #F25A5A","#.	c #F25353","$.	c #F36363","%.	c #F57474","&.	c #CD0202","*.	c #D51919","=.	c #DF3636","-.	c #E34242",";.	c #D10A0A","                                ","                                ","              . +               ","          @ # $ % & * =         ","        - ; > , ' ) ! ~ {       ","      ] ^ / ( _ : < [ } |       ","      1 2 3 4 5 6 7 8 9 0 a     ","    = b c d e f g h i j k l     ","    m n o p q r s t u v w x     ","    y z A B C D E E F G H I     ","      J K L F M N O E P Q R     ","      S T U V W X Y Z `  .      ","        ..+.` @.#.$.%.-         ","          &.*.=.-. .;.          ","                                ","                                "};
+""",
+'media_skip_backward':"""/* XPM */
+static char * media_skip_backward_xpm[] = {
+"16 16 68 1"," 	c None",".	c #535451","+	c #414140","@	c #FCFCFB","#	c #3D3F3B","$	c #494A47","%	c #3D3D3B","&	c #4A4B48","*	c #4E4F4C","=	c #747571","-	c #FCFCFC",";	c #4D4F4B",">	c #4C4C4A",",	c #696C68","'	c #F9F9F8",")	c #4D4E4B","!	c #5D5E5B","~	c #5B5E5A","{	c #6E6F6C","]	c #EEEFEE","^	c #FCFDFC","/	c #FBFBFB","(	c #595A57","_	c #646662",":	c #EBEBEA","<	c #575855","[	c #EBECEA","}	c #FAFAFA","|	c #F2F4F1","1	c #F1F1F0","2	c #BDBDBB","3	c #FAFAF9","4	c #626460","5	c #656663","6	c #D4D6D3","7	c #F1F2F0","8	c #E7E9E4","9	c #DFE2DD","0	c #B4B5B2","a	c #F2F3F0","b	c #E8EAE6","c	c #E0E2DD","d	c #6D6E6A","e	c #6C6D69","f	c #82837F","g	c #ABAEA8","h	c #F0F1EF","i	c #F9FAF9","j	c #FEFEFE","k	c #797B75","l	c #969791","m	c #EEEFED","n	c #767973","o	c #767772","p	c #838581","q	c #91928C","r	c #C9CBC6","s	c #838580","t	c #8D9089","u	c #AFB0AC","v	c #81837D","w	c #7E7F79","x	c #90938C","y	c #9C9E97","z	c #9A9D97","A	c #ADAFAA","B	c #7F817C","C	c #82837E","                ","                ","                "," ...     +    + "," .@.   #$$  %$& "," .@.  *=-; >,') "," !@!~{]^/(_:^/< "," !@![}|1/23|1/4 "," 5@56789@0abc@d "," e@efghijklm3jn "," o@o pqris tuiv "," w@w   xyz  AyB "," www     C    C ","                ","                ","                "};
+""",
+'edit-find-replace':"""/* XPM */
 static char * edit_find_replace_xpm[] = {
 "16 16 96 2","  	c None",". 	c #818380","+ 	c #AEBAC8","@ 	c #A2BAD4","# 	c #A7B9CC","$ 	c #A7B7C8","% 	c #8AACD1","& 	c #C5D7EA","* 	c #9BB9D9","= 	c #90ACCB","- 	c #858783","; 	c #888A85","> 	c #8D8F8A",", 	c #A2AEBB","' 	c #84A8CF",") 	c #DCE6F2","! 	c #E4ECF5","~ 	c #CADAEC","{ 	c #8DB1D8","] 	c #97B0CB","^ 	c #FFFFFF","/ 	c #A2B8D0","( 	c #A4C0DE","_ 	c #D9E4F1",": 	c #DDE7F2","< 	c #C3D5EA","[ 	c #A2BFDF","} 	c #80A5D0","| 	c #F0F0EF","1 	c #8F5902","2 	c #A7B5C2","3 	c #88AAD0","4 	c #BBD0E8","5 	c #CDDCEE","6 	c #DEE8F3","7 	c #A8C1DC","8 	c #94B0CE","9 	c #C7C7C6","0 	c #EEEAC6","a 	c #CFAD71","b 	c #9FB8D1","c 	c #91B3D6","d 	c #BBD0E6","e 	c #A6BED8","f 	c #97B5D3","g 	c #D1D2D0","h 	c #EFEBC7","i 	c #D2AC6A","j 	c #A18355","k 	c #848482","l 	c #A3A4A3","m 	c #B3C8DD","n 	c #7FA7D1","o 	c #99B4D1","p 	c #959693","q 	c #A48757","r 	c #B8B8B7","s 	c #8D8E8C","t 	c #B0B1AF","u 	c #EDE6C5","v 	c #CFAA69","w 	c #A08356","x 	c #EDE5C4","y 	c #C89F64","z 	c #A08457","A 	c #89806A","B 	c #898B86","C 	c #EFEFEE","D 	c #705B39","E 	c #C2AB8A","F 	c #A38555","G 	c #E7DCCA","H 	c #878984","I 	c #FEFEFD","J 	c #4C4226","K 	c #6B5736","L 	c #CCC1AF","M 	c #EFEFEF","N 	c #82847F","O 	c #FAFAF9","P 	c #EEEEED","Q 	c #000000","R 	c #B3A996","S 	c #C2C2C2","T 	c #CBCBCA","U 	c #E2E2E2","V 	c #7D7F7B","W 	c #FEFEFE","X 	c #F7F7F7","Y 	c #E9E9E9","Z 	c #E5E5E5","` 	c #EAEAEA"," .	c #8C8E89","..	c #868883","+.	c #858782","@.	c #8B8D88","        . . .                   ","      . + @ # .                 ","    . $ % & * = . - ; ; ; >     ","  . , ' ) ! ~ { ] . ^ ^ ^ ;     ","  . / ( _ : < [ } . | | ^ 1 1   ","  . 2 3 4 5 6 7 8 . 9 | 1 0 a 1 ","    . b c d e f . g | 1 h i j 1 ","  k l . m n o . p 9 1 h i q 1   ","k l r s . . . t | 1 u v w 1     ","k r s ^ | 9 9 9 1 x y z 1 A     ","  s B ^ | | | C D E F 1 G H     ","    B I | | C 1 J K 1 L M N     ","    B O | | P Q 1 R S T U V     ","    B ^ ^ ^ W X Y U Z ` M N     ","     .B ; ; ; H ..+.......@.    ","                                "};
 """,'zoom-original':
@@ -452,9 +460,9 @@ class SelectX(QtGui.QMainWindow):
         viewMenu.addSeparator()
         #self.nonPrintOn = True
         self.nonPrintOn = self.addActionParamX('Show/Hide non-printabale', 'Ctrl+H', 'Show/Hide non-printabale symbols', self.inverseNonPrintabale, \
-        viewMenu, 'list-add', self.toolbar, checkAble=True, returnName=True)
+        viewMenu, 'media_record', self.toolbar, checkAble=True, returnName=True)
         self.nonPyEnter = self.addActionParamX('Pythonic Enter', 'Ctrl+Shift+P', 'On/Off Pythonic Enter Style', self.inversePyEnter, \
-        viewMenu, 'list-add', self.toolbar, checkAble=True, returnName=True)
+        viewMenu, 'media_skip_backward', self.toolbar, checkAble=True, returnName=True)
         
         self.toolbar = self.addToolBar("Help")
         self.toolbar.setMovable(True)
@@ -498,8 +506,10 @@ class SelectX(QtGui.QMainWindow):
         currentWidget = self.mainTab.currentWidget()
         if currentWidget.pythonicEnterOn:
             currentWidget.pythonicEnterOn = False
+            self.statusBar().showMessage('Hide Py Enter')
         else:
             currentWidget.pythonicEnterOn = True
+            self.statusBar().showMessage('Add Py Enter')
         
     def getNewIcon(self, IconName):
         newIcon = QtGui.QIcon.fromTheme(IconName)
