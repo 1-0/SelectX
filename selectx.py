@@ -16,9 +16,9 @@ instead of PySide
     
     LIB_USE = "PyQt4"
 
-from PyQt4 import QtGui, QtCore
+#from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.4.2.2'''
+__version__ = '''0.4.3.0'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -294,7 +294,6 @@ class SelectX(QtGui.QMainWindow):
             #self.mainTab.currentWidget()
     
     def initUI(self):
-        
         self.MenuBar = self.makeMenu()
         
         self.statusBar()
@@ -309,6 +308,9 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.setTabsClosable(True)
         self.mainTab.setMovable(True)
         self.setCentralWidget(self.mainTab)
+        
+        
+        
         tabId = self.mainTab.addTab(self.initEdit(), "New Text")
         
         self.mainTab.tabCloseRequested.connect(self.closeTab)
@@ -325,6 +327,7 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.removeTab(index)
     
     def initEdit(self, fileName=None):
+        #return TextEditX(self)
         
         self.qFont = QtGui.QFont()
         self.qFont.setFamily('Courier New')
@@ -343,9 +346,9 @@ class SelectX(QtGui.QMainWindow):
         
         self.textEdit.setDocument(doc)
         self.textEdit.setFont(self.qFont)
-        self.textEdit.cursorPositionChanged.connect(self.cursorPosition)
         self.textEdit.setAcceptRichText (False)
         
+        self.textEdit.cursorPositionChanged.connect(self.cursorPosition)
         self.textEdit.installEventFilter(self)
         
         self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(0))
@@ -883,8 +886,115 @@ class SelectX(QtGui.QMainWindow):
         QtGui.QMessageBox.information(self, 'Keys SelectX', KEYS_HELP, \
         QtGui.QMessageBox.Ok)
 
+class TextEditX(QtGui.QTextEdit):
 
-
+    def __init__(self, ParentControl = None):
+        super(TextEditX, self).__init__()\
+        
+        self.qFont = QtGui.QFont()
+        self.qFont.setFamily('Courier New')
+        self.qFont.setFixedPitch(True)
+        self.qFont.setPointSize(14)
+        
+        doc = QtGui.QTextDocument()
+        option = QtGui.QTextOption()
+        #if settings.SHOW_TABS_AND_SPACES:
+        option.setFlags(QtGui.QTextOption.ShowTabsAndSpaces)
+        #option.setFlags(QtGui.QTextOption.ShowLineAndParagraphSeparators)
+        doc.setDefaultTextOption(option)
+        
+        self.textEdit = self
+        #self.textEdit.setStyleSheet("QTextEdit {font-family: Sans-serif;}")
+        
+        self.textEdit.setDocument(doc)
+        self.textEdit.setFont(self.qFont)
+        self.textEdit.setAcceptRichText (False)
+        
+        self.textEdit.cursorPositionChanged.connect(self.cursorPosition)
+        self.textEdit.installEventFilter(self)
+        
+        self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(0))
+        self.textEdit.pythonicEnterOn = True
+        self.textEdit.enterPressed = False
+        self.textEdit.insertSpace = ''
+        #self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(QtGui.QTextOption.WrapMode.NoWrap))
+        return self.textEdit
+        
+    def pythonEnter(self):
+        currentWidget = self
+        if currentWidget.pythonicEnterOn:
+            currentDoc = currentWidget.document()
+            cursor = currentWidget.textCursor()
+            line = cursor.blockNumber()
+            lineblock = currentDoc.findBlockByLineNumber(line)
+            linetext = str(lineblock.text())
+            #print 'linetext0-'+str(linetext)+'-linetext0'
+            if len(linetext)>0:
+            #if len(linetext)>1 or linetext=='\t':
+                #print 'linetext1-'+str(linetext)+'-linetext1'
+                if len(linetext.rstrip()) > 0:
+                    #print 'linetext.rstrip()-'+str(linetext.rstrip())+'-linetext.rstrip()'
+                    if linetext[0]=='\t':
+                        if linetext.rstrip()[-1] == ':':
+                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+1)*'\t'
+                        else:
+                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*'\t'
+                        currentWidget.enterPressed=True
+                    elif linetext[0]==' ':
+                        if linetext.rstrip()[-1] == ':':
+                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+4)*' '
+                        else:
+                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*' '
+                        currentWidget.enterPressed=True
+                else:
+                    #print 'linetext2-'+str(linetext)+'-linetext2'
+                    currentWidget.insertSpace = linetext
+                    currentWidget.enterPressed=True
+                    
+    def cursorPosition(self):
+        currentWidget = self
+        currentDoc = currentWidget.document()
+        cursor = currentWidget.textCursor()
+        line = cursor.blockNumber() + 1
+        col = cursor.columnNumber()
+        #currentText = currentWidget.toPlainText()
+        #symb = len(currentText)
+        symb = currentDoc.characterCount()-1
+        #allRows = currentText.split('\n') # ;)
+        #rows = len(allRows) 
+        rows = currentDoc.lineCount()
+        if  cursor.hasSelection():
+            block = cursor.selectionEnd() - cursor.selectionStart()
+            self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}".format(symb, rows, line, col, block))
+        else:
+            self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
+            
+        if currentWidget.enterPressed:
+            currentWidget.enterPressed=False
+            currentWidget.insertPlainText (currentWidget.insertSpace)
+            
+    def eventFilter(self, receiver, event):
+        if event.type() == QtCore.QEvent.KeyPress:
+            #print 'receiver, event, event.key()'+str(QtCore.Qt.Key_Enter)+str(receiver)+str(event)+str(event.key())
+            if event.key()==QtCore.Qt.Key_Enter or event.key()==16777220:
+                self.pythonEnter()
+            #else:
+                #print str(event.key())
+            #print receiver
+            #return False # means stop event propagation
+        #if event.type() == QtCore.QEvent.Wheel and event.modifiers()==QtCore.Qt.ControlModifier:
+            #if event.delta()>0:
+                #self.viewZoomIn()
+                #event.ignore()
+                return False
+            #else:
+                #self.viewZoomOut()
+                #event.ignore()
+                #return True
+        else:
+            return False
+            #return QtGui.QTextEdit.eventFilter(self, receiver, event)
+        return False
 
 
 HILIGHTER_SETUP = {'cpp c h' : {'keywordPatternsRules' : ["\\bchar\\b", "\\bclass\\b", "\\bconst\\b",
@@ -1408,5 +1518,5 @@ def runWindow(ForceIcons = None):
 
 
 if __name__ == "__main__":
-   main()
+    main()
 
