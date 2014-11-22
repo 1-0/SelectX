@@ -18,7 +18,7 @@ instead of PySide
 
 #from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.4.3.0'''
+__version__ = '''0.4.3.2'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -311,7 +311,9 @@ class SelectX(QtGui.QMainWindow):
         
         
         
-        tabId = self.mainTab.addTab(self.initEdit(), "New Text")
+        #tabId = self.mainTab.addTab(self.initEdit(), "New Text")
+        
+        tabId = self.mainTab.addTab(TextEditX(self), "New Text")
         
         self.mainTab.tabCloseRequested.connect(self.closeTab)
         self.mainTab.currentChanged.connect(self.changeTab)
@@ -325,38 +327,6 @@ class SelectX(QtGui.QMainWindow):
         if widget is not None:
             widget.deleteLater()
         self.mainTab.removeTab(index)
-    
-    def initEdit(self, fileName=None):
-        #return TextEditX(self)
-        
-        self.qFont = QtGui.QFont()
-        self.qFont.setFamily('Courier New')
-        self.qFont.setFixedPitch(True)
-        self.qFont.setPointSize(14)
-        
-        doc = QtGui.QTextDocument()
-        option = QtGui.QTextOption()
-        #if settings.SHOW_TABS_AND_SPACES:
-        option.setFlags(QtGui.QTextOption.ShowTabsAndSpaces)
-        #option.setFlags(QtGui.QTextOption.ShowLineAndParagraphSeparators)
-        doc.setDefaultTextOption(option)
-        
-        self.textEdit = QtGui.QTextEdit(self)
-        #self.textEdit.setStyleSheet("QTextEdit {font-family: Sans-serif;}")
-        
-        self.textEdit.setDocument(doc)
-        self.textEdit.setFont(self.qFont)
-        self.textEdit.setAcceptRichText (False)
-        
-        self.textEdit.cursorPositionChanged.connect(self.cursorPosition)
-        self.textEdit.installEventFilter(self)
-        
-        self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(0))
-        self.textEdit.pythonicEnterOn = True
-        self.textEdit.enterPressed = False
-        self.textEdit.insertSpace = ''
-        #self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(QtGui.QTextOption.WrapMode.NoWrap))
-        return self.textEdit
         
     def wheelEvent(self, event):
         if event.modifiers()==QtCore.Qt.CTRL:
@@ -367,28 +337,6 @@ class SelectX(QtGui.QMainWindow):
                 self.viewZoomOut()
                 event.ignore()
         
-    def eventFilter(self, receiver, event):
-        if event.type() == QtCore.QEvent.KeyPress:
-            #print 'receiver, event, event.key()'+str(QtCore.Qt.Key_Enter)+str(receiver)+str(event)+str(event.key())
-            if event.key()==QtCore.Qt.Key_Enter or event.key()==16777220:
-                self.pythonEnter()
-            #else:
-                #print str(event.key())
-            #print receiver
-            #return False # means stop event propagation
-        #if event.type() == QtCore.QEvent.Wheel and event.modifiers()==QtCore.Qt.ControlModifier:
-            #if event.delta()>0:
-                #self.viewZoomIn()
-                #event.ignore()
-                return False
-            #else:
-                #self.viewZoomOut()
-                #event.ignore()
-                #return True
-        else:
-            return False
-            #return QtGui.QTextEdit.eventFilter(self, receiver, event)
-        return False
 
     def makeMenu(self):
         menubar = self.menuBar()
@@ -533,29 +481,6 @@ class SelectX(QtGui.QMainWindow):
         #print 'newIcon - '+str(newIcon)
         return newIcon
             
-                
-    
-    def cursorPosition(self):
-        currentWidget = self.mainTab.currentWidget()
-        currentDoc = currentWidget.document()
-        cursor = currentWidget.textCursor()
-        line = cursor.blockNumber() + 1
-        col = cursor.columnNumber()
-        #currentText = currentWidget.toPlainText()
-        #symb = len(currentText)
-        symb = currentDoc.characterCount()-1
-        #allRows = currentText.split('\n') # ;)
-        #rows = len(allRows) 
-        rows = currentDoc.lineCount()
-        if  cursor.hasSelection():
-            block = cursor.selectionEnd() - cursor.selectionStart()
-            self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}".format(symb, rows, line, col, block))
-        else:
-            self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
-            
-        if currentWidget.enterPressed:
-            currentWidget.enterPressed=False
-            currentWidget.insertPlainText (currentWidget.insertSpace)
         
     def setHighlighter(self):
         extention = str(getFileName(self.path, '.')).lower()
@@ -566,37 +491,6 @@ class SelectX(QtGui.QMainWindow):
         #else:
             #self.highlighter = PythonHighlighter(self.mainTab.currentWidget().document())
         
-    def pythonEnter(self):
-        currentWidget = self.mainTab.currentWidget()
-        if currentWidget.pythonicEnterOn:
-            currentDoc = currentWidget.document()
-            cursor = currentWidget.textCursor()
-            line = cursor.blockNumber()
-            lineblock = currentDoc.findBlockByLineNumber(line)
-            linetext = str(lineblock.text())
-            #print 'linetext0-'+str(linetext)+'-linetext0'
-            if len(linetext)>0:
-            #if len(linetext)>1 or linetext=='\t':
-                #print 'linetext1-'+str(linetext)+'-linetext1'
-                if len(linetext.rstrip()) > 0:
-                    #print 'linetext.rstrip()-'+str(linetext.rstrip())+'-linetext.rstrip()'
-                    if linetext[0]=='\t':
-                        if linetext.rstrip()[-1] == ':':
-                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+1)*'\t'
-                        else:
-                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*'\t'
-                        currentWidget.enterPressed=True
-                    elif linetext[0]==' ':
-                        if linetext.rstrip()[-1] == ':':
-                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+4)*' '
-                        else:
-                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*' '
-                        currentWidget.enterPressed=True
-                else:
-                    #print 'linetext2-'+str(linetext)+'-linetext2'
-                    currentWidget.insertSpace = linetext
-                    currentWidget.enterPressed=True
-
     def newFile(self):
         self.mainTab.currentWidget().clear()
         self.path=None
@@ -605,7 +499,8 @@ class SelectX(QtGui.QMainWindow):
         
     def newTab(self):
         self.newDocNumber += 1
-        tabId = self.mainTab.addTab(self.initEdit(), "New text - %s"%self.newDocNumber)
+        self.textEdit = TextEditX(self)
+        tabId = self.mainTab.addTab(self.textEdit, "New text - %s"%self.newDocNumber)
         self.mainTab.setCurrentWidget(self.textEdit)
         self.setHighlighter()
         self.changeTab(tabId)
@@ -634,7 +529,6 @@ class SelectX(QtGui.QMainWindow):
         else:
             self.removeTab(tabIndex)
             return tabIndex
-        
         
     def saveFile(self):
         if self.path:
@@ -889,8 +783,8 @@ class SelectX(QtGui.QMainWindow):
 class TextEditX(QtGui.QTextEdit):
 
     def __init__(self, ParentControl = None):
-        super(TextEditX, self).__init__()\
-        
+        super(TextEditX, self).__init__()
+        self.parentControl = ParentControl
         self.qFont = QtGui.QFont()
         self.qFont.setFamily('Courier New')
         self.qFont.setFixedPitch(True)
@@ -903,22 +797,22 @@ class TextEditX(QtGui.QTextEdit):
         #option.setFlags(QtGui.QTextOption.ShowLineAndParagraphSeparators)
         doc.setDefaultTextOption(option)
         
-        self.textEdit = self
+        #self.textEdit = self
         #self.textEdit.setStyleSheet("QTextEdit {font-family: Sans-serif;}")
         
-        self.textEdit.setDocument(doc)
-        self.textEdit.setFont(self.qFont)
-        self.textEdit.setAcceptRichText (False)
+        self.setDocument(doc)
+        self.setFont(self.qFont)
+        self.setAcceptRichText (False)
         
-        self.textEdit.cursorPositionChanged.connect(self.cursorPosition)
-        self.textEdit.installEventFilter(self)
+        self.cursorPositionChanged.connect(self.cursorPosition)
+        self.installEventFilter(self)
         
-        self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(0))
-        self.textEdit.pythonicEnterOn = True
-        self.textEdit.enterPressed = False
-        self.textEdit.insertSpace = ''
+        self.setWordWrapMode (QtGui.QTextOption.WrapMode(0))
+        self.pythonicEnterOn = True
+        self.enterPressed = False
+        self.insertSpace = ''
         #self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(QtGui.QTextOption.WrapMode.NoWrap))
-        return self.textEdit
+        #return self.textEdit
         
     def pythonEnter(self):
         currentWidget = self
@@ -965,9 +859,9 @@ class TextEditX(QtGui.QTextEdit):
         rows = currentDoc.lineCount()
         if  cursor.hasSelection():
             block = cursor.selectionEnd() - cursor.selectionStart()
-            self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}".format(symb, rows, line, col, block))
+            self.parentControl.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}".format(symb, rows, line, col, block))
         else:
-            self.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
+            self.parentControl.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
             
         if currentWidget.enterPressed:
             currentWidget.enterPressed=False
