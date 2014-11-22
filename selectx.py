@@ -16,9 +16,9 @@ instead of PySide
     
     LIB_USE = "PyQt4"
 
-#from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.4.3.2'''
+__version__ = '''0.4.3.5'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -262,7 +262,7 @@ class SelectX(QtGui.QMainWindow):
         #self.nonPrintSymbols = [' ', '\t']
         #self.nonPrintMasks = [u'\u2022', u'\u2192']
         self.newDocNumber = 0
-        self.zoomRate = 0
+        #self.zoomRate = 0
         self.path = os.getenv('HOME')
         self.selectForCopyByWords = False
         self.startPath = os.getenv('HOME')
@@ -299,22 +299,13 @@ class SelectX(QtGui.QMainWindow):
         self.statusBar()
         self.setGeometry(100, 100, 400, 400)
         self.setWindowIcon(self.getNewIcon("edit-select-all"))
-        #self.setWindowIcon(QtGui.QIcon.fromTheme("document-new", QtCore.QIcon(":/new.png")))
         self.setMinimumSize(200,150)
         self.setWindowTitle('SelectX')
-        
         self.mainTab = QtGui.QTabWidget(self)
-        #self.mainTab = QtGui.QTabBar(self)
         self.mainTab.setTabsClosable(True)
         self.mainTab.setMovable(True)
         self.setCentralWidget(self.mainTab)
-        
-        
-        
-        #tabId = self.mainTab.addTab(self.initEdit(), "New Text")
-        
         tabId = self.mainTab.addTab(TextEditX(self), "New Text")
-        
         self.mainTab.tabCloseRequested.connect(self.closeTab)
         self.mainTab.currentChanged.connect(self.changeTab)
         
@@ -517,7 +508,7 @@ class SelectX(QtGui.QMainWindow):
             self.nonPyEnter.setChecked(True)
         else:
             self.nonPyEnter.setChecked(False)
-        pass
+        self.statusBar().showMessage('Selected Tab #%s' % (tabIndex+1))
         
     def closeTab(self, tabIndex):
         if self.mainTab.count()==1:
@@ -580,8 +571,6 @@ class SelectX(QtGui.QMainWindow):
         
     def openFile(self):
         ###to see http://www.rkblog.rk.edu.pl/w/p/simple-text-editor-pyqt4/
-        
-        
         if self.startPath:
             self.path = QtGui.QFileDialog.getOpenFileName(self, 'Open File', \
             self.startPath, \
@@ -595,16 +584,13 @@ class SelectX(QtGui.QMainWindow):
              "All Files (*);;Text Files (*.txt *.log *.TXT *.LOG);;Python Files (*.py *.PY *.py3 *.PY3);;C/C++ Files (*.c *.cc *.cpp *.c++ *.cxx *.h *.hh *.hpp *.hxx *.CPP *.H *.c *.C)" \
             )
         
-        
         if self.path:
             if type(self.path) is tuple: #for PySide
                 self.path = self.path[0]
                 #print self.path
         
             self.startPath = self.path[:-len(getFileName(self.path))]
-            #if len(self.mainTab.currentWidget().toPlainText()) > 0:
             if self.checkNotEmptyText() and self.path:
-                #print 'new tab + path -'+str(self.path)
                 self.newTab()
             self.openExistFile(self.path)
         else:
@@ -748,19 +734,22 @@ class SelectX(QtGui.QMainWindow):
         self.selectForCopyByWords = not(self.selectForCopyByWords)
         
     def viewZoomIn(self):
-        self.mainTab.currentWidget().zoomIn(1)
-        self.zoomRate += 1
-        self.statusBar().showMessage('Zoom Rate: %s' % self.zoomRate)
+        currentw = self.mainTab.currentWidget()
+        currentw.zoomIn(1)
+        currentw.zoomRate += 1
+        self.statusBar().showMessage('Zoom Rate: %s' % currentw.zoomRate)
         
     def viewZoomOut(self):
-        self.mainTab.currentWidget().zoomOut(1)
-        self.zoomRate -= 1
-        self.statusBar().showMessage('Zoom Rate: %s' % self.zoomRate)
+        currentw = self.mainTab.currentWidget()
+        currentw.zoomOut(1)
+        currentw.zoomRate -= 1
+        self.statusBar().showMessage('Zoom Rate: %s' % currentw.zoomRate)
         
     def viewZoomOriginal(self):
-        self.mainTab.currentWidget().zoomIn(-self.zoomRate)
-        self.zoomRate = 0
-        self.statusBar().showMessage('Zoom Rate: %s' % self.zoomRate)
+        currentw = self.mainTab.currentWidget()
+        currentw.zoomIn(-currentw.zoomRate)
+        currentw.zoomRate = 0
+        self.statusBar().showMessage('Zoom Rate: %s' % currentw.zoomRate)
         
     def viewFont(self):
         font, ok = QtGui.QFontDialog.getFont(self.qFont, self)
@@ -781,10 +770,10 @@ class SelectX(QtGui.QMainWindow):
         QtGui.QMessageBox.Ok)
 
 class TextEditX(QtGui.QTextEdit):
-
-    def __init__(self, ParentControl = None):
+    def __init__(self, parent = None):
         super(TextEditX, self).__init__()
-        self.parentControl = ParentControl
+        
+        self.parentControl = parent
         self.qFont = QtGui.QFont()
         self.qFont.setFamily('Courier New')
         self.qFont.setFixedPitch(True)
@@ -792,12 +781,10 @@ class TextEditX(QtGui.QTextEdit):
         
         doc = QtGui.QTextDocument()
         option = QtGui.QTextOption()
-        #if settings.SHOW_TABS_AND_SPACES:
         option.setFlags(QtGui.QTextOption.ShowTabsAndSpaces)
         #option.setFlags(QtGui.QTextOption.ShowLineAndParagraphSeparators)
         doc.setDefaultTextOption(option)
         
-        #self.textEdit = self
         #self.textEdit.setStyleSheet("QTextEdit {font-family: Sans-serif;}")
         
         self.setDocument(doc)
@@ -813,6 +800,7 @@ class TextEditX(QtGui.QTextEdit):
         self.insertSpace = ''
         #self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(QtGui.QTextOption.WrapMode.NoWrap))
         #return self.textEdit
+        self.zoomRate = 0
         
     def pythonEnter(self):
         currentWidget = self
@@ -822,12 +810,8 @@ class TextEditX(QtGui.QTextEdit):
             line = cursor.blockNumber()
             lineblock = currentDoc.findBlockByLineNumber(line)
             linetext = str(lineblock.text())
-            #print 'linetext0-'+str(linetext)+'-linetext0'
             if len(linetext)>0:
-            #if len(linetext)>1 or linetext=='\t':
-                #print 'linetext1-'+str(linetext)+'-linetext1'
                 if len(linetext.rstrip()) > 0:
-                    #print 'linetext.rstrip()-'+str(linetext.rstrip())+'-linetext.rstrip()'
                     if linetext[0]=='\t':
                         if linetext.rstrip()[-1] == ':':
                             currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+1)*'\t'
@@ -841,7 +825,6 @@ class TextEditX(QtGui.QTextEdit):
                             currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*' '
                         currentWidget.enterPressed=True
                 else:
-                    #print 'linetext2-'+str(linetext)+'-linetext2'
                     currentWidget.insertSpace = linetext
                     currentWidget.enterPressed=True
                     
@@ -854,8 +837,6 @@ class TextEditX(QtGui.QTextEdit):
         #currentText = currentWidget.toPlainText()
         #symb = len(currentText)
         symb = currentDoc.characterCount()-1
-        #allRows = currentText.split('\n') # ;)
-        #rows = len(allRows) 
         rows = currentDoc.lineCount()
         if  cursor.hasSelection():
             block = cursor.selectionEnd() - cursor.selectionStart()
