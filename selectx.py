@@ -5,8 +5,6 @@ import sys, os, re
 
 try:
     from PySide import QtGui, QtCore
-    from PySide.QtGui import *
-    from PySide.QtCore import *
 
     LIB_USE = "PySide"
 except ImportError:
@@ -15,13 +13,12 @@ except ImportError:
 instead of PySide
 (license - LGPL - http://www.gnu.org/copyleft/lesser.html )"""
     from PyQt4 import QtGui, QtCore
-    from PyQt4.Qt import *
     
     LIB_USE = "PyQt4"
 
-#from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.5.0.0'''
+__version__ = '''0.5.0.1'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -303,8 +300,8 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.setTabsClosable(True)
         self.mainTab.setMovable(True)
         self.setCentralWidget(self.mainTab)
-        tabId = self.mainTab.addTab(TextEditX(self), '')
-        #tabId = self.mainTab.addTab(TextEditX(self), "New Text")
+        #tabId = self.mainTab.addTab(TextEditX(self), '')
+        tabId = self.mainTab.addTab(TextEditX(self), "New Text")
         self.mainTab.tabCloseRequested.connect(self.closeTab)
         #self.mainTab.currentChanged.connect(self.changeTab)
         
@@ -1392,19 +1389,19 @@ def usage():
 #from PyQt4.Qt import Qt
  
 #class LNTextEdit(QFrame):
-class TextEditX(TextEditX1, QFrame):
+class TextEditX(TextEditX1, QtGui.QFrame):
  #https://john.nachtimwald.com/2009/08/19/better-qplaintextedit-with-line-numbers/
-    class NumberBar(QWidget):
+    class NumberBar(QtGui.QWidget):
  
         def __init__(self, edit):
-            QWidget.__init__(self, edit)
+            QtGui.QWidget.__init__(self, edit)
  
             self.edit = edit
             self.adjustWidth(1)
  
         def paintEvent(self, event):
             self.edit.numberbarPaint(self, event)
-            QWidget.paintEvent(self, event)
+            QtGui.QWidget.paintEvent(self, event)
  
         def adjustWidth(self, count):
             width = self.fontMetrics().width(unicode(count))
@@ -1423,14 +1420,14 @@ class TextEditX(TextEditX1, QFrame):
                 self.update()
  
  
-    class PlainTextEdit(QPlainTextEdit):
+    class PlainTextEdit(QtGui.QPlainTextEdit):
  
         def __init__(self, *args):
-            QPlainTextEdit.__init__(self, *args)
+            QtGui.QPlainTextEdit.__init__(self, *args)
  
             #self.setFrameStyle(QFrame.NoFrame)
  
-            self.setFrameStyle(QFrame.NoFrame)
+            self.setFrameStyle(QtGui.QFrame.NoFrame)
             self.highlight()
             #self.setLineWrapMode(QPlainTextEdit.NoWrap)
  
@@ -1438,7 +1435,7 @@ class TextEditX(TextEditX1, QFrame):
             
  
         def highlight(self):
-            hi_selection = QTextEdit.ExtraSelection()
+            hi_selection = QtGui.QTextEdit.ExtraSelection()
  
             hi_selection.format.setBackground(self.palette().alternateBase())
             #hi_selection.format.setProperty(QTextFormat.FullWidthSelection, QVariant(True))
@@ -1453,7 +1450,7 @@ class TextEditX(TextEditX1, QFrame):
  
             block = self.firstVisibleBlock()
             line_count = block.blockNumber()
-            painter = QPainter(number_bar)
+            painter = QtGui.QPainter(number_bar)
             painter.fillRect(event.rect(), self.palette().base())
  
             # Iterate over all visible text blocks in the document.
@@ -1477,8 +1474,8 @@ class TextEditX(TextEditX1, QFrame):
                     painter.setFont(font)
  
                 # Draw the line number right justified at the position of the line.
-                paint_rect = QRect(0, block_top, number_bar.width(), font_metrics.height())
-                painter.drawText(paint_rect, Qt.AlignRight, unicode(line_count))
+                paint_rect = QtCore.QRect(0, block_top, number_bar.width(), font_metrics.height())
+                painter.drawText(paint_rect, QtCore.Qt.AlignRight, unicode(line_count))
  
                 block = block.next()
  
@@ -1486,14 +1483,14 @@ class TextEditX(TextEditX1, QFrame):
  
     def __init__(self, *args):
         #QFrame.__init__(self, *args)
-        QFrame.__init__(self)
+        QtGui.QFrame.__init__(self)
  
-        self.setFrameStyle(QFrame.StyledPanel | QFrame.Sunken)
+        self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Sunken)
  
         self.edit = self.PlainTextEdit()
         self.number_bar = self.NumberBar(self.edit)
  
-        hbox = QHBoxLayout(self)
+        hbox = QtGui.QHBoxLayout(self)
         hbox.setSpacing(0)
         #hbox.setMargin(0)
         hbox.addWidget(self.number_bar)
