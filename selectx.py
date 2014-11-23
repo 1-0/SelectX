@@ -316,7 +316,7 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.removeTab(index)
 
     def wheelEvent(self, event):
-        if event.modifiers()==QtCore.Qt.CTRL:
+        if  event.modifiers()==0x04000000 or event.modifiers()==QtCore.Qt.CTRL or event.modifiers()==QtCore.Qt.ControlModifier:
             if event.delta()>0:
                 self.viewZoomIn()
                 event.ignore()
@@ -863,7 +863,7 @@ class TextEditBaseX(QtGui.QTextEdit):
         else:
             return False
             #return QtGui.QTextEdit.eventFilter(self, receiver, event)
-        return False
+        return QtGui.QFrame.eventFilter(self, receiver, event)
 
 
 HILIGHTER_SETUP = {'cpp c h' : {'keywordPatternsRules' : ["\\bchar\\b", "\\bclass\\b", "\\bconst\\b",
@@ -976,7 +976,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
 
 class TextEditX(QtGui.QFrame):
-#https://john.nachtimwald.com/2009/08/15/qtextedit-with-line-numbers/
+#based on https://john.nachtimwald.com/2009/08/15/qtextedit-with-line-numbers/
     class NumberBar(QtGui.QWidget):
 
         def __init__(self, *args):
@@ -1070,13 +1070,16 @@ class TextEditX(QtGui.QFrame):
         self.edit.installEventFilter(self)
         self.edit.viewport().installEventFilter(self)
 
-    def eventFilter(self, object, event):
+    def eventFilter(self, receiver, event):
         # Update the line numbers for all events on the text edit and the viewport.
         # This is easier than connecting all necessary singals.
-        if object in (self.edit, self.edit.viewport()):
+        if (receiver in (self.edit, self.edit.viewport())) and \
+        (event.type() in (QtCore.QEvent.Paint,)):
+        #(event.type() in (QtCore.QEvent.Wheel, QtCore.QEvent.KeyPress, \
+        #QtCore.QEvent.MouseButtonPress, QtCore.QEvent.Paint)):
             self.number_bar.update()
             return False
-        return QtGui.QFrame.eventFilter(object, event)
+        return QtGui.QFrame.eventFilter(self, receiver, event)
 
     def getTextEdit(self):
         return self.edit
@@ -1485,7 +1488,7 @@ def usage():
     print sys.argv[0] + '\n' + VERSION_INFO % __version__ + CONSOLE_USAGE
 
 
-def runWindow(ForceIcons = None):
+def runWindow(ForceIcons = True):
     app = QtGui.QApplication(sys.argv)
     if ForceIcons:
         selxnotepad = SelectX(ForceIcons)
