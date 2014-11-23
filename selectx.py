@@ -18,7 +18,7 @@ instead of PySide
 
 #from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.5.0.5'''
+__version__ = '''0.5.1.1'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -476,7 +476,7 @@ class SelectX(QtGui.QMainWindow):
         elif extention in ['py', 'py3']:
             self.highlighter = PythonHighlighter(self.mainTab.currentWidget().edit.document())
         #else:
-            #self.highlighter = PythonHighlighter(self.mainTab.currentWidget().document())
+            #self.highlighter = PythonHighlighter(self.mainTab.currentWidget().edit.document())
 
     def newFile(self):
         self.mainTab.currentWidget().edit.clear()
@@ -509,7 +509,7 @@ class SelectX(QtGui.QMainWindow):
     def closeTab(self, tabIndex):
         if self.mainTab.count()==1:
             return -1
-        if self.mainTab.widget(tabIndex).document().isModified():
+        if self.mainTab.widget(tabIndex).edit.document().isModified():
             if self.checkCloseTab(tabIndex):
                 self.removeTab(tabIndex)
                 return tabIndex
@@ -588,6 +588,8 @@ class SelectX(QtGui.QMainWindow):
             self.startPath = self.path[:-len(getFileName(self.path))]
             if self.checkNotEmptyText() and self.path:
                 self.newTab()
+                self.statusBar().showMessage('Start reading: %s' % self.path)
+        
             self.openExistFile(self.path)
         else:
             self.statusBar().showMessage('Stop Open Text')
@@ -611,6 +613,7 @@ class SelectX(QtGui.QMainWindow):
         return False
 
     def openExistFile(self, filePath):
+        self.statusBar().showMessage('Start reading: %s' % self.path)
         self.path = filePath
         inFile = QtCore.QFile(self.path)
         if inFile.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
@@ -1488,7 +1491,7 @@ def usage():
     print sys.argv[0] + '\n' + VERSION_INFO % __version__ + CONSOLE_USAGE
 
 
-def runWindow(ForceIcons = True):
+def runWindow(ForceIcons = None):
     app = QtGui.QApplication(sys.argv)
     if ForceIcons:
         selxnotepad = SelectX(ForceIcons)
