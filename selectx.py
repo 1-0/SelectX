@@ -5,7 +5,9 @@ import sys, os, re
 
 try:
     from PySide import QtGui, QtCore
-    
+    from PySide.QtGui import *
+    from PySide.QtCore import *
+
     LIB_USE = "PySide"
 except ImportError:
     print """Try to use PyQt4
@@ -13,12 +15,13 @@ except ImportError:
 instead of PySide
 (license - LGPL - http://www.gnu.org/copyleft/lesser.html )"""
     from PyQt4 import QtGui, QtCore
+    from PyQt4.Qt import *
     
     LIB_USE = "PyQt4"
 
-from PyQt4 import QtGui, QtCore
+#from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.4.3.5'''
+__version__ = '''0.5.0.0'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -287,11 +290,6 @@ class SelectX(QtGui.QMainWindow):
         
         #splashScreen.close()
         #self.installEventFilter(self)
-        
-    #def keyPressEvent(self,event):
-        #if event.key()==Qt.Key_Tab:
-            #print 'tab'
-            #self.mainTab.currentWidget()
     
     def initUI(self):
         self.MenuBar = self.makeMenu()
@@ -305,12 +303,13 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.setTabsClosable(True)
         self.mainTab.setMovable(True)
         self.setCentralWidget(self.mainTab)
-        tabId = self.mainTab.addTab(TextEditX(self), "New Text")
+        tabId = self.mainTab.addTab(TextEditX(self), '')
+        #tabId = self.mainTab.addTab(TextEditX(self), "New Text")
         self.mainTab.tabCloseRequested.connect(self.closeTab)
-        self.mainTab.currentChanged.connect(self.changeTab)
+        #self.mainTab.currentChanged.connect(self.changeTab)
         
         self.setHighlighter()
-        self.changeTab(tabId)
+        #self.changeTab(tabId)
         self.show()
 
     def removeTab(self, index):
@@ -496,7 +495,7 @@ class SelectX(QtGui.QMainWindow):
         self.setHighlighter()
         self.changeTab(tabId)
         
-    def changeTab(self, tabIndex):
+    def changeTab1(self, tabIndex):
         edit = self.mainTab.currentWidget()
         doc = edit.document()
         #print 'changeTab-'+str(tabIndex)
@@ -769,7 +768,7 @@ class SelectX(QtGui.QMainWindow):
         QtGui.QMessageBox.information(self, 'Keys SelectX', KEYS_HELP, \
         QtGui.QMessageBox.Ok)
 
-class TextEditX(QtGui.QTextEdit):
+class TextEditX1(QtGui.QTextEdit):
     def __init__(self, parent = None):
         super(TextEditX, self).__init__()
         
@@ -803,10 +802,9 @@ class TextEditX(QtGui.QTextEdit):
         self.zoomRate = 0
         
     def pythonEnter(self):
-        currentWidget = self
-        if currentWidget.pythonicEnterOn:
-            currentDoc = currentWidget.document()
-            cursor = currentWidget.textCursor()
+        if self.pythonicEnterOn:
+            currentDoc = self.document()
+            cursor = self.textCursor()
             line = cursor.blockNumber()
             lineblock = currentDoc.findBlockByLineNumber(line)
             linetext = str(lineblock.text())
@@ -814,24 +812,23 @@ class TextEditX(QtGui.QTextEdit):
                 if len(linetext.rstrip()) > 0:
                     if linetext[0]=='\t':
                         if linetext.rstrip()[-1] == ':':
-                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+1)*'\t'
+                            self.insertSpace = (len(linetext)-len(linetext.lstrip())+1)*'\t'
                         else:
-                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*'\t'
-                        currentWidget.enterPressed=True
+                            self.insertSpace = (len(linetext)-len(linetext.lstrip()))*'\t'
+                        self.enterPressed=True
                     elif linetext[0]==' ':
                         if linetext.rstrip()[-1] == ':':
-                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip())+4)*' '
+                            self.insertSpace = (len(linetext)-len(linetext.lstrip())+4)*' '
                         else:
-                            currentWidget.insertSpace = (len(linetext)-len(linetext.lstrip()))*' '
-                        currentWidget.enterPressed=True
+                            self.insertSpace = (len(linetext)-len(linetext.lstrip()))*' '
+                        self.enterPressed=True
                 else:
-                    currentWidget.insertSpace = linetext
-                    currentWidget.enterPressed=True
+                    self.insertSpace = linetext
+                    self.enterPressed=True
                     
     def cursorPosition(self):
-        currentWidget = self
-        currentDoc = currentWidget.document()
-        cursor = currentWidget.textCursor()
+        currentDoc = self.document()
+        cursor = self.textCursor()
         line = cursor.blockNumber() + 1
         col = cursor.columnNumber()
         #currentText = currentWidget.toPlainText()
@@ -844,9 +841,9 @@ class TextEditX(QtGui.QTextEdit):
         else:
             self.parentControl.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
             
-        if currentWidget.enterPressed:
-            currentWidget.enterPressed=False
-            currentWidget.insertPlainText (currentWidget.insertSpace)
+        if self.enterPressed:
+            self.enterPressed=False
+            self.insertPlainText (self.insertSpace)
             
     def eventFilter(self, receiver, event):
         if event.type() == QtCore.QEvent.KeyPress:
@@ -1381,6 +1378,144 @@ def getFileName(pathName, separatorSymbol=None):
 
 def usage():
     print sys.argv[0] + '\n' + VERSION_INFO % __version__ + CONSOLE_USAGE
+
+
+#from PyQt4.Qt import QFrame
+#from PyQt4.Qt import QHBoxLayout
+#from PyQt4.Qt import QPainter
+#from PyQt4.Qt import QPlainTextEdit
+#from PyQt4.Qt import QRect
+#from PyQt4.Qt import QTextEdit
+#from PyQt4.Qt import QTextFormat
+#from PyQt4.Qt import QVariant
+#from PyQt4.Qt import QWidget
+#from PyQt4.Qt import Qt
+ 
+#class LNTextEdit(QFrame):
+class TextEditX(TextEditX1, QFrame):
+ #https://john.nachtimwald.com/2009/08/19/better-qplaintextedit-with-line-numbers/
+    class NumberBar(QWidget):
+ 
+        def __init__(self, edit):
+            QWidget.__init__(self, edit)
+ 
+            self.edit = edit
+            self.adjustWidth(1)
+ 
+        def paintEvent(self, event):
+            self.edit.numberbarPaint(self, event)
+            QWidget.paintEvent(self, event)
+ 
+        def adjustWidth(self, count):
+            width = self.fontMetrics().width(unicode(count))
+            if self.width() != width:
+                self.setFixedWidth(width)
+ 
+        def updateContents(self, rect, scroll):
+            if scroll:
+                self.scroll(0, scroll)
+            else:
+                # It would be nice to do
+                # self.update(0, rect.y(), self.width(), rect.height())
+                # But we can't because it will not remove the bold on the
+                # current line if word wrap is enabled and a new block is
+                # selected.
+                self.update()
+ 
+ 
+    class PlainTextEdit(QPlainTextEdit):
+ 
+        def __init__(self, *args):
+            QPlainTextEdit.__init__(self, *args)
+ 
+            #self.setFrameStyle(QFrame.NoFrame)
+ 
+            self.setFrameStyle(QFrame.NoFrame)
+            self.highlight()
+            #self.setLineWrapMode(QPlainTextEdit.NoWrap)
+ 
+            self.cursorPositionChanged.connect(self.highlight)
+            
+ 
+        def highlight(self):
+            hi_selection = QTextEdit.ExtraSelection()
+ 
+            hi_selection.format.setBackground(self.palette().alternateBase())
+            #hi_selection.format.setProperty(QTextFormat.FullWidthSelection, QVariant(True))
+            hi_selection.cursor = self.textCursor()
+            hi_selection.cursor.clearSelection()
+ 
+            self.setExtraSelections([hi_selection])
+ 
+        def numberbarPaint(self, number_bar, event):
+            font_metrics = self.fontMetrics()
+            current_line = self.document().findBlock(self.textCursor().position()).blockNumber() + 1
+ 
+            block = self.firstVisibleBlock()
+            line_count = block.blockNumber()
+            painter = QPainter(number_bar)
+            painter.fillRect(event.rect(), self.palette().base())
+ 
+            # Iterate over all visible text blocks in the document.
+            while block.isValid():
+                line_count += 1
+                block_top = self.blockBoundingGeometry(block).translated(self.contentOffset()).top()
+ 
+                # Check if the position of the block is out side of the visible
+                # area.
+                if not block.isVisible() or block_top >= event.rect().bottom():
+                    break
+ 
+                # We want the line number for the selected line to be bold.
+                if line_count == current_line:
+                    font = painter.font()
+                    font.setBold(True)
+                    painter.setFont(font)
+                else:
+                    font = painter.font()
+                    font.setBold(False)
+                    painter.setFont(font)
+ 
+                # Draw the line number right justified at the position of the line.
+                paint_rect = QRect(0, block_top, number_bar.width(), font_metrics.height())
+                painter.drawText(paint_rect, Qt.AlignRight, unicode(line_count))
+ 
+                block = block.next()
+ 
+            painter.end()
+ 
+    def __init__(self, *args):
+        #QFrame.__init__(self, *args)
+        QFrame.__init__(self)
+ 
+        self.setFrameStyle(QFrame.StyledPanel | QFrame.Sunken)
+ 
+        self.edit = self.PlainTextEdit()
+        self.number_bar = self.NumberBar(self.edit)
+ 
+        hbox = QHBoxLayout(self)
+        hbox.setSpacing(0)
+        #hbox.setMargin(0)
+        hbox.addWidget(self.number_bar)
+        hbox.addWidget(self.edit)
+ 
+        self.edit.blockCountChanged.connect(self.number_bar.adjustWidth)
+        self.edit.updateRequest.connect(self.number_bar.updateContents)
+ 
+    def getText(self):
+        return unicode(self.edit.toPlainText())
+ 
+    def setText(self, text):
+        self.edit.setPlainText(text)
+ 
+    def isModified(self):
+        return self.edit.document().isModified()
+ 
+    def setModified(self, modified):
+        self.edit.document().setModified(modified)
+ 
+    def setLineWrapMode(self, mode):
+        self.edit.setLineWrapMode(mode)
 
 
 def runWindow(ForceIcons = None):
