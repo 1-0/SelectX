@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''SelectX - easy eXtendable text editor for developers writed on Python. Licensed by GPL3.'''
-
+#!/usr/bin/python -m cProfile -s time ./selectx.py |less -o ./pof.log     #<<<<profiler run
 import sys, os, re
 
 try:
@@ -18,7 +18,7 @@ instead of PySide
 
 #from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.5.1.5'''
+__version__ = '''0.5.1.6'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -60,7 +60,10 @@ Keys:
 VERSION_INFO = "SelectX. Text editor licenced by GPL3. Ver. %s"
 
 #icon theme for very soft and very micro os ;) (based on http://tango.freedesktop.org/Tango_Icon_Library)
-TANGO_ICONS = {'media_record':"""/* XPM */
+TANGO_ICONS = {'office_calendar':"""/* XPM */
+static char * office_calendar_xpm[] = {
+"16 16 79 1"," 	c None",".	c #555753","+	c #BCBCBC","@	c #C7C7C7","#	c #8D8D8D","$	c #8E8E8E","%	c #D3D3D3","&	c #BBBBBB","*	c #BDBDBD","=	c #BEBEBE","-	c #BFBFBF",";	c #C3C3C3",">	c #C5C5C5",",	c #888887","'	c #FFFFFF",")	c #E2E2E2","!	c #E3E3E3","~	c #E4E4E4","{	c #E5E5E5","]	c #E6E6E6","^	c #E7E7E7","/	c #EFEFEF","(	c #7F7F7F","_	c #EAEAEA",":	c #F1F1F1","<	c #787877","[	c #7B7B7B","}	c #1C1C1C","|	c #0C0C0C","1	c #525252","2	c #1A1A1A","3	c #000000","4	c #DFDFDF","5	c #EBEBEB","6	c #EEEEEE","7	c #090909","8	c #ADADAD","9	c #B6B6B6","0	c #171717","a	c #6D6D6D","b	c #B3B3B3","c	c #F3F3F3","d	c #F4F4F4","e	c #DADADA","f	c #8C8C8C","g	c #030303","h	c #B5B5B5","i	c #E8E8E8","j	c #F2F2F2","k	c #F9F9F9","l	c #515151","m	c #181818","n	c #111111","o	c #6A6A6A","p	c #ECECEC","q	c #0E0E0E","r	c #3C3C3C","s	c #A1A1A1","t	c #EDEDED","u	c #F6F6F6","v	c #FAFAFA","w	c #FBFBFB","x	c #F7F7F7","y	c #F0F0F0","z	c #808080","A	c #818181","B	c #828282","C	c #838383","D	c #848484","E	c #858585","F	c #868686","G	c #878787","H	c #888888","I	c #B1B1B1","J	c #C4C4C4","K	c #B7B7B7","L	c #B8B8B8","M	c #B9B9B9","N	c #BABABA","................",".+++++++++++++@.",".+##$$$$$$$$$$@.",".%&++++*====-;>.",",'))!!~{{]^^^/'(",",')!~~{]]^^^_:'<",",'![}|1]^23456'<",",'~4{#7~^83!::'<",",'{903a^^b3~cd'<",",'{e]fg~_h3ijk'<",",'{lmnop:qrs6k'<",",']_pt:/jccuvw'<",",'kxxddy:cjccc'<",",:zAABCDDEFGGHI<","BJKKLMNN&&&&**J<"," B<<<<<<<<<<<<< "};""",
+'media_record':"""/* XPM */
 static char * media_record_xpm[] = {
 "16 16 104 2","  	c None",". 	c #CE0000","+ 	c #CB0000","@ 	c #D00E0E","# 	c #E96363","$ 	c #F38C8C","% 	c #F59898","& 	c #EE7878","* 	c #DD3939","= 	c #CD0000","- 	c #DB2D2D","; 	c #F8A1A1","> 	c #F49A9A",", 	c #F08888","' 	c #EE8181",") 	c #F18A8A","! 	c #F7A2A2","~ 	c #EE6F6F","{ 	c #CD0505","] 	c #CF0F0F","^ 	c #F79A9A","/ 	c #EE7C7C","( 	c #EB6E6E","_ 	c #EB6D6D",": 	c #EB6C6C","< 	c #EB6A6A","[ 	c #EB6767","} 	c #F49191","| 	c #E75454","1 	c #EA5D5D","2 	c #F28686","3 	c #EA6262","4 	c #EB6363","5 	c #EB6464","6 	c #EB6262","7 	c #EB5F5F","8 	c #EA5C5C","9 	c #EA5F5F","0 	c #F89393","a 	c #D20E0E","b 	c #F27979","c 	c #EA5757","d 	c #E73F3F","e 	c #E84545","f 	c #EB5757","g 	c #EC5858","h 	c #EC5656","i 	c #EB5353","j 	c #E94F4F","k 	c #F48383","l 	c #DA2B2B","m 	c #CD0101","n 	c #F57676","o 	c #E42525","p 	c #E31C1C","q 	c #E51E1E","r 	c #E72121","s 	c #E92E2E","t 	c #EA3B3B","u 	c #EA4242","v 	c #E83B3B","w 	c #F16868","x 	c #E03A3A","y 	c #CA0000","z 	c #EF6161","A 	c #E93939","B 	c #E51D1D","C 	c #E72020","D 	c #E92222","E 	c #EA2323","F 	c #E82121","G 	c #E61F1F","H 	c #F36969","I 	c #D81F1F","J 	c #E13A3A","K 	c #F16464","L 	c #E61E1E","M 	c #EB2424","N 	c #ED2626","O 	c #EC2525","P 	c #EB3737","Q 	c #F47171","R 	c #CE0707","S 	c #CE0303","T 	c #F06565","U 	c #F05454","V 	c #EA2424","W 	c #EB2525","X 	c #EE2727","Y 	c #EC2626","Z 	c #EC3535","` 	c #F57171"," .	c #DA2727","..	c #D10C0C","+.	c #ED5959","@.	c #F25A5A","#.	c #F25353","$.	c #F36363","%.	c #F57474","&.	c #CD0202","*.	c #D51919","=.	c #DF3636","-.	c #E34242",";.	c #D10A0A","                                ","                                ","              . +               ","          @ # $ % & * =         ","        - ; > , ' ) ! ~ {       ","      ] ^ / ( _ : < [ } |       ","      1 2 3 4 5 6 7 8 9 0 a     ","    = b c d e f g h i j k l     ","    m n o p q r s t u v w x     ","    y z A B C D E E F G H I     ","      J K L F M N O E P Q R     ","      S T U V W X Y Z `  .      ","        ..+.` @.#.$.%.-         ","          &.*.=.-. .;.          ","                                ","                                "};
 """,
@@ -403,6 +406,8 @@ class SelectX(QtGui.QMainWindow):
         viewMenu, 'media_record', self.toolbar, checkAble=True, returnName=True)
         self.nonPyEnter = self.addActionParamX('Pythonic Enter', 'Ctrl+Shift+P', 'On/Off Pythonic Enter Style', self.inversePyEnter, \
         viewMenu, 'media_skip_backward', self.toolbar, checkAble=True, returnName=True)
+        self.nonLineNumbers = self.addActionParamX('Line Numbers', 'Ctrl+Shift+L', 'On/Off PLine Numbers', self.inverseLineNumbering, \
+        viewMenu, 'office_calendar', self.toolbar, checkAble=True, returnName=True)
 
         self.toolbar = self.addToolBar("Help")
         self.toolbar.setMovable(True)
@@ -495,6 +500,8 @@ class SelectX(QtGui.QMainWindow):
         self.changeTab(tabId)
 
     def changeTab(self, tabIndex):
+        bar = self.mainTab.currentWidget().number_bar
+        
         edit = self.mainTab.currentWidget().edit
         doc = edit.document()
         #print 'changeTab-'+str(tabIndex)
@@ -506,6 +513,10 @@ class SelectX(QtGui.QMainWindow):
             self.nonPyEnter.setChecked(True)
         else:
             self.nonPyEnter.setChecked(False)
+        if bar.paintLineNumber:
+            self.nonLineNumbers.setChecked(True)
+        else:
+            self.nonLineNumbers.setChecked(False)
         self.statusBar().showMessage('Selected Tab #%s' % (tabIndex+1))
 
     def closeTab(self, tabIndex):
@@ -710,6 +721,14 @@ class SelectX(QtGui.QMainWindow):
             self.statusBar().showMessage('Show Non Printabale')
         doc.setDefaultTextOption(option)
 
+    def inverseLineNumbering(self):
+        bar = self.mainTab.currentWidget().number_bar
+        bar.paintLineNumber = not bar.paintLineNumber
+        if bar.paintLineNumber:
+           self.statusBar().showMessage('Show Line Numbers')
+        else:
+            self.statusBar().showMessage('Hide Line Numbers')
+        bar.update()
 
     def findText(self):
         cursor = self.mainTab.currentWidget().edit.textCursor()
@@ -1011,56 +1030,57 @@ class TextEditX(QtGui.QFrame):
             QtGui.QWidget.update(self, *args)
 
         def paintEvent(self, event):
-            contents_y = self.edit.verticalScrollBar().value()
-            page_bottom = contents_y + self.edit.viewport().height()
-            font_metrics = self.fontMetrics()
-            current_block = self.edit.document().findBlock(self.edit.textCursor().position())
-
-            painter = QtGui.QPainter(self)
-
-            line_count = 0
-            # Iterate over all text blocks in the document.
-            block = self.edit.document().begin()
-            while block.isValid():
-                line_count += 1
-
-                # The top left position of the block in the document
-                position = self.edit.document().documentLayout().blockBoundingRect(block).topLeft()
-
-                # Check if the position of the block is out side of the visible
-                # area.
-                if position.y() > page_bottom:
-                    break
-
-                # We want the line number for the selected line to be bold.
-                bold = False
-                if block == current_block:
-                    bold = True
-                    font = painter.font()
-                    font.setBold(True)
-                    painter.setFont(font)
-
-                # Draw the line number right justified at the y position of the
-                # line. 3 is a magic padding number. drawText(x, y, text).
-                painter.drawText(self.width() - font_metrics.width(str(line_count)) - 3, round(position.y()) - contents_y + font_metrics.ascent(), str(line_count))
-
-                # Remove the bold style if it was set previously.
-                if bold:
-                    font = painter.font()
-                    font.setBold(False)
-                    painter.setFont(font)
-
-                block = block.next()
-
-            self.highest_line = line_count
-            painter.end()
-
-            QtGui.QWidget.paintEvent(self, event)
+            if self.paintLineNumber:
+                contents_y = self.edit.verticalScrollBar().value()
+                page_bottom = contents_y + self.edit.viewport().height()
+                font_metrics = self.fontMetrics()
+                current_block = self.edit.document().findBlock(self.edit.textCursor().position())
+    
+                painter = QtGui.QPainter(self)
+    
+                line_count = 0
+                # Iterate over all text blocks in the document.
+                block = self.edit.document().begin()
+                while block.isValid():
+                    line_count += 1
+    
+                    # The top left position of the block in the document
+                    position = self.edit.document().documentLayout().blockBoundingRect(block).topLeft()
+    
+                    # Check if the position of the block is out side of the visible
+                    # area.
+                    if position.y() > page_bottom:
+                        break
+    
+                    # We want the line number for the selected line to be bold.
+                    bold = False
+                    if block == current_block:
+                        bold = True
+                        font = painter.font()
+                        font.setBold(True)
+                        painter.setFont(font)
+    
+                    # Draw the line number right justified at the y position of the
+                    # line. 3 is a magic padding number. drawText(x, y, text).
+                    painter.drawText(self.width() - font_metrics.width(str(line_count)) - 3, round(position.y()) - contents_y + font_metrics.ascent(), str(line_count))
+    
+                    # Remove the bold style if it was set previously.
+                    if bold:
+                        font = painter.font()
+                        font.setBold(False)
+                        painter.setFont(font)
+    
+                    block = block.next()
+    
+                self.highest_line = line_count
+                painter.end()
+    
+                QtGui.QWidget.paintEvent(self, event)
 
 
     def __init__(self, parent, *args):
-        self.parent = parent
         QtGui.QFrame.__init__(self, *args)
+        self.parent = parent
 
         self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Sunken)
 
@@ -1071,6 +1091,7 @@ class TextEditX(QtGui.QFrame):
 
         self.number_bar = self.NumberBar()
         self.number_bar.setTextEdit(self.edit)
+        self.number_bar.paintLineNumber = True
 
         hbox = QtGui.QHBoxLayout(self)
         hbox.setSpacing(0)
