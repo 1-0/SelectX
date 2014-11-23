@@ -13,12 +13,12 @@ except ImportError:
 instead of PySide
 (license - LGPL - http://www.gnu.org/copyleft/lesser.html )"""
     from PyQt4 import QtGui, QtCore
-    
+
     LIB_USE = "PyQt4"
 
 from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.5.0.1'''
+__version__ = '''0.5.0.4'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -270,8 +270,8 @@ class SelectX(QtGui.QMainWindow):
             self.useThemeIcons = False
         else:
             self.useThemeIcons = True
-        
-        
+
+
         self.initUI()
         #self.openInNewTab = True
         try:
@@ -284,13 +284,13 @@ class SelectX(QtGui.QMainWindow):
         except IndexError:
             #print 'not open File'
             pass
-        
+
         #splashScreen.close()
         #self.installEventFilter(self)
-    
+
     def initUI(self):
         self.MenuBar = self.makeMenu()
-        
+
         self.statusBar()
         self.setGeometry(100, 100, 400, 400)
         self.setWindowIcon(self.getNewIcon("edit-select-all"))
@@ -303,10 +303,10 @@ class SelectX(QtGui.QMainWindow):
         #tabId = self.mainTab.addTab(TextEditX(self), '')
         tabId = self.mainTab.addTab(TextEditX(self), "New Text")
         self.mainTab.tabCloseRequested.connect(self.closeTab)
-        #self.mainTab.currentChanged.connect(self.changeTab)
-        
+        self.mainTab.currentChanged.connect(self.changeTab)
+
         self.setHighlighter()
-        #self.changeTab(tabId)
+        self.changeTab(tabId)
         self.show()
 
     def removeTab(self, index):
@@ -314,7 +314,7 @@ class SelectX(QtGui.QMainWindow):
         if widget is not None:
             widget.deleteLater()
         self.mainTab.removeTab(index)
-        
+
     def wheelEvent(self, event):
         if event.modifiers()==QtCore.Qt.CTRL:
             if event.delta()>0:
@@ -323,14 +323,14 @@ class SelectX(QtGui.QMainWindow):
             else:
                 self.viewZoomOut()
                 event.ignore()
-        
+
 
     def makeMenu(self):
         menubar = self.menuBar()
-        
+
         self.toolbar = self.addToolBar("File")
         self.toolbar.setMovable(True)
-        
+
         fileMenu = menubar.addMenu('&File')
         #self.addActionParamX('New', 'Ctrl+N', 'Create new file', self.newFile, \
         #fileMenu, 'document-new', self.toolbar)
@@ -354,7 +354,7 @@ class SelectX(QtGui.QMainWindow):
         self.closeTab, fileMenu, 'window-close')
         self.addActionParamX('Exit', 'Ctrl+Q', 'Exit SelectX', \
         self.checkExitProgram, fileMenu, 'application-exit')
-        
+
         self.toolbar = self.addToolBar("Edit")
         self.toolbar.setMovable(True)
         editMenu = menubar.addMenu('&Edit')
@@ -374,7 +374,7 @@ class SelectX(QtGui.QMainWindow):
         #editMenu, 'edit-find', self.toolbar)
         self.addActionParamX('Find and replace', 'Ctrl+F', 'Find and replace words in your document', Find(self).show, \
         editMenu, 'edit-find-replace', self.toolbar)
-        
+
         self.toolbar = self.addToolBar("Select")
         self.toolbar.setMovable(True)
         selectMenu = menubar.addMenu('&Select')
@@ -382,7 +382,7 @@ class SelectX(QtGui.QMainWindow):
         self.selectAll, selectMenu, 'edit-select-all', self.toolbar)
         #self.addActionParamX('Select For Copy By Words', 'Ctrl+Shift+A', 'Set Select For Copy By Words', \
         #self.setSelectByWords, selectMenu, 'edit-select', self.toolbar, checkAble=True)
-        
+
         self.toolbar = self.addToolBar("View")
         self.toolbar.setMovable(True)
         viewMenu = menubar.addMenu('&View')
@@ -401,7 +401,7 @@ class SelectX(QtGui.QMainWindow):
         viewMenu, 'media_record', self.toolbar, checkAble=True, returnName=True)
         self.nonPyEnter = self.addActionParamX('Pythonic Enter', 'Ctrl+Shift+P', 'On/Off Pythonic Enter Style', self.inversePyEnter, \
         viewMenu, 'media_skip_backward', self.toolbar, checkAble=True, returnName=True)
-        
+
         self.toolbar = self.addToolBar("Help")
         self.toolbar.setMovable(True)
         helpMenu = menubar.addMenu('&Help')
@@ -411,21 +411,21 @@ class SelectX(QtGui.QMainWindow):
         helpMenu, 'help-about')
         self.addActionParamX("About &Qt", 'Shift+F9', 'About current QT', QtGui.qApp.aboutQt, \
         helpMenu, 'help-about')
-        
-        
+
+
         return menubar
-        
+
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
     TopActLevel, IconName, toolBar=None, checkAble=False, \
     checkState=False, returnName=None):
         newIcon =  self.getNewIcon(IconName)
         MakeAction = QtGui.QAction(newIcon, ActText, self)
-        
+
         if checkAble:
             MakeAction.setCheckable (True)
             MakeAction.setChecked (checkState)
-            
-        
+
+
         #MakeAction.setPriority (MakeAction.LowPriority)
         #MakeAction.setIconVisibleInMenu (False)
         MakeAction.setIconVisibleInMenu (True)
@@ -433,22 +433,22 @@ class SelectX(QtGui.QMainWindow):
         MakeAction.setStatusTip(ActTip)
         MakeAction.triggered.connect(ActConnect)
         TopActLevel.addAction(MakeAction)
-        
+
         if toolBar:
             toolBar.addAction(MakeAction)
-            
+
         if returnName:
             return MakeAction
-        
+
     def inversePyEnter(self):
-        currentWidget = self.mainTab.currentWidget()
+        currentWidget = self.mainTab.currentWidget().edit
         if currentWidget.pythonicEnterOn:
             currentWidget.pythonicEnterOn = False
             self.statusBar().showMessage('Hide Py Enter')
         else:
             currentWidget.pythonicEnterOn = True
             self.statusBar().showMessage('Add Py Enter')
-        
+
     def getNewIcon(self, IconName):
         newIcon = QtGui.QIcon.fromTheme(IconName)
         if self.useThemeIcons and newIcon.hasThemeIcon(IconName):
@@ -467,23 +467,23 @@ class SelectX(QtGui.QMainWindow):
                 pass
         #print 'newIcon - '+str(newIcon)
         return newIcon
-            
-        
+
+
     def setHighlighter(self):
         extention = str(getFileName(self.path, '.')).lower()
         if extention in ['c', 'cc','cpp', 'c++', 'cxx', 'h', 'hh', 'hpp', 'hxx']:
-            self.highlighter = Highlighter(self.mainTab.currentWidget().document(), extention)
+            self.highlighter = Highlighter(self.mainTab.currentWidget().edit.document(), extention)
         elif extention in ['py', 'py3']:
-            self.highlighter = PythonHighlighter(self.mainTab.currentWidget().document())
+            self.highlighter = PythonHighlighter(self.mainTab.currentWidget().edit.document())
         #else:
             #self.highlighter = PythonHighlighter(self.mainTab.currentWidget().document())
-        
+
     def newFile(self):
-        self.mainTab.currentWidget().clear()
+        self.mainTab.currentWidget().edit.clear()
         self.path=None
         self.statusBar().showMessage('New Text')
         self.setWindowTitle('SelectX')
-        
+
     def newTab(self):
         self.newDocNumber += 1
         self.textEdit = TextEditX(self)
@@ -491,9 +491,9 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.setCurrentWidget(self.textEdit)
         self.setHighlighter()
         self.changeTab(tabId)
-        
-    def changeTab1(self, tabIndex):
-        edit = self.mainTab.currentWidget()
+
+    def changeTab(self, tabIndex):
+        edit = self.mainTab.currentWidget().edit
         doc = edit.document()
         #print 'changeTab-'+str(tabIndex)
         if doc.defaultTextOption().flags():
@@ -505,7 +505,7 @@ class SelectX(QtGui.QMainWindow):
         else:
             self.nonPyEnter.setChecked(False)
         self.statusBar().showMessage('Selected Tab #%s' % (tabIndex+1))
-        
+
     def closeTab(self, tabIndex):
         if self.mainTab.count()==1:
             return -1
@@ -516,7 +516,7 @@ class SelectX(QtGui.QMainWindow):
         else:
             self.removeTab(tabIndex)
             return tabIndex
-        
+
     def saveFile(self):
         if self.path:
             #f = open(self.path, 'w')
@@ -524,13 +524,13 @@ class SelectX(QtGui.QMainWindow):
                 f = open(self.path, 'w')
             except IOError:
                 self.saveFileAs()
-            filedata = self.mainTab.currentWidget().toPlainText()
+            filedata = self.mainTab.currentWidget().edit.toPlainText()
             f.write(filedata)
             f.close()
             self.statusBar().showMessage('Save Text: %s' % self.path)
         else:
             self.saveFileAs()
-        
+
     def saveFileAs(self):
         if self.startPath:
             filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File', \
@@ -545,7 +545,7 @@ class SelectX(QtGui.QMainWindow):
                 f = open(self.path, 'w')
             except IOError:
                 return
-            filedata = self.mainTab.currentWidget().toPlainText()
+            filedata = self.mainTab.currentWidget().edit.toPlainText()
             f.write(filedata)
             f.close()
             self.path = filename
@@ -553,18 +553,18 @@ class SelectX(QtGui.QMainWindow):
             self.statusBar().showMessage('Save Text: %s' % filename)
             self.setWindowTitle('SelectX - %s' % filename)
             curtabind = self.mainTab.currentIndex()
-            
+
             self.mainTab.setTabToolTip (curtabind, '%s' % self.path)
             newFileName =  getFileName(self.path)
             self.mainTab.setTabText(curtabind, '%s' % newFileName)
             self.setHighlighter()
         else:
             self.statusBar().showMessage('Stop Save Text')
-        
+
     def setOpenInNewTab(self):
         self.openInNewTab = not(self.openInNewTab)
         print self.openInNewTab
-        
+
     def openFile(self):
         ###to see http://www.rkblog.rk.edu.pl/w/p/simple-text-editor-pyqt4/
         if self.startPath:
@@ -579,12 +579,12 @@ class SelectX(QtGui.QMainWindow):
             self.startPath, \
              "All Files (*);;Text Files (*.txt *.log *.TXT *.LOG);;Python Files (*.py *.PY *.py3 *.PY3);;C/C++ Files (*.c *.cc *.cpp *.c++ *.cxx *.h *.hh *.hpp *.hxx *.CPP *.H *.c *.C)" \
             )
-        
+
         if self.path:
             if type(self.path) is tuple: #for PySide
                 self.path = self.path[0]
                 #print self.path
-        
+
             self.startPath = self.path[:-len(getFileName(self.path))]
             if self.checkNotEmptyText() and self.path:
                 self.newTab()
@@ -592,24 +592,24 @@ class SelectX(QtGui.QMainWindow):
         else:
             self.statusBar().showMessage('Stop Open Text')
         #if self.path:
-            #print 
+            #print
             #if type(self.path) is tuple: #for PySide
                 #if self.checkNotEmptyText():
                     #self.path = self.path[0]
                 ##print self.path
-        
+
             #self.startPath = self.path[:-len(getFileName(self.path))]
             #if self.checkNotEmptyText():
                 #self.newTab()
             #self.openExistFile(self.path)
         #else:
             #self.statusBar().showMessage('Stop Open Text')
-                
+
     def checkNotEmptyText(self):
-        if len(self.mainTab.currentWidget().toPlainText()) > 0:
+        if len(self.mainTab.currentWidget().edit.toPlainText()) > 0:
             return True
         return False
-                
+
     def openExistFile(self, filePath):
         self.path = filePath
         inFile = QtCore.QFile(self.path)
@@ -623,12 +623,12 @@ class SelectX(QtGui.QMainWindow):
             except TypeError:
                 # Python v2.
                 text = str(text)
-            self.mainTab.currentWidget().clear()
+            self.mainTab.currentWidget().edit.clear()
             self.setHighlighter()
-            self.mainTab.currentWidget().insertPlainText(text)
+            self.mainTab.currentWidget().edit.insertPlainText(text)
             self.statusBar().showMessage('Open Text: %s' % self.path)
             curtabind = self.mainTab.currentIndex()
-            
+
             self.mainTab.setTabToolTip (curtabind, '%s' % self.path)
             self.mainTab.setTabText(curtabind, '%s' % getFileName(self.path))
             #elf.currentIndex()
@@ -636,19 +636,19 @@ class SelectX(QtGui.QMainWindow):
         else:
             print 'Can Not Open This File -> %s' % self.path
             self.path = None
-        
+
     def filePreview(self):
         '''Open preview dialog'''
         preview = QtGui.QPrintPreviewDialog()
         # If a print is requested, open print dialog
-        preview.paintRequested.connect(lambda p: self.mainTab.currentWidget().print_(p))
+        preview.paintRequested.connect(lambda p: self.mainTab.currentWidget().edit.print_(p))
         preview.exec_()
 
     def filePrint(self):
         '''Open printing dialog'''
         dialog = QtGui.QPrintDialog()
         if dialog.exec_() == QtGui.QDialog.Accepted:
-            self.mainTab.currentWidget().document().print_(dialog.printer())
+            self.mainTab.currentWidget().edit.document().print_(dialog.printer())
 
     def checkExitProgram(self):
         reply_exit = QtGui.QMessageBox.question(self, 'Confirm Exit SelectX', \
@@ -657,7 +657,7 @@ class SelectX(QtGui.QMainWindow):
         if reply_exit==QtGui.QMessageBox.Yes:
             self.close()
         self.statusBar().showMessage('Close Stoped')
-        
+
     def checkCloseTab(self, idTab=None):
         reply_exit = QtGui.QMessageBox.question(self, 'Confirm Close Tab', \
         "Are you sure to Close Tab?", QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, \
@@ -666,35 +666,35 @@ class SelectX(QtGui.QMainWindow):
         if reply_exit==QtGui.QMessageBox.Yes:
             return True
         return False
-        
+
     def undoText(self):
-        self.mainTab.currentWidget().undo()
+        self.mainTab.currentWidget().edit.undo()
         self.statusBar().showMessage('Undo Text')
-        
+
     def redoText(self):
-        self.mainTab.currentWidget().redo()
+        self.mainTab.currentWidget().edit.redo()
         self.statusBar().showMessage('Redo Text')
-        
+
     def copyText(self):
         if self.selectForCopyByWords:
-        
-            self.cursorMain = self.mainTab.currentWidget().cursorRect()
+
+            self.cursorMain = self.mainTab.currentWidget().edit.cursorRect()
             print self.cursorMain
             print 'self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()'
             print self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()
-        self.mainTab.currentWidget().copy()
+        self.mainTab.currentWidget().edit.copy()
         self.statusBar().showMessage('Copy Text')
-        
+
     def cutText(self):
-        self.mainTab.currentWidget().cut()
+        self.mainTab.currentWidget().edit.cut()
         self.statusBar().showMessage('Cut Text')
-        
+
     def pasteText(self):
-        self.mainTab.currentWidget().paste()
+        self.mainTab.currentWidget().edit.paste()
         self.statusBar().showMessage('Paste Text')
-        
+
     def inverseNonPrintabale(self):
-        edit = self.mainTab.currentWidget()
+        edit = self.mainTab.currentWidget().edit
         doc = edit.document()
         option = QtGui.QTextOption()
         if doc.defaultTextOption().flags():
@@ -704,15 +704,15 @@ class SelectX(QtGui.QMainWindow):
             option.setFlags(QtGui.QTextOption.ShowTabsAndSpaces)
             self.statusBar().showMessage('Show Non Printabale')
         doc.setDefaultTextOption(option)
-        
-        
+
+
     def findText(self):
-        cursor = self.mainTab.currentWidget().textCursor()
+        cursor = self.mainTab.currentWidget().edit.textCursor()
         textSelected = cursor.selectedText()
         text_find, find_ok = QtGui.QInputDialog.getText(self, \
         'SelectX Find Dialog', 'Enter text to find:', QtGui.QLineEdit.Normal,  textSelected)
         if find_ok:
-            if self.mainTab.currentWidget().find(str(text_find)):
+            if self.mainTab.currentWidget().edit.find(str(text_find)):
                 self.statusBar().showMessage('Finded: %s' % text_find)
                 return
             else:
@@ -720,76 +720,76 @@ class SelectX(QtGui.QMainWindow):
                 return
             return
         self.statusBar().showMessage('Find Canseled')
-        
+
     def selectAll(self):
-        self.mainTab.currentWidget().selectAll()
+        self.mainTab.currentWidget().edit.selectAll()
         #self.statusBar().showMessage('Select All Text')
         self.cursorPosition()
-        
+
     def setSelectByWords(self):
         self.selectForCopyByWords = not(self.selectForCopyByWords)
-        
+
     def viewZoomIn(self):
-        currentw = self.mainTab.currentWidget()
+        currentw = self.mainTab.currentWidget().edit
         currentw.zoomIn(1)
         currentw.zoomRate += 1
         self.statusBar().showMessage('Zoom Rate: %s' % currentw.zoomRate)
-        
+
     def viewZoomOut(self):
-        currentw = self.mainTab.currentWidget()
+        currentw = self.mainTab.currentWidget().edit
         currentw.zoomOut(1)
         currentw.zoomRate -= 1
         self.statusBar().showMessage('Zoom Rate: %s' % currentw.zoomRate)
-        
+
     def viewZoomOriginal(self):
-        currentw = self.mainTab.currentWidget()
+        currentw = self.mainTab.currentWidget().edit
         currentw.zoomIn(-currentw.zoomRate)
         currentw.zoomRate = 0
         self.statusBar().showMessage('Zoom Rate: %s' % currentw.zoomRate)
-        
+
     def viewFont(self):
         font, ok = QtGui.QFontDialog.getFont(self.qFont, self)
         if ok:
             self.qFont = font
             self.viewZoomOriginal()
-            self.mainTab.currentWidget().setFont(self.qFont)
+            self.mainTab.currentWidget().edit.setFont(self.qFont)
             self.statusBar().showMessage('Font set: %s' % self.qFont.toString())
-        
+
     def aboutHelp(self):
         QtGui.QMessageBox.about(self, 'About SelectX', \
         "SelectX. Text editor licenced by GPL3. Ver. %s" % __version__)
         self.statusBar().showMessage(VERSION_INFO % \
         __version__)
-        
+
     def keyHelp(self):
         QtGui.QMessageBox.information(self, 'Keys SelectX', KEYS_HELP, \
         QtGui.QMessageBox.Ok)
 
 class TextEditX1(QtGui.QTextEdit):
     def __init__(self, parent = None):
-        super(TextEditX, self).__init__()
-        
+        super(TextEditX1, self).__init__()
+
         self.parentControl = parent
         self.qFont = QtGui.QFont()
         self.qFont.setFamily('Courier New')
         self.qFont.setFixedPitch(True)
         self.qFont.setPointSize(14)
-        
+
         doc = QtGui.QTextDocument()
         option = QtGui.QTextOption()
         option.setFlags(QtGui.QTextOption.ShowTabsAndSpaces)
         #option.setFlags(QtGui.QTextOption.ShowLineAndParagraphSeparators)
         doc.setDefaultTextOption(option)
-        
+
         #self.textEdit.setStyleSheet("QTextEdit {font-family: Sans-serif;}")
-        
+
         self.setDocument(doc)
         self.setFont(self.qFont)
         self.setAcceptRichText (False)
-        
+
         self.cursorPositionChanged.connect(self.cursorPosition)
         self.installEventFilter(self)
-        
+
         self.setWordWrapMode (QtGui.QTextOption.WrapMode(0))
         self.pythonicEnterOn = True
         self.enterPressed = False
@@ -797,7 +797,7 @@ class TextEditX1(QtGui.QTextEdit):
         #self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(QtGui.QTextOption.WrapMode.NoWrap))
         #return self.textEdit
         self.zoomRate = 0
-        
+
     def pythonEnter(self):
         if self.pythonicEnterOn:
             currentDoc = self.document()
@@ -822,7 +822,7 @@ class TextEditX1(QtGui.QTextEdit):
                 else:
                     self.insertSpace = linetext
                     self.enterPressed=True
-                    
+
     def cursorPosition(self):
         currentDoc = self.document()
         cursor = self.textCursor()
@@ -834,14 +834,14 @@ class TextEditX1(QtGui.QTextEdit):
         rows = currentDoc.lineCount()
         if  cursor.hasSelection():
             block = cursor.selectionEnd() - cursor.selectionStart()
-            self.parentControl.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}".format(symb, rows, line, col, block))
+            #self.parentControl.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}".format(symb, rows, line, col, block))
         else:
-            self.parentControl.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
-            
+            #self.parentControl.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
+            pass
         if self.enterPressed:
             self.enterPressed=False
             self.insertPlainText (self.insertSpace)
-            
+
     def eventFilter(self, receiver, event):
         if event.type() == QtCore.QEvent.KeyPress:
             #print 'receiver, event, event.key()'+str(QtCore.Qt.Key_Enter)+str(receiver)+str(event)+str(event.key())
@@ -898,11 +898,11 @@ class Highlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, parent=None, fileExt=''):
         if fileExt:
             super(Highlighter, self).__init__(parent)
-    
+
             keywordFormat = QtGui.QTextCharFormat()
             keywordFormat.setForeground(QtCore.Qt.darkBlue)
             keywordFormat.setFontWeight(QtGui.QFont.Bold)
-    
+
             keywordPatterns = ["\\bchar\\b", "\\bclass\\b", "\\bconst\\b",
                     "\\bdouble\\b", "\\benum\\b", "\\bexplicit\\b", "\\bfriend\\b",
                     "\\binline\\b", "\\bint\\b", "\\blong\\b", "\\bnamespace\\b",
@@ -912,35 +912,35 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                     "\\btemplate\\b", "\\btypedef\\b", "\\btypename\\b",
                     "\\bunion\\b", "\\bunsigned\\b", "\\bvirtual\\b", "\\bvoid\\b",
                     "\\bvolatile\\b"]
-    
+
             self.highlightingRules = [(QtCore.QRegExp(pattern), keywordFormat)
                     for pattern in keywordPatterns]
-    
+
             classFormat = QtGui.QTextCharFormat()
             classFormat.setFontWeight(QtGui.QFont.Bold)
             classFormat.setForeground(QtCore.Qt.darkMagenta)
             self.highlightingRules.append((QtCore.QRegExp("\\bQ[A-Za-z]+\\b"),
                     classFormat))
-    
+
             singleLineCommentFormat = QtGui.QTextCharFormat()
             singleLineCommentFormat.setForeground(QtCore.Qt.red)
             self.highlightingRules.append((QtCore.QRegExp("//[^\n]*"),
                     singleLineCommentFormat))
-    
+
             self.multiLineCommentFormat = QtGui.QTextCharFormat()
             self.multiLineCommentFormat.setForeground(QtCore.Qt.red)
-    
+
             quotationFormat = QtGui.QTextCharFormat()
             quotationFormat.setForeground(QtCore.Qt.darkGreen)
             self.highlightingRules.append((QtCore.QRegExp("\".*\""),
                     quotationFormat))
-    
+
             functionFormat = QtGui.QTextCharFormat()
             functionFormat.setFontItalic(True)
             functionFormat.setForeground(QtCore.Qt.blue)
             self.highlightingRules.append((QtCore.QRegExp("\\b[A-Za-z0-9_]+(?=\\()"),
                     functionFormat))
-            
+
             self.commentStartExpression = QtCore.QRegExp("/\\*")
             self.commentEndExpression = QtCore.QRegExp("\\*/")
 
@@ -972,6 +972,114 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                     self.multiLineCommentFormat)
             startIndex = self.commentStartExpression.indexIn(text,
                     startIndex + commentLength);
+
+
+
+class TextEditX(QtGui.QFrame):
+#https://john.nachtimwald.com/2009/08/15/qtextedit-with-line-numbers/
+    class NumberBar(QtGui.QWidget):
+
+        def __init__(self, *args):
+            QtGui.QWidget.__init__(self, *args)
+            self.edit = None
+            # This is used to update the width of the control.
+            # It is the highest line that is currently visibile.
+            self.highest_line = 0
+
+        def setTextEdit(self, edit):
+            self.edit = edit
+
+        def update(self, *args):
+            '''
+            Updates the number bar to display the current set of numbers.
+            Also, adjusts the width of the number bar if necessary.
+            '''
+            # The + 4 is used to compensate for the current line being bold.
+            width = self.fontMetrics().width(str(self.highest_line)) + 4
+            if self.width() != width:
+                self.setFixedWidth(width)
+            QtGui.QWidget.update(self, *args)
+
+        def paintEvent(self, event):
+            contents_y = self.edit.verticalScrollBar().value()
+            page_bottom = contents_y + self.edit.viewport().height()
+            font_metrics = self.fontMetrics()
+            current_block = self.edit.document().findBlock(self.edit.textCursor().position())
+
+            painter = QtGui.QPainter(self)
+
+            line_count = 0
+            # Iterate over all text blocks in the document.
+            block = self.edit.document().begin()
+            while block.isValid():
+                line_count += 1
+
+                # The top left position of the block in the document
+                position = self.edit.document().documentLayout().blockBoundingRect(block).topLeft()
+
+                # Check if the position of the block is out side of the visible
+                # area.
+                if position.y() > page_bottom:
+                    break
+
+                # We want the line number for the selected line to be bold.
+                bold = False
+                if block == current_block:
+                    bold = True
+                    font = painter.font()
+                    font.setBold(True)
+                    painter.setFont(font)
+
+                # Draw the line number right justified at the y position of the
+                # line. 3 is a magic padding number. drawText(x, y, text).
+                painter.drawText(self.width() - font_metrics.width(str(line_count)) - 3, round(position.y()) - contents_y + font_metrics.ascent(), str(line_count))
+
+                # Remove the bold style if it was set previously.
+                if bold:
+                    font = painter.font()
+                    font.setBold(False)
+                    painter.setFont(font)
+
+                block = block.next()
+
+            self.highest_line = line_count
+            painter.end()
+
+            QtGui.QWidget.paintEvent(self, event)
+
+
+    def __init__(self, *args):
+        QtGui.QFrame.__init__(self, *args)
+
+        self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Sunken)
+
+        self.edit = TextEditX1()
+        #self.edit = QtGui.QTextEdit()
+        self.edit.setFrameStyle(QtGui.QFrame.NoFrame)
+        self.edit.setAcceptRichText(False)
+
+        self.number_bar = self.NumberBar()
+        self.number_bar.setTextEdit(self.edit)
+
+        hbox = QtGui.QHBoxLayout(self)
+        hbox.setSpacing(0)
+        hbox.setMargin(0)
+        hbox.addWidget(self.number_bar)
+        hbox.addWidget(self.edit)
+
+        self.edit.installEventFilter(self)
+        self.edit.viewport().installEventFilter(self)
+
+    def eventFilter(self, object, event):
+        # Update the line numbers for all events on the text edit and the viewport.
+        # This is easier than connecting all necessary singals.
+        if object in (self.edit, self.edit.viewport()):
+            self.number_bar.update()
+            return False
+        return QtGui.QFrame.eventFilter(object, event)
+
+    def getTextEdit(self):
+        return self.edit
 
 
 def format(color, style=''):
@@ -1046,7 +1154,7 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
         self.tri_double = (QtCore.QRegExp('"""'), 2, STYLES['string2'])
 
         rules = []
-        
+
 
         # Keyword, operator, and brace rules
         rules += [(r'\b%s\b' % w, 0, STYLES['keyword'])
@@ -1159,7 +1267,7 @@ class Find(QtGui.QDialog):
     def __init__(self, parent = None):
 
         QtGui.QDialog.__init__(self, parent)
-        
+
         self.setModal(True)
 
         self.parent = parent
@@ -1375,144 +1483,6 @@ def getFileName(pathName, separatorSymbol=None):
 
 def usage():
     print sys.argv[0] + '\n' + VERSION_INFO % __version__ + CONSOLE_USAGE
-
-
-#from PyQt4.Qt import QFrame
-#from PyQt4.Qt import QHBoxLayout
-#from PyQt4.Qt import QPainter
-#from PyQt4.Qt import QPlainTextEdit
-#from PyQt4.Qt import QRect
-#from PyQt4.Qt import QTextEdit
-#from PyQt4.Qt import QTextFormat
-#from PyQt4.Qt import QVariant
-#from PyQt4.Qt import QWidget
-#from PyQt4.Qt import Qt
- 
-#class LNTextEdit(QFrame):
-class TextEditX(TextEditX1, QtGui.QFrame):
- #https://john.nachtimwald.com/2009/08/19/better-qplaintextedit-with-line-numbers/
-    class NumberBar(QtGui.QWidget):
- 
-        def __init__(self, edit):
-            QtGui.QWidget.__init__(self, edit)
- 
-            self.edit = edit
-            self.adjustWidth(1)
- 
-        def paintEvent(self, event):
-            self.edit.numberbarPaint(self, event)
-            QtGui.QWidget.paintEvent(self, event)
- 
-        def adjustWidth(self, count):
-            width = self.fontMetrics().width(unicode(count))
-            if self.width() != width:
-                self.setFixedWidth(width)
- 
-        def updateContents(self, rect, scroll):
-            if scroll:
-                self.scroll(0, scroll)
-            else:
-                # It would be nice to do
-                # self.update(0, rect.y(), self.width(), rect.height())
-                # But we can't because it will not remove the bold on the
-                # current line if word wrap is enabled and a new block is
-                # selected.
-                self.update()
- 
- 
-    class PlainTextEdit(QtGui.QPlainTextEdit):
- 
-        def __init__(self, *args):
-            QtGui.QPlainTextEdit.__init__(self, *args)
- 
-            #self.setFrameStyle(QFrame.NoFrame)
- 
-            self.setFrameStyle(QtGui.QFrame.NoFrame)
-            self.highlight()
-            #self.setLineWrapMode(QPlainTextEdit.NoWrap)
- 
-            self.cursorPositionChanged.connect(self.highlight)
-            
- 
-        def highlight(self):
-            hi_selection = QtGui.QTextEdit.ExtraSelection()
- 
-            hi_selection.format.setBackground(self.palette().alternateBase())
-            #hi_selection.format.setProperty(QTextFormat.FullWidthSelection, QVariant(True))
-            hi_selection.cursor = self.textCursor()
-            hi_selection.cursor.clearSelection()
- 
-            self.setExtraSelections([hi_selection])
- 
-        def numberbarPaint(self, number_bar, event):
-            font_metrics = self.fontMetrics()
-            current_line = self.document().findBlock(self.textCursor().position()).blockNumber() + 1
- 
-            block = self.firstVisibleBlock()
-            line_count = block.blockNumber()
-            painter = QtGui.QPainter(number_bar)
-            painter.fillRect(event.rect(), self.palette().base())
- 
-            # Iterate over all visible text blocks in the document.
-            while block.isValid():
-                line_count += 1
-                block_top = self.blockBoundingGeometry(block).translated(self.contentOffset()).top()
- 
-                # Check if the position of the block is out side of the visible
-                # area.
-                if not block.isVisible() or block_top >= event.rect().bottom():
-                    break
- 
-                # We want the line number for the selected line to be bold.
-                if line_count == current_line:
-                    font = painter.font()
-                    font.setBold(True)
-                    painter.setFont(font)
-                else:
-                    font = painter.font()
-                    font.setBold(False)
-                    painter.setFont(font)
- 
-                # Draw the line number right justified at the position of the line.
-                paint_rect = QtCore.QRect(0, block_top, number_bar.width(), font_metrics.height())
-                painter.drawText(paint_rect, QtCore.Qt.AlignRight, unicode(line_count))
- 
-                block = block.next()
- 
-            painter.end()
- 
-    def __init__(self, *args):
-        #QFrame.__init__(self, *args)
-        QtGui.QFrame.__init__(self)
- 
-        self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Sunken)
- 
-        self.edit = self.PlainTextEdit()
-        self.number_bar = self.NumberBar(self.edit)
- 
-        hbox = QtGui.QHBoxLayout(self)
-        hbox.setSpacing(0)
-        #hbox.setMargin(0)
-        hbox.addWidget(self.number_bar)
-        hbox.addWidget(self.edit)
- 
-        self.edit.blockCountChanged.connect(self.number_bar.adjustWidth)
-        self.edit.updateRequest.connect(self.number_bar.updateContents)
- 
-    def getText(self):
-        return unicode(self.edit.toPlainText())
- 
-    def setText(self, text):
-        self.edit.setPlainText(text)
- 
-    def isModified(self):
-        return self.edit.document().isModified()
- 
-    def setModified(self, modified):
-        self.edit.document().setModified(modified)
- 
-    def setLineWrapMode(self, mode):
-        self.edit.setLineWrapMode(mode)
 
 
 def runWindow(ForceIcons = None):
