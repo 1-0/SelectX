@@ -16,9 +16,9 @@ instead of PySide
 
     LIB_USE = "PyQt4"
 
-from PyQt4 import QtGui, QtCore
+#from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.5.0.4'''
+__version__ = '''0.5.0.5'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -765,9 +765,9 @@ class SelectX(QtGui.QMainWindow):
         QtGui.QMessageBox.information(self, 'Keys SelectX', KEYS_HELP, \
         QtGui.QMessageBox.Ok)
 
-class TextEditX1(QtGui.QTextEdit):
+class TextEditBaseX(QtGui.QTextEdit):
     def __init__(self, parent = None):
-        super(TextEditX1, self).__init__()
+        super(TextEditBaseX, self).__init__()
 
         self.parentControl = parent
         self.qFont = QtGui.QFont()
@@ -1053,7 +1053,7 @@ class TextEditX(QtGui.QFrame):
 
         self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Sunken)
 
-        self.edit = TextEditX1()
+        self.edit = TextEditBaseX()
         #self.edit = QtGui.QTextEdit()
         self.edit.setFrameStyle(QtGui.QFrame.NoFrame)
         self.edit.setAcceptRichText(False)
@@ -1063,7 +1063,7 @@ class TextEditX(QtGui.QFrame):
 
         hbox = QtGui.QHBoxLayout(self)
         hbox.setSpacing(0)
-        hbox.setMargin(0)
+        #hbox.setMargin(0)
         hbox.addWidget(self.number_bar)
         hbox.addWidget(self.edit)
 
