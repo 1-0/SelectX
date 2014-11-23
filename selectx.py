@@ -18,7 +18,7 @@ instead of PySide
 
 #from PyQt4 import QtGui, QtCore
 
-__version__ = '''0.5.1.1'''
+__version__ = '''0.5.1.5'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -301,7 +301,7 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.setMovable(True)
         self.setCentralWidget(self.mainTab)
         #tabId = self.mainTab.addTab(TextEditX(self), '')
-        tabId = self.mainTab.addTab(TextEditX(self), "New Text")
+        tabId = self.mainTab.addTab(TextEditX(parent=self), "New Text")
         self.mainTab.tabCloseRequested.connect(self.closeTab)
         self.mainTab.currentChanged.connect(self.changeTab)
 
@@ -319,10 +319,12 @@ class SelectX(QtGui.QMainWindow):
         if  event.modifiers()==0x04000000 or event.modifiers()==QtCore.Qt.CTRL or event.modifiers()==QtCore.Qt.ControlModifier:
             if event.delta()>0:
                 self.viewZoomIn()
-                event.ignore()
+                return True
+                #event.ignore()
             else:
                 self.viewZoomOut()
-                event.ignore()
+                return True
+                #event.ignore()
 
 
     def makeMenu(self):
@@ -340,7 +342,7 @@ class SelectX(QtGui.QMainWindow):
         #fileMenu, 'document-open', checkAble=True)
         self.addActionParamX('Open', 'Ctrl+O', 'Open a file', self.openFile, \
         fileMenu, 'document-open', self.toolbar)
-        self.addActionParamX('Save.', 'Ctrl+S', 'Save current file', \
+        self.addActionParamX('Save', 'Ctrl+S', 'Save current file', \
         self.saveFile, fileMenu, 'document-save', self.toolbar)
         self.addActionParamX('Save As...', 'Ctrl+Shift+S', 'Save as new file', \
         self.saveFileAs, fileMenu, 'document-save-as', self.toolbar)
@@ -486,7 +488,7 @@ class SelectX(QtGui.QMainWindow):
 
     def newTab(self):
         self.newDocNumber += 1
-        self.textEdit = TextEditX(self)
+        self.textEdit = TextEditX(parent=self)
         tabId = self.mainTab.addTab(self.textEdit, "New text - %s"%self.newDocNumber)
         self.mainTab.setCurrentWidget(self.textEdit)
         self.setHighlighter()
@@ -751,12 +753,12 @@ class SelectX(QtGui.QMainWindow):
         self.statusBar().showMessage('Zoom Rate: %s' % currentw.zoomRate)
 
     def viewFont(self):
-        font, ok = QtGui.QFontDialog.getFont(self.qFont, self)
+        font, ok = QtGui.QFontDialog.getFont(self.mainTab.currentWidget().edit.qFont, self)
         if ok:
-            self.qFont = font
+            self.mainTab.currentWidget().edit.qFont = font
             self.viewZoomOriginal()
-            self.mainTab.currentWidget().edit.setFont(self.qFont)
-            self.statusBar().showMessage('Font set: %s' % self.qFont.toString())
+            self.mainTab.currentWidget().edit.setFont(font)
+            self.statusBar().showMessage('Font set: %s' % font.toString())
 
     def aboutHelp(self):
         QtGui.QMessageBox.about(self, 'About SelectX', \
@@ -772,6 +774,7 @@ class TextEditBaseX(QtGui.QTextEdit):
     def __init__(self, parent = None):
         super(TextEditBaseX, self).__init__()
 
+        self.setStyleSheet("QTextEdit {background-color: #EEFFEE;}")
         self.parentControl = parent
         self.qFont = QtGui.QFont()
         self.qFont.setFamily('Courier New')
@@ -784,16 +787,20 @@ class TextEditBaseX(QtGui.QTextEdit):
         #option.setFlags(QtGui.QTextOption.ShowLineAndParagraphSeparators)
         doc.setDefaultTextOption(option)
 
-        #self.textEdit.setStyleSheet("QTextEdit {font-family: Sans-serif;}")
-
-        self.setDocument(doc)
+        #self.setStyleSheet("QTextEdit {font-family: Courier New;}")
+        doc.setDefaultStyleSheet ("QTextDocument {font-family: Courier New;}")
         self.setFont(self.qFont)
+        #self.setCurrentFont('Courier New')
+        
+        doc.setDefaultFont(self.qFont)
+        self.setDocument(doc)
         self.setAcceptRichText (False)
 
         self.cursorPositionChanged.connect(self.cursorPosition)
         self.installEventFilter(self)
 
         self.setWordWrapMode (QtGui.QTextOption.WrapMode(0))
+        self.setTextBackgroundColor(QtGui.QColor(245, 250, 250))
         self.pythonicEnterOn = True
         self.enterPressed = False
         self.insertSpace = ''
@@ -837,9 +844,9 @@ class TextEditBaseX(QtGui.QTextEdit):
         rows = currentDoc.lineCount()
         if  cursor.hasSelection():
             block = cursor.selectionEnd() - cursor.selectionStart()
-            #self.parentControl.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}".format(symb, rows, line, col, block))
+            self.parentControl.parent.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}".format(symb, rows, line, col, block))
         else:
-            #self.parentControl.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
+            self.parentControl.parent.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
             pass
         if self.enterPressed:
             self.enterPressed=False
@@ -1051,12 +1058,13 @@ class TextEditX(QtGui.QFrame):
             QtGui.QWidget.paintEvent(self, event)
 
 
-    def __init__(self, *args):
+    def __init__(self, parent, *args):
+        self.parent = parent
         QtGui.QFrame.__init__(self, *args)
 
         self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Sunken)
 
-        self.edit = TextEditBaseX()
+        self.edit = TextEditBaseX(parent=self)
         #self.edit = QtGui.QTextEdit()
         self.edit.setFrameStyle(QtGui.QFrame.NoFrame)
         self.edit.setAcceptRichText(False)
