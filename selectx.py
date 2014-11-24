@@ -18,7 +18,7 @@ instead of PySide
 
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
-__version__ = '''0.5.1.8'''
+__version__ = '''0.5.2.1'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -306,12 +306,16 @@ class SelectX(QtGui.QMainWindow):
         self.toolbar = self.addToolBar("View")
         self.toolbar.setMovable(True)
         viewMenu = menubar.addMenu('&View')
+        zoomSubmenu = QtGui.QMenu(viewMenu)
+        zoomSubmenu.setTitle("&Zoom")
+        zoomSubmenu.setStatusTip("Zoom options")
+        viewMenu.addMenu(zoomSubmenu)
         self.addActionParamX('Zoom In', 'Ctrl++', 'Zoom In text in editor', \
-        self.viewZoomIn, viewMenu, 'zoom-in', self.toolbar)
+        self.viewZoomIn, zoomSubmenu, 'zoom-in', self.toolbar)
         self.addActionParamX('Zoom Out', 'Ctrl+-', 'Zoom Out text in editor', \
-        self.viewZoomOut, viewMenu, 'zoom-out', self.toolbar)
+        self.viewZoomOut, zoomSubmenu, 'zoom-out', self.toolbar)
         self.addActionParamX('Zoom Original', 'Ctrl+0', 'Zoom original text in editor', \
-        self.viewZoomOriginal, viewMenu, 'zoom-original', self.toolbar)
+        self.viewZoomOriginal, zoomSubmenu, 'zoom-original', self.toolbar)
         viewMenu.addSeparator()
         self.addActionParamX('Font', 'F8', 'Font select dialog', \
         self.viewFont, viewMenu, 'preferences-desktop-font', self.toolbar)
@@ -340,6 +344,35 @@ class SelectX(QtGui.QMainWindow):
 
 
         return menubar
+
+
+#from PyQt4 import QtGui
+
+#app = QtGui.QApplication([])
+
+#w = QtGui.QMainWindow()
+#menu = QtGui.QMenu("menu", w)
+#ag = QtGui.QActionGroup(w, exclusive=True)
+
+#a = ag.addAction(QtGui.QAction('50%', w, checkable=True))
+#menu.addAction(a)
+
+#a = ag.addAction(QtGui.QAction('100%', w, checkable=True))
+#menu.addAction(a)
+
+#a = ag.addAction(QtGui.QAction('200%', w, checkable=True))
+#menu.addAction(a)
+
+#a = ag.addAction(QtGui.QAction('300%', w, checkable=True))
+#menu.addAction(a)
+
+#a = ag.addAction(QtGui.QAction('400%', w, checkable=True))
+#menu.addAction(a)
+
+#w.menuBar().addMenu(menu)
+#w.show()
+#app.exec_()
+
 
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
     TopActLevel, IconName, toolBar=None, checkAble=False, \
