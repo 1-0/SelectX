@@ -18,7 +18,7 @@ instead of PySide
 
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
-__version__ = '''0.5.2.1'''
+__version__ = '''0.5.2.2'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -162,6 +162,10 @@ static char * tab_new_xpm[] = {
 """/* XPM */
 static char * media_playback_start_xpm[] = {
 "16 16 58 1"," 	c None",".	c #464745","+	c #4C4D4A","@	c #4D4E4B","#	c #4A4B47","$	c #4B4C49","%	c #FBFBFB","&	c #B0B2AF","*	c #474745","=	c #4E4F4C","-	c #F2F3F0",";	c #E8E8E6",">	c #A3A4A2",",	c #50514E","'	c #464845",")	c #545551","!	c #F6F6F5","~	c #FAFBFA","{	c #F9F9F9","]	c #DEDEDD","^	c #9D9D9A","/	c #555754","(	c #595B57","_	c #ECEEEA",":	c #EEEFEC","<	c #EDEEEB","[	c #EBECE9","}	c #E6E7E5","|	c #959694","1	c #6C6E69","2	c #5E5F5C","3	c #E1E4DF","4	c #E1E3DE","5	c #E0E3DE","6	c #E5E7E3","7	c #F5F5F4","8	c #EBEBEA","9	c #949591","0	c #7F807C","a	c #646561","b	c #D7DAD3","c	c #DCDFDA","d	c #F6F7F6","e	c #F3F3F2","f	c #959592","g	c #6F716C","h	c #696B67","i	c #FBFBFA","j	c #FAFAF9","k	c #A6A7A4","l	c #797B77","m	c #F9FAF9","n	c #B3B5B1","o	c #858781","p	c #92958F","q	c #787A73","r	c #898A85","s	c #7E807A","                ","                ","   .            ","   +@#          ","   $%&$*        ","   =%-;>,'      ","   )%!~{]^/     ","   (%_::<[}|1   ","   2%34567890   ","   a%bcdefg     ","   hi!jkl       ","   gmnop        ","   qrs          ","   g            ","                ","                "};
+""",'format_text_bold':
+"""/* XPM */
+static char * format_text_bold_xpm[] = {
+"16 16 99 2","  	c None",". 	c #3566A4","+ 	c #3364A3","@ 	c #82A2C9","# 	c #E7EEF6","$ 	c #E8EFF7","% 	c #7D9EC6","& 	c #3666A4","* 	c #D0DDED","= 	c #A8C3E1","- 	c #6790C0","; 	c #A1BEDC","> 	c #B3C6DD",", 	c #6287B8","' 	c #DAE5F1",") 	c #8CB0D6","! 	c #3464A1","~ 	c #88ADD5","{ 	c #ACC1DB","] 	c #4B75AC","^ 	c #35639F","/ 	c #AAC0D9","( 	c #ACC5DF","_ 	c #6E95C3",": 	c #34629F","< 	c #648DC0","[ 	c #89ABD3","} 	c #6F93C0","| 	c #33619F","1 	c #3A66A0","2 	c #BFCFE0","3 	c #8DB1D8","4 	c #3F6BA6","5 	c #3C69A5","6 	c #719CCF","7 	c #759BCB","8 	c #2F5D9B","9 	c #2F5C99","0 	c #7796BE","a 	c #9DB8D7","b 	c #729ACB","c 	c #2D5B99","d 	c #2D5B98","e 	c #5C8BC5","f 	c #6090CB","g 	c #406FAD","h 	c #2C5A99","i 	c #2C5896","j 	c #94AFCF","k 	c #7EA4D1","l 	c #5E89BF","m 	c #295694","n 	c #4C7CBA","o 	c #5688C9","p 	c #4A7DC0","q 	c #2A5795","r 	c #4A71A6","s 	c #85A7D0","t 	c #6E9AD0","u 	c #759FD2","v 	c #89ADD9","w 	c #9BB9DE","x 	c #B0C7E5","y 	c #C5D6EC","z 	c #C6D6EC","A 	c #4B80C6","B 	c #497FC6","C 	c #2F5E9E","D 	c #295592","E 	c #658BBC","F 	c #6C97CD","G 	c #6392CD","H 	c #5E8ECB","I 	c #598BCA","J 	c #5487C9","K 	c #4F83C7","L 	c #4A80C6","M 	c #3E71B5","N 	c #275392","O 	c #2B5691","P 	c #6692CA","Q 	c #5D8ECB","R 	c #32609D","S 	c #234F8C","T 	c #2D5C9C","U 	c #487EC5","V 	c #265391","W 	c #244F8C","X 	c #416EAC","Y 	c #588ACA","Z 	c #4B7DBE","` 	c #224D8B"," .	c #4377BD","..	c #3667A9","+.	c #234E8C","@.	c #224D8A","#.	c #204A87","$.	c #214C89","%.	c #224C8A","                                ","          . + + + + .           ","          @ # $ $ # %           ","        & * = - - ; > &         ","        , ' ) ! ! ~ { ]         ","      ^ / ( _ : : < [ } |       ","      1 2 3 4     5 6 7 8       ","    9 0 a b c     d e f g h     ","    i j k l m m m m n o p q     ","    r s t u v w x y z A B C     ","  D E F G H I J K L B B B M N   ","  O P Q R S S S S S S T B U V   ","W X Y Z `             `  .B ..+.","@.#.#.#.$.            %.#.#.#.%.","                                ","                                "};
 """}
 
 
@@ -303,12 +307,32 @@ class SelectX(QtGui.QMainWindow):
         #self.addActionParamX('Select For Copy By Words', 'Ctrl+Shift+A', 'Set Select For Copy By Words', \
         #self.setSelectByWords, selectMenu, 'edit-select', self.toolbar, checkAble=True)
 
+#(self, ActText, ActSortcut, ActTip, ActConnect, \
+#    TopActLevel, IconName, toolBar=None, checkAble=False, \
+#    checkState=False, returnName=False, ActionGroupName=False)
+
+
         self.toolbar = self.addToolBar("View")
         self.toolbar.setMovable(True)
         viewMenu = menubar.addMenu('&View')
+        
+        highlighterSubmenu = QtGui.QMenu(viewMenu)
+        highlighterSubmenu.setTitle("&Highlighter")
+        viewMenu.addMenu(highlighterSubmenu)
+        self.highlighterGroup = QtGui.QActionGroup(self, exclusive=True)
+        self.addActionParamX('None', False, 'None Highlighter', \
+        self.viewZoomIn, highlighterSubmenu,  'format_text_bold', None, 
+        True, False, False, self.highlighterGroup)
+        self.addActionParamX('Cpp', False, 'Cpp Highlighter', \
+        self.viewZoomIn, highlighterSubmenu, 'format_text_bold', None, 
+        True, False, False, self.highlighterGroup)
+        self.addActionParamX('Python', False, 'Python Highlighter', \
+        self.viewZoomIn, highlighterSubmenu, 'format_text_bold', None, 
+        True, True, False, self.highlighterGroup)
+        
         zoomSubmenu = QtGui.QMenu(viewMenu)
         zoomSubmenu.setTitle("&Zoom")
-        zoomSubmenu.setStatusTip("Zoom options")
+        #zoomSubmenu.setStatusTip("Zoom options")
         viewMenu.addMenu(zoomSubmenu)
         self.addActionParamX('Zoom In', 'Ctrl++', 'Zoom In text in editor', \
         self.viewZoomIn, zoomSubmenu, 'zoom-in', self.toolbar)
@@ -376,21 +400,28 @@ class SelectX(QtGui.QMainWindow):
 
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
     TopActLevel, IconName, toolBar=None, checkAble=False, \
-    checkState=False, returnName=None):
+    checkState=False, returnName=False, ActionGroupName=False):
         newIcon =  self.getNewIcon(IconName)
-        MakeAction = QtGui.QAction(newIcon, ActText, self)
+        MakeAct = QtGui.QAction(newIcon, ActText, self)
 
         if checkAble:
-            MakeAction.setCheckable (True)
-            MakeAction.setChecked (checkState)
+            MakeAct.setCheckable (True)
+            MakeAct.setChecked (checkState)
 
 
         #MakeAction.setPriority (MakeAction.LowPriority)
         #MakeAction.setIconVisibleInMenu (False)
-        MakeAction.setIconVisibleInMenu (True)
-        MakeAction.setShortcut(ActSortcut)
-        MakeAction.setStatusTip(ActTip)
-        MakeAction.triggered.connect(ActConnect)
+        MakeAct.setIconVisibleInMenu (True)
+        if ActSortcut:
+            MakeAct.setShortcut(ActSortcut)
+        MakeAct.setStatusTip(ActTip)
+        MakeAct.triggered.connect(ActConnect)
+        
+        if ActionGroupName:
+            MakeAction = ActionGroupName.addAction(MakeAct)
+        else:
+            MakeAction = MakeAct
+        
         TopActLevel.addAction(MakeAction)
 
         if toolBar:
