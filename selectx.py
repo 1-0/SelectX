@@ -321,13 +321,13 @@ class SelectX(QtGui.QMainWindow):
         viewMenu.addMenu(highlighterSubmenu)
         self.highlighterGroup = QtGui.QActionGroup(self, exclusive=True)
         self.addActionParamX('None', False, 'None Highlighter', \
-        self.viewZoomIn, highlighterSubmenu,  'format_text_bold', None, 
+        self.putHighlighter, highlighterSubmenu,  'format_text_bold', None, 
         True, False, False, self.highlighterGroup)
         self.addActionParamX('Cpp', False, 'Cpp Highlighter', \
-        self.viewZoomIn, highlighterSubmenu, 'format_text_bold', None, 
+        self.putCppHighlighter, highlighterSubmenu, 'format_text_bold', None, 
         True, False, False, self.highlighterGroup)
         self.addActionParamX('Python', False, 'Python Highlighter', \
-        self.viewZoomIn, highlighterSubmenu, 'format_text_bold', None, 
+        self.putPyHighlighter, highlighterSubmenu, 'format_text_bold', None, 
         True, True, False, self.highlighterGroup)
         
         zoomSubmenu = QtGui.QMenu(viewMenu)
@@ -461,12 +461,31 @@ class SelectX(QtGui.QMainWindow):
 
     def setHighlighter(self):
         extention = str(getFileName(self.path, '.')).lower()
+        self.putHighlighter(extention)
+        
+    def putPyHighlighter(self, extention=None):
+        print 'putPyHighlighter-'+str(extention)
+        self.putHighlighter('py')
+        
+    def putCppHighlighter(self, extention=None):
+        print 'putCppHighlighter-'+str(extention)
+        self.putHighlighter('cpp')
+        
+    def putHighlighter(self, extention = None):
         if extention in ['c', 'cc','cpp', 'c++', 'cxx', 'h', 'hh', 'hpp', 'hxx']:
             self.highlighter = Highlighter(self.mainTab.currentWidget().edit.document(), extention)
         elif extention in ['py', 'py3']:
             self.highlighter = PythonHighlighter(self.mainTab.currentWidget().edit.document())
+        else:
+            #self.highlighter = None
+            self.highlighter = self.NoneHigHlighter()
         #else:
             #self.highlighter = PythonHighlighter(self.mainTab.currentWidget().edit.document())
+
+    class NoneHigHlighter(QtGui.QSyntaxHighlighter):
+        def __init__(self):
+            #super(self.NoneHigHlighter, self).__init__()
+            pass
 
     def newFile(self):
         self.mainTab.currentWidget().edit.clear()
