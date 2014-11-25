@@ -18,7 +18,7 @@ instead of PySide
 
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
-__version__ = '''0.5.2.2'''
+__version__ = '''0.5.2.3'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -320,15 +320,15 @@ class SelectX(QtGui.QMainWindow):
         highlighterSubmenu.setTitle("&Highlighter")
         viewMenu.addMenu(highlighterSubmenu)
         self.highlighterGroup = QtGui.QActionGroup(self, exclusive=True)
-        self.addActionParamX('None', False, 'None Highlighter', \
-        self.putHighlighter, highlighterSubmenu,  'format_text_bold', None, 
-        True, False, False, self.highlighterGroup)
-        self.addActionParamX('Cpp', False, 'Cpp Highlighter', \
+        #self.addActionParamX('None', False, 'None Highlighter', \
+        #self.putHighlighter, highlighterSubmenu,  'format_text_bold', None, 
+        #True, False, False, self.highlighterGroup)
+        self.cppHi = self.addActionParamX('Cpp', False, 'Cpp Highlighter', \
         self.putCppHighlighter, highlighterSubmenu, 'format_text_bold', None, 
-        True, False, False, self.highlighterGroup)
-        self.addActionParamX('Python', False, 'Python Highlighter', \
+        True, False, True, self.highlighterGroup)
+        self.pyHi = self.addActionParamX('Python', False, 'Python Highlighter', \
         self.putPyHighlighter, highlighterSubmenu, 'format_text_bold', None, 
-        True, True, False, self.highlighterGroup)
+        True, False, True, self.highlighterGroup)
         
         zoomSubmenu = QtGui.QMenu(viewMenu)
         zoomSubmenu.setTitle("&Zoom")
@@ -368,34 +368,6 @@ class SelectX(QtGui.QMainWindow):
 
 
         return menubar
-
-
-#from PyQt4 import QtGui
-
-#app = QtGui.QApplication([])
-
-#w = QtGui.QMainWindow()
-#menu = QtGui.QMenu("menu", w)
-#ag = QtGui.QActionGroup(w, exclusive=True)
-
-#a = ag.addAction(QtGui.QAction('50%', w, checkable=True))
-#menu.addAction(a)
-
-#a = ag.addAction(QtGui.QAction('100%', w, checkable=True))
-#menu.addAction(a)
-
-#a = ag.addAction(QtGui.QAction('200%', w, checkable=True))
-#menu.addAction(a)
-
-#a = ag.addAction(QtGui.QAction('300%', w, checkable=True))
-#menu.addAction(a)
-
-#a = ag.addAction(QtGui.QAction('400%', w, checkable=True))
-#menu.addAction(a)
-
-#w.menuBar().addMenu(menu)
-#w.show()
-#app.exec_()
 
 
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
@@ -464,28 +436,58 @@ class SelectX(QtGui.QMainWindow):
         self.putHighlighter(extention)
         
     def putPyHighlighter(self, extention=None):
-        print 'putPyHighlighter-'+str(extention)
+        #print 'putPyHighlighter-'+str(extention)
         self.putHighlighter('py')
         
     def putCppHighlighter(self, extention=None):
-        print 'putCppHighlighter-'+str(extention)
+        #print 'putCppHighlighter-'+str(extention)
         self.putHighlighter('cpp')
         
     def putHighlighter(self, extention = None):
         if extention in ['c', 'cc','cpp', 'c++', 'cxx', 'h', 'hh', 'hpp', 'hxx']:
-            self.highlighter = Highlighter(self.mainTab.currentWidget().edit.document(), extention)
+            #print 1
+            self.mainTab.currentWidget().edit.highlighter = Highlighter(self.mainTab.currentWidget().edit.document(), extention)
+            self.mainTab.currentWidget().edit.highlighterType = 'cpp'
+            self.pyHi.setChecked(False)
+            self.cppHi.setChecked(True)
+            #print "set-"+self.mainTab.currentWidget().edit.highlighterType
         elif extention in ['py', 'py3']:
-            self.highlighter = PythonHighlighter(self.mainTab.currentWidget().edit.document())
+            #print 2
+            self.mainTab.currentWidget().edit.highlighter = PythonHighlighter(self.mainTab.currentWidget().edit.document())
+            self.mainTab.currentWidget().edit.highlighterType = 'python'
+            self.pyHi.setChecked(True)
+            self.cppHi.setChecked(False)
+            #print "set-"+self.mainTab.currentWidget().edit.highlighterType
+        elif self.mainTab.currentWidget().edit.highlighterType:
+            print 3
+            #print 'highlighterType-'+self.mainTab.currentWidget().edit.highlighterType
+            #print 'self.mainTab.currentWidget().edit.highlighter-'+str(self.mainTab.currentWidget().edit.highlighter)
+            self.mainTab.currentWidget().edit.highlighter.setDocument(None)
+            try:
+                highlighter0 = Highlighter(self.mainTab.currentWidget().edit.document())
+                highlighter0.setDocument(None)
+            except RuntimeError:
+                pass
+            try:
+                highlighter1 = PythonHighlighter(self.mainTab.currentWidget().edit.document())
+                highlighter1.setDocument(None)
+            except RuntimeError:
+                pass
+            #print 'self.mainTab.currentWidget().edit.highlighter.document()-'+str(self.mainTab.currentWidget().edit.highlighter.document())
+            self.mainTab.currentWidget().edit.highlighter = None
+            self.mainTab.currentWidget().edit.highlighterType = None
+            #print "set-"+self.mainTab.currentWidget().edit.highlighterType
         else:
-            #self.highlighter = None
-            self.highlighter = self.NoneHigHlighter()
+            pass
+            
+            #self.highlighter = self.NoneHigHlighter()
         #else:
             #self.highlighter = PythonHighlighter(self.mainTab.currentWidget().edit.document())
 
-    class NoneHigHlighter(QtGui.QSyntaxHighlighter):
-        def __init__(self):
-            #super(self.NoneHigHlighter, self).__init__()
-            pass
+    #class NoneHigHlighter(QtGui.QSyntaxHighlighter):
+    #    def __init__(self):
+    #        #super(self.NoneHigHlighter, self).__init__()
+    #        pass
 
     def newFile(self):
         self.mainTab.currentWidget().edit.clear()
@@ -519,6 +521,15 @@ class SelectX(QtGui.QMainWindow):
             self.nonLineNumbers.setChecked(True)
         else:
             self.nonLineNumbers.setChecked(False)
+        if self.mainTab.currentWidget().edit.highlighterType == 'python':
+            self.pyHi.setChecked(True)
+            self.cppHi.setChecked(False)
+        elif self.mainTab.currentWidget().edit.highlighterType == 'cpp':
+            self.cppHi.setChecked(True)
+            self.pyHi.setChecked(False)
+        else:
+            self.cppHi.setChecked(False)
+            self.pyHi.setChecked(False)
         self.statusBar().showMessage('Selected Tab #%s' % (tabIndex+1))
 
     def closeTab(self, tabIndex):
@@ -839,6 +850,8 @@ class TextEditBaseX(QtGui.QTextEdit):
         self.qFont.setPointSize(14)
 
         doc = QtGui.QTextDocument()
+        self.highlighter = None
+        self.highlighterType = None
         option = QtGui.QTextOption()
         option.setFlags(QtGui.QTextOption.ShowTabsAndSpaces)
         #option.setFlags(QtGui.QTextOption.ShowLineAndParagraphSeparators)
