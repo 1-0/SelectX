@@ -3,10 +3,6 @@
 #!/usr/bin/python -m cProfile -s time ./selectx.py |less -o ./pof.log     #<<<<profiler run
 import sys, os, re, encodings
 
-#encodings_aliases=encodings._aliases
-#print encodings_aliases
-#for kkk in encodings_aliases.keys():
-#    print encodings_aliases[kkk]
 
 try:
     from PySide import QtGui, QtCore
@@ -1580,6 +1576,20 @@ def getFileName(pathName, separatorSymbol=None):
     else:
         return pathName.split('/')[-1]
 
+def getCodecsList(newlist = []):
+    encodings_aliases=encodings._aliases
+    #print encodings_aliases
+    for kkk in encodings_aliases.keys():
+        #print encodings_aliases[kkk]
+        if not kkk in newlist and not kkk[0] in ('0','1','2','3','4','5','6','7','8','9'):
+            newlist.append(kkk)
+    #for kkk in encodings_aliases.keys():
+        ##print encodings_aliases[kkk]
+        #if not encodings_aliases[kkk] in newlist:
+            #newlist.append(encodings_aliases[kkk])
+    return sorted(newlist)
+
+#print 'getCodecsList()'+str(getCodecsList())
 
 def usage():
     print sys.argv[0] + '\n' + VERSION_INFO % __version__ + CONSOLE_USAGE
