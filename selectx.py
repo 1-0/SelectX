@@ -20,7 +20,7 @@ instead of PySide
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
 
-__version__ = '''0.5.2.7'''
+__version__ = '''0.5.2.8'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -225,7 +225,8 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.setMovable(True)
         self.setCentralWidget(self.mainTab)
         #tabId = self.mainTab.addTab(TextEditX(self), '')
-        tabId = self.mainTab.addTab(TextEditX(parent=self), "New Text")
+        self.cWidget=TextEditX(parent=self)
+        tabId = self.mainTab.addTab(self.cWidget, "New Text")
         self.mainTab.tabCloseRequested.connect(self.closeTab)
         self.mainTab.currentChanged.connect(self.changeTab)
 
@@ -411,7 +412,7 @@ class SelectX(QtGui.QMainWindow):
             return MakeAction
 
     def inversePyEnter(self):
-        currentWidget = self.mainTab.currentWidget().edit
+        currentWidget = self.cWidget.edit
         if currentWidget.pythonicEnterOn:
             currentWidget.pythonicEnterOn = False
             self.statusBar().showMessage('Hide Py Enter')
@@ -454,48 +455,48 @@ class SelectX(QtGui.QMainWindow):
     def putHighlighter(self, extention = None):
         if extention in ['c', 'cc','cpp', 'c++', 'cxx', 'h', 'hh', 'hpp', 'hxx']:
             #print 1
-            if self.mainTab.currentWidget().edit.highlighterType:
-                self.mainTab.currentWidget().edit.highlighter.setDocument(None)
-            self.mainTab.currentWidget().edit.highlighter = Highlighter(self.mainTab.currentWidget().edit.document(), extention)
-            self.mainTab.currentWidget().edit.highlighterType = 'cpp'
+            if self.cWidget.edit.highlighterType:
+                self.cWidget.edit.highlighter.setDocument(None)
+            self.cWidget.edit.highlighter = Highlighter(self.cWidget.edit.document(), extention)
+            self.cWidget.edit.highlighterType = 'cpp'
             #self.pyHi.setChecked(False)
             self.cppHi.setChecked(True)
-            #print "set-"+self.mainTab.currentWidget().edit.highlighterType
+            #print "set-"+self.cWidget.edit.highlighterType
         elif extention in ['py', 'py3']:
             #print 2
-            if self.mainTab.currentWidget().edit.highlighterType:
-                self.mainTab.currentWidget().edit.highlighter.setDocument(None)
-            self.mainTab.currentWidget().edit.highlighter = PythonHighlighter(self.mainTab.currentWidget().edit.document())
-            self.mainTab.currentWidget().edit.highlighterType = 'python'
+            if self.cWidget.edit.highlighterType:
+                self.cWidget.edit.highlighter.setDocument(None)
+            self.cWidget.edit.highlighter = PythonHighlighter(self.cWidget.edit.document())
+            self.cWidget.edit.highlighterType = 'python'
             self.pyHi.setChecked(True)
             #self.cppHi.setChecked(False)
-            #print "set-"+self.mainTab.currentWidget().edit.highlighterType
-        elif self.mainTab.currentWidget().edit.highlighterType:
+            #print "set-"+self.cWidget.edit.highlighterType
+        elif self.cWidget.edit.highlighterType:
             #print 3
-            #print 'highlighterType-'+self.mainTab.currentWidget().edit.highlighterType
-            #print 'self.mainTab.currentWidget().edit.highlighter-'+str(self.mainTab.currentWidget().edit.highlighter)
-            self.mainTab.currentWidget().edit.highlighter.setDocument(None)
+            #print 'highlighterType-'+self.cWidget.edit.highlighterType
+            #print 'self.cWidget.edit.highlighter-'+str(self.cWidget.edit.highlighter)
+            self.cWidget.edit.highlighter.setDocument(None)
             #try:
-            #    highlighter0 = Highlighter(self.mainTab.currentWidget().edit.document())
+            #    highlighter0 = Highlighter(self.cWidget.edit.document())
             #    highlighter0.setDocument(None)
             #except RuntimeError:
             #    pass
             #try:
-            #    highlighter1 = PythonHighlighter(self.mainTab.currentWidget().edit.document())
+            #    highlighter1 = PythonHighlighter(self.cWidget.edit.document())
             #    highlighter1.setDocument(None)
             #except RuntimeError:
             #    pass
-            #print 'self.mainTab.currentWidget().edit.highlighter.document()-'+str(self.mainTab.currentWidget().edit.highlighter.document())
-            self.mainTab.currentWidget().edit.highlighter = None
-            self.mainTab.currentWidget().edit.highlighterType = None
+            #print 'self.cWidget.edit.highlighter.document()-'+str(self.cWidget.edit.highlighter.document())
+            self.cWidget.edit.highlighter = None
+            self.cWidget.edit.highlighterType = None
             self.nonHi.setChecked(True)
-            #print "set-"+self.mainTab.currentWidget().edit.highlighterType
+            #print "set-"+self.cWidget.edit.highlighterType
         else:
             pass
             
             #self.highlighter = self.NoneHigHlighter()
         #else:
-            #self.highlighter = PythonHighlighter(self.mainTab.currentWidget().edit.document())
+            #self.highlighter = PythonHighlighter(self.cWidget.edit.document())
 
     #class NoneHigHlighter(QtGui.QSyntaxHighlighter):
     #    def __init__(self):
@@ -503,23 +504,25 @@ class SelectX(QtGui.QMainWindow):
     #        pass
 
     def newFile(self):
-        self.mainTab.currentWidget().edit.clear()
+        self.cWidget.edit.clear()
         self.path=None
         self.statusBar().showMessage('New Text')
         self.setWindowTitle('SelectX')
 
     def newTab(self):
         self.newDocNumber += 1
-        self.textEdit = TextEditX(parent=self)
-        tabId = self.mainTab.addTab(self.textEdit, "New text - %s"%self.newDocNumber)
-        self.mainTab.setCurrentWidget(self.textEdit)
+        self.cWidget = TextEditX(parent=self)
+        
+        tabId = self.mainTab.addTab(self.cWidget, "New text - %s"%self.newDocNumber)
+        self.mainTab.setCurrentWidget(self.cWidget)
         self.setHighlighter()
         self.changeTab(tabId)
 
     def changeTab(self, tabIndex):
-        bar = self.mainTab.currentWidget().number_bar
+        self.cWidget=self.mainTab.currentWidget()
+        bar = self.cWidget.number_bar
         
-        edit = self.mainTab.currentWidget().edit
+        edit = self.cWidget.edit
         doc = edit.document()
         #print 'changeTab-'+str(tabIndex)
         if doc.defaultTextOption().flags():
@@ -534,11 +537,11 @@ class SelectX(QtGui.QMainWindow):
             self.nonLineNumbers.setChecked(True)
         else:
             self.nonLineNumbers.setChecked(False)
-        if self.mainTab.currentWidget().edit.highlighterType == 'python':
+        if self.cWidget.edit.highlighterType == 'python':
             self.pyHi.setChecked(True)
             self.cppHi.setChecked(False)
             self.nonHi.setChecked(False)
-        elif self.mainTab.currentWidget().edit.highlighterType == 'cpp':
+        elif self.cWidget.edit.highlighterType == 'cpp':
             self.cppHi.setChecked(True)
             self.pyHi.setChecked(False)
             self.nonHi.setChecked(False)
@@ -566,7 +569,7 @@ class SelectX(QtGui.QMainWindow):
                 f = open(self.path, 'w')
             except IOError:
                 self.saveFileAs()
-            filedata = self.mainTab.currentWidget().edit.toPlainText()
+            filedata = self.cWidget.edit.toPlainText()
             f.write(filedata)
             f.close()
             self.statusBar().showMessage('Save Text: %s' % self.path)
@@ -587,7 +590,7 @@ class SelectX(QtGui.QMainWindow):
                 f = open(self.path, 'w')
             except IOError:
                 return
-            filedata = self.mainTab.currentWidget().edit.toPlainText()
+            filedata = self.cWidget.edit.toPlainText()
             f.write(filedata)
             f.close()
             self.path = filename
@@ -650,7 +653,7 @@ class SelectX(QtGui.QMainWindow):
             #self.statusBar().showMessage('Stop Open Text')
 
     def checkNotEmptyText(self):
-        if len(self.mainTab.currentWidget().edit.toPlainText()) > 0:
+        if len(self.cWidget.edit.toPlainText()) > 0:
             return True
         return False
 
@@ -668,9 +671,9 @@ class SelectX(QtGui.QMainWindow):
             except TypeError:
                 # Python v2.
                 text = str(text)
-            self.mainTab.currentWidget().edit.clear()
+            self.cWidget.edit.clear()
             self.setHighlighter()
-            self.mainTab.currentWidget().edit.insertPlainText(text)
+            self.cWidget.edit.insertPlainText(text)
             self.statusBar().showMessage('Open Text: %s' % self.path)
             curtabind = self.mainTab.currentIndex()
 
@@ -686,14 +689,14 @@ class SelectX(QtGui.QMainWindow):
         '''Open preview dialog'''
         preview = QtGui.QPrintPreviewDialog()
         # If a print is requested, open print dialog
-        preview.paintRequested.connect(lambda p: self.mainTab.currentWidget().edit.print_(p))
+        preview.paintRequested.connect(lambda p: self.cWidget.edit.print_(p))
         preview.exec_()
 
     def filePrint(self):
         '''Open printing dialog'''
         dialog = QtGui.QPrintDialog()
         if dialog.exec_() == QtGui.QDialog.Accepted:
-            self.mainTab.currentWidget().edit.document().print_(dialog.printer())
+            self.cWidget.edit.document().print_(dialog.printer())
 
     def checkExitProgram(self):
         reply_exit = QtGui.QMessageBox.question(self, 'Confirm Exit SelectX', \
@@ -713,33 +716,33 @@ class SelectX(QtGui.QMainWindow):
         return False
 
     def undoText(self):
-        self.mainTab.currentWidget().edit.undo()
+        self.cWidget.edit.undo()
         self.statusBar().showMessage('Undo Text')
 
     def redoText(self):
-        self.mainTab.currentWidget().edit.redo()
+        self.cWidget.edit.redo()
         self.statusBar().showMessage('Redo Text')
 
     def copyText(self):
         if self.selectForCopyByWords:
 
-            self.cursorMain = self.mainTab.currentWidget().edit.cursorRect()
+            self.cursorMain = self.cWidget.edit.cursorRect()
             print self.cursorMain
             print 'self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()'
             print self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()
-        self.mainTab.currentWidget().edit.copy()
+        self.cWidget.edit.copy()
         self.statusBar().showMessage('Copy Text')
 
     def cutText(self):
-        self.mainTab.currentWidget().edit.cut()
+        self.cWidget.edit.cut()
         self.statusBar().showMessage('Cut Text')
 
     def pasteText(self):
-        self.mainTab.currentWidget().edit.paste()
+        self.cWidget.edit.paste()
         self.statusBar().showMessage('Paste Text')
 
     def inverseNonPrintabale(self):
-        edit = self.mainTab.currentWidget().edit
+        edit = self.cWidget.edit
         doc = edit.document()
         option = QtGui.QTextOption()
         if doc.defaultTextOption().flags():
@@ -751,7 +754,7 @@ class SelectX(QtGui.QMainWindow):
         doc.setDefaultTextOption(option)
 
     def inverseLineNumbering(self):
-        bar = self.mainTab.currentWidget().number_bar
+        bar = self.cWidget.number_bar
         bar.paintLineNumber = not bar.paintLineNumber
         if bar.paintLineNumber:
            self.statusBar().showMessage('Show Line Numbers')
@@ -760,12 +763,12 @@ class SelectX(QtGui.QMainWindow):
         bar.update()
 
     def findText(self):
-        cursor = self.mainTab.currentWidget().edit.textCursor()
+        cursor = self.cWidget.edit.textCursor()
         textSelected = cursor.selectedText()
         text_find, find_ok = QtGui.QInputDialog.getText(self, \
         'SelectX Find Dialog', 'Enter text to find:', QtGui.QLineEdit.Normal,  textSelected)
         if find_ok:
-            if self.mainTab.currentWidget().edit.find(str(text_find)):
+            if self.cWidget.edit.find(str(text_find)):
                 self.statusBar().showMessage('Finded: %s' % text_find)
                 return
             else:
@@ -775,7 +778,7 @@ class SelectX(QtGui.QMainWindow):
         self.statusBar().showMessage('Find Canseled')
 
     def selectAll(self):
-        self.mainTab.currentWidget().edit.selectAll()
+        self.cWidget.edit.selectAll()
         #self.statusBar().showMessage('Select All Text')
         self.cursorPosition()
 
@@ -783,29 +786,29 @@ class SelectX(QtGui.QMainWindow):
         self.selectForCopyByWords = not(self.selectForCopyByWords)
 
     def viewZoomIn(self):
-        currentw = self.mainTab.currentWidget().edit
+        currentw = self.cWidget.edit
         currentw.zoomIn(1)
         currentw.zoomRate += 1
         self.statusBar().showMessage('Zoom Rate: %s' % currentw.zoomRate)
 
     def viewZoomOut(self):
-        currentw = self.mainTab.currentWidget().edit
+        currentw = self.cWidget.edit
         currentw.zoomOut(1)
         currentw.zoomRate -= 1
         self.statusBar().showMessage('Zoom Rate: %s' % currentw.zoomRate)
 
     def viewZoomOriginal(self):
-        currentw = self.mainTab.currentWidget().edit
+        currentw = self.cWidget.edit
         currentw.zoomIn(-currentw.zoomRate)
         currentw.zoomRate = 0
         self.statusBar().showMessage('Zoom Rate: %s' % currentw.zoomRate)
 
     def viewFont(self):
-        font, ok = QtGui.QFontDialog.getFont(self.mainTab.currentWidget().edit.qFont, self)
+        font, ok = QtGui.QFontDialog.getFont(self.cWidget.edit.qFont, self)
         if ok:
-            self.mainTab.currentWidget().edit.qFont = font
+            self.cWidget.edit.qFont = font
             self.viewZoomOriginal()
-            self.mainTab.currentWidget().edit.setFont(font)
+            self.cWidget.edit.setFont(font)
             self.statusBar().showMessage('Font set: %s' % font.toString())
 
     def _okPlayer(self):
