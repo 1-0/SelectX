@@ -20,7 +20,7 @@ instead of PySide
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
 
-__version__ = '''0.5.2.5'''
+__version__ = '''0.5.2.7'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -323,14 +323,17 @@ class SelectX(QtGui.QMainWindow):
         viewMenu.addMenu(highlighterSubmenu)
         self.highlighterGroup = QtGui.QActionGroup(self, exclusive=True)
         self.nonHi = self.addActionParamX('None', False, 'None Highlighter', \
-        self.putHighlighter, highlighterSubmenu,  'format_text_bold', None, 
+        self.putHighlighter, highlighterSubmenu,  False, None, 
         True, True, True, self.highlighterGroup)
         self.cppHi = self.addActionParamX('Cpp', False, 'Cpp Highlighter', \
-        self.putCppHighlighter, highlighterSubmenu, 'format_text_bold', None, 
+        self.putCppHighlighter, highlighterSubmenu, False, None, 
         True, False, True, self.highlighterGroup)
         self.pyHi = self.addActionParamX('Python', False, 'Python Highlighter', \
-        self.putPyHighlighter, highlighterSubmenu, 'format_text_bold', None, 
+        self.putPyHighlighter, highlighterSubmenu, False, None, 
         True, False, True, self.highlighterGroup)
+        #self.pyHi = self.addActionParamX('Python', False, 'Python Highlighter', \
+        #self.putPyHighlighter, highlighterSubmenu, 'format_text_bold', None, 
+        #True, False, True, self.highlighterGroup)
         
         zoomSubmenu = QtGui.QMenu(viewMenu)
         zoomSubmenu.setTitle("&Zoom")
@@ -373,10 +376,13 @@ class SelectX(QtGui.QMainWindow):
 
 
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
-    TopActLevel, IconName, toolBar=None, checkAble=False, \
+    TopActLevel, IconName=None, toolBar=None, checkAble=False, \
     checkState=False, returnName=False, ActionGroupName=False):
-        newIcon =  self.getNewIcon(IconName)
-        MakeAct = QtGui.QAction(newIcon, ActText, self)
+        if IconName:
+            newIcon =  self.getNewIcon(IconName)
+            MakeAct = QtGui.QAction(newIcon, ActText, self)
+        else:
+            MakeAct = QtGui.QAction(ActText, self)
 
         if checkAble:
             MakeAct.setCheckable (True)
@@ -452,7 +458,7 @@ class SelectX(QtGui.QMainWindow):
                 self.mainTab.currentWidget().edit.highlighter.setDocument(None)
             self.mainTab.currentWidget().edit.highlighter = Highlighter(self.mainTab.currentWidget().edit.document(), extention)
             self.mainTab.currentWidget().edit.highlighterType = 'cpp'
-            self.pyHi.setChecked(False)
+            #self.pyHi.setChecked(False)
             self.cppHi.setChecked(True)
             #print "set-"+self.mainTab.currentWidget().edit.highlighterType
         elif extention in ['py', 'py3']:
@@ -462,7 +468,7 @@ class SelectX(QtGui.QMainWindow):
             self.mainTab.currentWidget().edit.highlighter = PythonHighlighter(self.mainTab.currentWidget().edit.document())
             self.mainTab.currentWidget().edit.highlighterType = 'python'
             self.pyHi.setChecked(True)
-            self.cppHi.setChecked(False)
+            #self.cppHi.setChecked(False)
             #print "set-"+self.mainTab.currentWidget().edit.highlighterType
         elif self.mainTab.currentWidget().edit.highlighterType:
             #print 3
