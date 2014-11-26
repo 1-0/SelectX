@@ -20,7 +20,7 @@ instead of PySide
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
 
-__version__ = '''0.5.2.8'''
+__version__ = '''0.5.2.9'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -180,10 +180,7 @@ class SelectX(QtGui.QMainWindow):
         #splashScreen = QtGui.QSplashScreen(pixmap)
         #init class constants
         self.nonPrintFlag = True
-        #self.nonPrintSymbols = [' ', '\t']
-        #self.nonPrintMasks = [u'\u2022', u'\u2192']
         self.newDocNumber = 0
-        #self.zoomRate = 0
         self.path = os.getenv('HOME')
         self.selectForCopyByWords = False
         self.startPath = os.getenv('HOME')
@@ -197,7 +194,6 @@ class SelectX(QtGui.QMainWindow):
         self.text_url = False
 
         self.initUI()
-        #self.openInNewTab = True
         try:
             if len(sys.argv)<3:
                 print 'Try Open This File -> %s' % sys.argv[1]
@@ -224,7 +220,6 @@ class SelectX(QtGui.QMainWindow):
         self.mainTab.setTabsClosable(True)
         self.mainTab.setMovable(True)
         self.setCentralWidget(self.mainTab)
-        #tabId = self.mainTab.addTab(TextEditX(self), '')
         self.cWidget=TextEditX(parent=self)
         tabId = self.mainTab.addTab(self.cWidget, "New Text")
         self.mainTab.tabCloseRequested.connect(self.closeTab)
@@ -310,11 +305,6 @@ class SelectX(QtGui.QMainWindow):
         #self.addActionParamX('Select For Copy By Words', 'Ctrl+Shift+A', 'Set Select For Copy By Words', \
         #self.setSelectByWords, selectMenu, 'edit-select', self.toolbar, checkAble=True)
 
-#(self, ActText, ActSortcut, ActTip, ActConnect, \
-#    TopActLevel, IconName, toolBar=None, checkAble=False, \
-#    checkState=False, returnName=False, ActionGroupName=False)
-
-
         self.toolbar = self.addToolBar("View")
         self.toolbar.setMovable(True)
         viewMenu = menubar.addMenu('&View')
@@ -327,18 +317,14 @@ class SelectX(QtGui.QMainWindow):
         self.putHighlighter, highlighterSubmenu,  False, None, 
         True, True, True, self.highlighterGroup)
         self.cppHi = self.addActionParamX('Cpp', False, 'Cpp Highlighter', \
-        self.putCppHighlighter, highlighterSubmenu, False, None, 
+        lambda: self.putHighlighter('cpp'), highlighterSubmenu, False, None, 
         True, False, True, self.highlighterGroup)
         self.pyHi = self.addActionParamX('Python', False, 'Python Highlighter', \
-        self.putPyHighlighter, highlighterSubmenu, False, None, 
+        lambda: self.putHighlighter('py'), highlighterSubmenu, False, None, 
         True, False, True, self.highlighterGroup)
-        #self.pyHi = self.addActionParamX('Python', False, 'Python Highlighter', \
-        #self.putPyHighlighter, highlighterSubmenu, 'format_text_bold', None, 
-        #True, False, True, self.highlighterGroup)
         
         zoomSubmenu = QtGui.QMenu(viewMenu)
         zoomSubmenu.setTitle("&Zoom")
-        #zoomSubmenu.setStatusTip("Zoom options")
         viewMenu.addMenu(zoomSubmenu)
         self.addActionParamX('Zoom In', 'Ctrl++', 'Zoom In text in editor', \
         self.viewZoomIn, zoomSubmenu, 'zoom-in', self.toolbar)
@@ -350,7 +336,6 @@ class SelectX(QtGui.QMainWindow):
         self.addActionParamX('Font', 'F8', 'Font select dialog', \
         self.viewFont, viewMenu, 'preferences-desktop-font', self.toolbar)
         viewMenu.addSeparator()
-        #self.nonPrintOn = True
         self.nonPrintOn = self.addActionParamX('Show/Hide non-printabale', 'Ctrl+H', 'Show/Hide non-printabale symbols', self.inverseNonPrintabale, \
         viewMenu, 'media_record', self.toolbar, checkAble=True, returnName=True)
         self.nonPyEnter = self.addActionParamX('Pythonic Enter', 'Ctrl+Shift+P', 'On/Off Pythonic Enter Style', self.inversePyEnter, \
@@ -384,14 +369,9 @@ class SelectX(QtGui.QMainWindow):
             MakeAct = QtGui.QAction(newIcon, ActText, self)
         else:
             MakeAct = QtGui.QAction(ActText, self)
-
         if checkAble:
             MakeAct.setCheckable (True)
             MakeAct.setChecked (checkState)
-
-
-        #MakeAction.setPriority (MakeAction.LowPriority)
-        #MakeAction.setIconVisibleInMenu (False)
         MakeAct.setIconVisibleInMenu (True)
         if ActSortcut:
             MakeAct.setShortcut(ActSortcut)
@@ -444,49 +424,29 @@ class SelectX(QtGui.QMainWindow):
         extention = str(getFileName(self.path, '.')).lower()
         self.putHighlighter(extention)
         
-    def putPyHighlighter(self, extention=None):
-        #print 'putPyHighlighter-'+str(extention)
-        self.putHighlighter('py')
+    #def putPyHighlighter(self, extention=None):
+        ##print 'putPyHighlighter-'+str(extention)
+        #self.putHighlighter('py')
         
-    def putCppHighlighter(self, extention=None):
-        #print 'putCppHighlighter-'+str(extention)
-        self.putHighlighter('cpp')
+    #def putCppHighlighter(self, extention=None):
+        ##print 'putCppHighlighter-'+str(extention)
+        #self.putHighlighter('cpp')
         
     def putHighlighter(self, extention = None):
         if extention in ['c', 'cc','cpp', 'c++', 'cxx', 'h', 'hh', 'hpp', 'hxx']:
-            #print 1
             if self.cWidget.edit.highlighterType:
                 self.cWidget.edit.highlighter.setDocument(None)
             self.cWidget.edit.highlighter = Highlighter(self.cWidget.edit.document(), extention)
             self.cWidget.edit.highlighterType = 'cpp'
-            #self.pyHi.setChecked(False)
             self.cppHi.setChecked(True)
-            #print "set-"+self.cWidget.edit.highlighterType
         elif extention in ['py', 'py3']:
-            #print 2
             if self.cWidget.edit.highlighterType:
                 self.cWidget.edit.highlighter.setDocument(None)
             self.cWidget.edit.highlighter = PythonHighlighter(self.cWidget.edit.document())
             self.cWidget.edit.highlighterType = 'python'
             self.pyHi.setChecked(True)
-            #self.cppHi.setChecked(False)
-            #print "set-"+self.cWidget.edit.highlighterType
         elif self.cWidget.edit.highlighterType:
-            #print 3
-            #print 'highlighterType-'+self.cWidget.edit.highlighterType
-            #print 'self.cWidget.edit.highlighter-'+str(self.cWidget.edit.highlighter)
             self.cWidget.edit.highlighter.setDocument(None)
-            #try:
-            #    highlighter0 = Highlighter(self.cWidget.edit.document())
-            #    highlighter0.setDocument(None)
-            #except RuntimeError:
-            #    pass
-            #try:
-            #    highlighter1 = PythonHighlighter(self.cWidget.edit.document())
-            #    highlighter1.setDocument(None)
-            #except RuntimeError:
-            #    pass
-            #print 'self.cWidget.edit.highlighter.document()-'+str(self.cWidget.edit.highlighter.document())
             self.cWidget.edit.highlighter = None
             self.cWidget.edit.highlighterType = None
             self.nonHi.setChecked(True)
@@ -497,11 +457,6 @@ class SelectX(QtGui.QMainWindow):
             #self.highlighter = self.NoneHigHlighter()
         #else:
             #self.highlighter = PythonHighlighter(self.cWidget.edit.document())
-
-    #class NoneHigHlighter(QtGui.QSyntaxHighlighter):
-    #    def __init__(self):
-    #        #super(self.NoneHigHlighter, self).__init__()
-    #        pass
 
     def newFile(self):
         self.cWidget.edit.clear()
@@ -524,7 +479,6 @@ class SelectX(QtGui.QMainWindow):
         
         edit = self.cWidget.edit
         doc = edit.document()
-        #print 'changeTab-'+str(tabIndex)
         if doc.defaultTextOption().flags():
             self.nonPrintOn.setChecked(True)
         else:
@@ -679,7 +633,6 @@ class SelectX(QtGui.QMainWindow):
 
             self.mainTab.setTabToolTip (curtabind, '%s' % self.path)
             self.mainTab.setTabText(curtabind, '%s' % getFileName(self.path))
-            #elf.currentIndex()
             self.setWindowTitle('SelectX - %s' % self.path)
         else:
             print 'Can Not Open This File -> %s' % self.path
@@ -710,7 +663,6 @@ class SelectX(QtGui.QMainWindow):
         reply_exit = QtGui.QMessageBox.question(self, 'Confirm Close Tab', \
         "Are you sure to Close Tab?", QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, \
         QtGui.QMessageBox.No)
-        #print 1
         if reply_exit==QtGui.QMessageBox.Yes:
             return True
         return False
