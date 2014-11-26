@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 '''SelectX - easy eXtendable text editor for developers writed on Python. Licensed by GPL3.'''
 #!/usr/bin/python -m cProfile -s time ./selectx.py |less -o ./pof.log     #<<<<profiler run
-import sys, os, re
+import sys, os, re, encodings
+
+#encodings_aliases=encodings._aliases
+#print encodings_aliases
+#for kkk in encodings_aliases.keys():
+#    print encodings_aliases[kkk]
 
 try:
     from PySide import QtGui, QtCore
@@ -18,7 +23,8 @@ instead of PySide
 
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
-__version__ = '''0.5.2.4'''
+
+__version__ = '''0.5.2.5'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
