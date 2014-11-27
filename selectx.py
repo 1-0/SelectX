@@ -20,7 +20,7 @@ instead of PySide
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
 
-__version__ = '''0.5.2.11'''
+__version__ = '''0.5.2.12'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -521,7 +521,7 @@ class SelectX(QtGui.QMainWindow):
         if self.path:
             #f = open(self.path, 'w')
             try:
-                with codecs.open(self.path, 'w', 'utf8') as f:
+                with codecs.open(self.path, 'w', self.cWidget.edit.encodingSet) as f:
                     filedata = self.cWidget.edit.document().toPlainText()
                     #filedata = codecs.encode(filedata, 'utf8')
                     f.write(filedata)
@@ -548,10 +548,15 @@ class SelectX(QtGui.QMainWindow):
         #print str(filename)
         if filename:
             if type(filename) is tuple:
-                filename=filename[0]
+                if filename[0] <> u'':
+                    #print 'type(filename)-'+str(filename)
+                    filename = filename[0]
+                else:
+                    self.statusBar().showMessage('Stop Save Text')
+                    return
+            self.path = filename
             try:
-                self.path = filename
-                with codecs.open(self.path, 'w', 'utf8') as f:
+                with codecs.open(self.path, 'w', self.cWidget.edit.encodingSet) as f:
                     filedata = self.cWidget.edit.document().toPlainText()
                     #filedata = codecs.encode(filedata, 'utf8')
                     f.write(filedata)
@@ -561,7 +566,7 @@ class SelectX(QtGui.QMainWindow):
                 #f = open(self.path, 'w')
                 #f = open(self.path, 'w')
             except IOError:
-                return filename[0]
+                return self.path
             #filedata = self.cWidget.edit.toPlainText()
             #f.write(filedata)
             #f.close()
@@ -635,7 +640,7 @@ class SelectX(QtGui.QMainWindow):
         self.path = filePath
         inFile = QtCore.QFile(self.path)
         
-        with codecs.open(self.path, 'r', 'utf8') as inFile:
+        with codecs.open(self.path, 'r', self.cWidget.edit.encodingSet) as inFile:
         #with codecs.open(self.path, 'r', 'koi8-r') as inFile:
         #with codecs.open(self.path, 'r', 'windows_1251') as inFile:
             text = inFile.read()
@@ -885,6 +890,7 @@ class TextEditBaseX(QtGui.QTextEdit):
         #self.textEdit.setWordWrapMode (QtGui.QTextOption.WrapMode(QtGui.QTextOption.WrapMode.NoWrap))
         #return self.textEdit
         self.zoomRate = 0
+        self.encodingSet = 'utf8'
 
     def pythonEnter(self):
         if self.pythonicEnterOn:
