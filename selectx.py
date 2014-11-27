@@ -20,7 +20,7 @@ instead of PySide
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
 
-__version__ = '''0.5.2.10'''
+__version__ = '''0.5.2.11'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -517,20 +517,25 @@ class SelectX(QtGui.QMainWindow):
             return tabIndex
 
     def saveFile(self):
+        import codecs
         if self.path:
             #f = open(self.path, 'w')
             try:
-                f = open(self.path, 'w')
+                with codecs.open(self.path, 'w', 'utf8') as f:
+                    filedata = self.cWidget.edit.document().toPlainText()
+                    #filedata = codecs.encode(filedata, 'utf8')
+                    f.write(filedata)
+                    f.close()
+                    self.statusBar().showMessage('Save Text: %s' % self.path)
+                    pass
+                #f = open(self.path, 'w')
             except IOError:
                 self.saveFileAs()
-            filedata = self.cWidget.edit.toPlainText()
-            f.write(filedata)
-            f.close()
-            self.statusBar().showMessage('Save Text: %s' % self.path)
         else:
             self.saveFileAs()
 
     def saveFileAs(self):
+        import codecs
         if self.startPath:
             filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File', \
             self.startPath)
@@ -539,15 +544,28 @@ class SelectX(QtGui.QMainWindow):
             self.startPath = './'
             filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File', \
             self.startPath)
+            
+        #print str(filename)
         if filename:
+            if type(filename) is tuple:
+                filename=filename[0]
             try:
-                f = open(self.path, 'w')
+                self.path = filename
+                with codecs.open(self.path, 'w', 'utf8') as f:
+                    filedata = self.cWidget.edit.document().toPlainText()
+                    #filedata = codecs.encode(filedata, 'utf8')
+                    f.write(filedata)
+                    f.close()
+                    self.statusBar().showMessage('Save Text: %s' % self.path)
+                    pass
+                #f = open(self.path, 'w')
+                #f = open(self.path, 'w')
             except IOError:
-                return
-            filedata = self.cWidget.edit.toPlainText()
-            f.write(filedata)
-            f.close()
-            self.path = filename
+                return filename[0]
+            #filedata = self.cWidget.edit.toPlainText()
+            #f.write(filedata)
+            #f.close()
+            #self.path = filename
             self.startPath = self.path[:-len(getFileName(self.path))]
             self.statusBar().showMessage('Save Text: %s' % filename)
             self.setWindowTitle('SelectX - %s' % filename)
@@ -616,12 +634,16 @@ class SelectX(QtGui.QMainWindow):
         self.statusBar().showMessage('Start reading: %s' % self.path)
         self.path = filePath
         inFile = QtCore.QFile(self.path)
+        
         with codecs.open(self.path, 'r', 'utf8') as inFile:
-            content = inFile.readlines()
-            text = ''
-            for lll in content:
-                text += lll
-        #if inFile.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text,  'utf8'):
+        #with codecs.open(self.path, 'r', 'koi8-r') as inFile:
+        #with codecs.open(self.path, 'r', 'windows_1251') as inFile:
+            text = inFile.read()
+            #content = inFile.readlines()
+            #text = ''
+            #for lll in content:
+                #text += lll
+        #if inFile.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
             #text = inFile.readAll()
             #text = inFile.readAll()
             #inFile.close()
@@ -1574,7 +1596,21 @@ def getCodecsList(newlist = []):
             #newlist.append(encodings_aliases[kkk])
     return sorted(newlist)
 
+def getCodecsAliasesList(newlist = []):
+    encodings_aliases=encodings._aliases
+    #print encodings_aliases
+    #for kkk in encodings_aliases.keys():
+        ##print encodings_aliases[kkk]
+        #if not kkk in newlist and not kkk[0] in ('0','1','2','3','4','5','6','7','8','9'):
+            #newlist.append(kkk)
+    for kkk in encodings_aliases.keys():
+        #print encodings_aliases[kkk]
+        if not encodings_aliases[kkk] in newlist:
+            newlist.append(encodings_aliases[kkk])
+    return sorted(newlist)
+
 #print 'getCodecsList()'+str(getCodecsList())
+#print 'getCodecsAliasesList()'+str(getCodecsList())
 #print 'getQtCodecsList()'+str(getQtCodecsList())
 
 def usage():
