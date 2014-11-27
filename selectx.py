@@ -20,7 +20,7 @@ instead of PySide
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
 
-__version__ = '''0.5.2.9'''
+__version__ = '''0.5.2.10'''
 
 KEYS_HELP = '''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -612,19 +612,34 @@ class SelectX(QtGui.QMainWindow):
         return False
 
     def openExistFile(self, filePath):
+        import codecs
         self.statusBar().showMessage('Start reading: %s' % self.path)
         self.path = filePath
         inFile = QtCore.QFile(self.path)
-        if inFile.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
-            text = inFile.readAll()
+        with codecs.open(self.path, 'r', 'utf8') as inFile:
+            content = inFile.readlines()
+            text = ''
+            for lll in content:
+                text += lll
+        #if inFile.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text,  'utf8'):
+            #text = inFile.readAll()
+            #text = inFile.readAll()
+            #inFile.close()
             inFile.close()
-            try:
-                # Python v3.
-                text = str(text, encoding='ascii')
+            #try:
+                #print 1
+                ## Python v3.
+                ##text = str(text, encoding='windows_1251')
+                ##text = str(text, encoding='ascii')
+                
                 #text = str(text, encoding='utf-8')
-            except TypeError:
-                # Python v2.
-                text = str(text)
+            #except TypeError:
+                #print 2
+                ## Python v2.
+                #text = str(text)
+                
+            #text = str(text)
+                
             self.cWidget.edit.clear()
             self.setHighlighter()
             self.cWidget.edit.insertPlainText(text)
@@ -634,9 +649,9 @@ class SelectX(QtGui.QMainWindow):
             self.mainTab.setTabToolTip (curtabind, '%s' % self.path)
             self.mainTab.setTabText(curtabind, '%s' % getFileName(self.path))
             self.setWindowTitle('SelectX - %s' % self.path)
-        else:
-            print 'Can Not Open This File -> %s' % self.path
-            self.path = None
+        #else:
+            #print 'Can Not Open This File -> %s' % self.path
+            #self.path = None
 
     def filePreview(self):
         '''Open preview dialog'''
@@ -1537,6 +1552,15 @@ def getFileName(pathName, separatorSymbol=None):
     else:
         return pathName.split('/')[-1]
 
+def getQtCodecsList():
+    newlist=[]
+    for kkk in QtCore.QTextCodec.availableCodecs():
+        ccc = QtCore.QTextCodec.codecForName(kkk)
+        nnn=ccc.name()
+        if not nnn in newlist and not nnn[0] in ('0','1','2','3','4','5','6','7','8','9'):
+            newlist.append(nnn)
+    return newlist
+
 def getCodecsList(newlist = []):
     encodings_aliases=encodings._aliases
     #print encodings_aliases
@@ -1551,6 +1575,7 @@ def getCodecsList(newlist = []):
     return sorted(newlist)
 
 #print 'getCodecsList()'+str(getCodecsList())
+#print 'getQtCodecsList()'+str(getQtCodecsList())
 
 def usage():
     print sys.argv[0] + '\n' + VERSION_INFO % __version__ + CONSOLE_USAGE
