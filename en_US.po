@@ -1,0 +1,590 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SelectX VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-12-02 15:51+0200\n"
+"PO-Revision-Date: 2014-12-02 16:08+0300\n"
+"Last-Translator: 10 <1_0@usa.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"Language: en_US\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: /home/a10/dev/SelectX/\n"
+
+#: selectx.py:13
+msgid ""
+"Try to use PyQt4\n"
+"(license - http://www.riverbankcomputing.co.uk/software/pyqt/license )\n"
+"instead of PySide\n"
+"(license - LGPL - http://www.gnu.org/copyleft/lesser.html )"
+msgstr ""
+"Try to use PyQt4\n"
+"(license - http://www.riverbankcomputing.co.uk/software/pyqt/license )\n"
+"instead of PySide\n"
+"(license - LGPL - http://www.gnu.org/copyleft/lesser.html )"
+
+#: selectx.py:26
+msgid ""
+"Keypresses:  Action:\n"
+"Backspace  Deletes the character to the left of the cursor.\n"
+"Delete     Deletes the character to the right of the cursor.\n"
+"Ctrl+C     Copy the selected text to the clipboard.\n"
+"Ctrl+Insert    Copy the selected text to the clipboard.\n"
+"Ctrl+K     Deletes to the end of the line.\n"
+"Ctrl+V     Pastes the clipboard text into text edit.\n"
+"Shift+Insert   Pastes the clipboard text into text edit.\n"
+"Ctrl+X     Deletes the selected text and copies it to the clipboard.\n"
+"Shift+Delete   Deletes the selected text and copies it to the clipboard.\n"
+"Ctrl+Z     Undoes the last operation.\n"
+"Ctrl+Y     Redoes the last operation.\n"
+"LeftArrow  Moves the cursor one character to the left.\n"
+"Ctrl+LeftArrow     Moves the cursor one word to the left.\n"
+"RightArrow     Moves the cursor one character to the right.\n"
+"Ctrl+RightArrow    Moves the cursor one word to the right.\n"
+"UpArrow    Moves the cursor one line up.\n"
+"Ctrl+UpArrow   Moves the cursor one word up.\n"
+"DownArrow  Moves the cursor one line down.\n"
+"Ctrl+Down Arrow    Moves the cursor one word down.\n"
+"PageUp     Moves the cursor one page up.\n"
+"PageDown   Moves the cursor one page down.\n"
+"Home   Moves the cursor to the beginning of the line.\n"
+"Ctrl+Home  Moves the cursor to the beginning of the text.\n"
+"End    Moves the cursor to the end of the line.\n"
+"Ctrl+End   Moves the cursor to the end of the text.\n"
+"Alt+Wheel  Scrolls the page horizontally (the Wheel is the mouse wheel).\n"
+"Ctrl+Wheel     Zooms the text."
+msgstr ""
+"Keypresses:  Action:\n"
+"Backspace  Deletes the character to the left of the cursor.\n"
+"Delete     Deletes the character to the right of the cursor.\n"
+"Ctrl+C     Copy the selected text to the clipboard.\n"
+"Ctrl+Insert    Copy the selected text to the clipboard.\n"
+"Ctrl+K     Deletes to the end of the line.\n"
+"Ctrl+V     Pastes the clipboard text into text edit.\n"
+"Shift+Insert   Pastes the clipboard text into text edit.\n"
+"Ctrl+X     Deletes the selected text and copies it to the clipboard.\n"
+"Shift+Delete   Deletes the selected text and copies it to the clipboard.\n"
+"Ctrl+Z     Undoes the last operation.\n"
+"Ctrl+Y     Redoes the last operation.\n"
+"LeftArrow  Moves the cursor one character to the left.\n"
+"Ctrl+LeftArrow     Moves the cursor one word to the left.\n"
+"RightArrow     Moves the cursor one character to the right.\n"
+"Ctrl+RightArrow    Moves the cursor one word to the right.\n"
+"UpArrow    Moves the cursor one line up.\n"
+"Ctrl+UpArrow   Moves the cursor one word up.\n"
+"DownArrow  Moves the cursor one line down.\n"
+"Ctrl+Down Arrow    Moves the cursor one word down.\n"
+"PageUp     Moves the cursor one page up.\n"
+"PageDown   Moves the cursor one page down.\n"
+"Home   Moves the cursor to the beginning of the line.\n"
+"Ctrl+Home  Moves the cursor to the beginning of the text.\n"
+"End    Moves the cursor to the end of the line.\n"
+"Ctrl+End   Moves the cursor to the end of the text.\n"
+"Alt+Wheel  Scrolls the page horizontally (the Wheel is the mouse wheel).\n"
+"Ctrl+Wheel     Zooms the text."
+
+#: selectx.py:55
+msgid ""
+"\n"
+"[KEY]...[FILE]\n"
+"Keys:\n"
+"--ForceEmbededIcons         Use embeded icons theme\n"
+"-h, --help                  Print this help message\n"
+"--version                   Print version info\n"
+msgstr ""
+"\n"
+"[KEY]...[FILE]\n"
+"Keys:\n"
+"--ForceEmbededIcons         Use embeded icons theme\n"
+"-h, --help                  Print this help message\n"
+"--version                   Print version info\n"
+
+#: selectx.py:63 selectx.py:832
+#, python-format
+msgid "SelectX. Text editor licenced by GPL3. Ver. %s"
+msgstr "SelectX. Text editor licenced by GPL3. Ver. %s"
+
+#: selectx.py:200
+#, python-format
+msgid "Try Open This File -> %s"
+msgstr "Try Open This File -> %s"
+
+#: selectx.py:203
+msgid "Too many args"
+msgstr "Too many args"
+
+#: selectx.py:219 selectx.py:466
+msgid "SelectX"
+msgstr "SelectX"
+
+#: selectx.py:225 selectx.py:465
+msgid "New Text"
+msgstr "New Text"
+
+#: selectx.py:254
+msgid "File"
+msgstr "File"
+
+#: selectx.py:257
+msgid "&File"
+msgstr "&File"
+
+#: selectx.py:260
+msgid "New Tab"
+msgstr "New Tab"
+
+#: selectx.py:260
+msgid "Create new tab"
+msgstr "Create new tab"
+
+#: selectx.py:264
+msgid "Open"
+msgstr "Openn"
+
+#: selectx.py:264
+msgid "Open a file"
+msgstr "Open a file"
+
+#: selectx.py:266
+msgid "Save"
+msgstr "Save"
+
+#: selectx.py:266
+msgid "Save current file"
+msgstr "Save current file"
+
+#: selectx.py:268
+msgid "Save As..."
+msgstr "Save As..."
+
+#: selectx.py:268
+msgid "Save as new file"
+msgstr "Save as new file"
+
+#: selectx.py:271
+msgid "Preview"
+msgstr "Preview"
+
+#: selectx.py:271
+msgid "File Preview"
+msgstr "File Preview"
+
+#: selectx.py:273
+msgid "Print"
+msgstr "Print"
+
+#: selectx.py:273
+msgid "File Print"
+msgstr "File Print"
+
+#: selectx.py:276
+msgid "Close Tab"
+msgstr "Close Tab"
+
+#: selectx.py:276
+msgid "Close current tab"
+msgstr "Close current tab"
+
+#: selectx.py:278
+msgid "Exit"
+msgstr "Exit"
+
+#: selectx.py:278
+msgid "Exit SelectX"
+msgstr "Exit SelectX"
+
+#: selectx.py:281
+msgid "Edit"
+msgstr "Edit"
+
+#: selectx.py:283
+msgid "&Edit"
+msgstr "&Edit"
+
+#: selectx.py:284
+msgid "Undo"
+msgstr "Undo"
+
+#: selectx.py:284
+msgid "Undo last text edit"
+msgstr "Undo last text edit"
+
+#: selectx.py:286
+msgid "Redo"
+msgstr "Redo"
+
+#: selectx.py:286
+msgid "Redo last text edit"
+msgstr "Redo last text edit"
+
+#: selectx.py:289
+msgid "Copy"
+msgstr "Copy"
+
+#: selectx.py:289
+msgid "Copy selected text"
+msgstr "Copy selected text"
+
+#: selectx.py:291
+msgid "Cut"
+msgstr "Cut"
+
+#: selectx.py:291
+msgid "Cut selected text"
+msgstr "Cut selected text"
+
+#: selectx.py:293
+msgid "Paste"
+msgstr "Paste"
+
+#: selectx.py:293
+msgid "Paste text"
+msgstr "Paste text"
+
+#: selectx.py:298
+msgid "Find and replace"
+msgstr "Find and replace"
+
+#: selectx.py:298
+msgid "Find and replace words in your document"
+msgstr "Find and replace words in your document"
+
+#: selectx.py:301
+msgid "Select"
+msgstr "Select"
+
+#: selectx.py:303
+msgid "&Select"
+msgstr "&Select"
+
+#: selectx.py:304
+msgid "SelectAll"
+msgstr "SelectAll"
+
+#: selectx.py:304
+msgid "Select all text in editor"
+msgstr "Select all text in editor"
+
+#: selectx.py:309
+msgid "View"
+msgstr "View"
+
+#: selectx.py:311
+msgid "&View"
+msgstr "&View"
+
+#: selectx.py:314
+msgid "&Highlighter"
+msgstr "&Highlighter"
+
+#: selectx.py:317
+msgid "None"
+msgstr "None"
+
+#: selectx.py:317
+msgid "None Highlighter"
+msgstr "None Highlighter"
+
+#: selectx.py:320
+msgid "Cpp"
+msgstr "Cpp"
+
+#: selectx.py:320
+msgid "Cpp Highlighter"
+msgstr "Cpp Highlighter"
+
+#: selectx.py:323
+msgid "Python"
+msgstr "Python"
+
+#: selectx.py:323
+msgid "Python Highlighter"
+msgstr "Python Highlighter"
+
+#: selectx.py:328
+msgid "&Zoom"
+msgstr "&Zoom"
+
+#: selectx.py:330
+msgid "Zoom In"
+msgstr "Zoom In"
+
+#: selectx.py:330
+msgid "Zoom In text in editor"
+msgstr "Zoom In text in editor"
+
+#: selectx.py:332
+msgid "Zoom Out"
+msgstr "Zoom Out"
+
+#: selectx.py:332
+msgid "Zoom Out text in editor"
+msgstr "Zoom Out text in editor"
+
+#: selectx.py:334
+msgid "Zoom Original"
+msgstr "Zoom Original"
+
+#: selectx.py:334
+msgid "Zoom original text in editor"
+msgstr "Zoom original text in editor"
+
+#: selectx.py:337
+msgid "Font"
+msgstr "Font"
+
+#: selectx.py:337
+msgid "Font select dialog"
+msgstr "Font select dialog"
+
+#: selectx.py:340
+msgid "Show/Hide non-printabale"
+msgstr "Show/Hide non-printabale"
+
+#: selectx.py:340
+msgid "Show/Hide non-printabale symbols"
+msgstr "Show/Hide non-printabale symbols"
+
+#: selectx.py:342
+msgid "Pythonic Enter"
+msgstr "Pythonic Enter"
+
+#: selectx.py:342
+msgid "On/Off Pythonic Enter Style"
+msgstr "On/Off Pythonic Enter Style"
+
+#: selectx.py:344
+msgid "Line Numbers"
+msgstr "Line Numbers"
+
+#: selectx.py:344
+msgid "On/Off PLine Numbers"
+msgstr "On/Off PLine Numbers"
+
+#: selectx.py:347 selectx.py:350
+msgid "Help"
+msgstr "Help"
+
+#: selectx.py:349
+msgid "&Help"
+msgstr "&Help"
+
+#: selectx.py:350
+msgid "Keys Help"
+msgstr "Keys Help"
+
+#: selectx.py:352
+msgid "About"
+msgstr "About"
+
+#: selectx.py:352
+msgid "About editor"
+msgstr "About editor"
+
+#: selectx.py:354
+msgid "About &Qt"
+msgstr "About &Qt"
+
+#: selectx.py:354
+msgid "About current QT"
+msgstr "About current QT"
+
+#: selectx.py:356
+msgid "Ok Player"
+msgstr "Ok Player"
+
+#: selectx.py:356
+msgid "On/Off Ok Player"
+msgstr "On/Off Ok Player"
+
+#: selectx.py:399
+msgid "Hide Py Enter"
+msgstr "Hide Py Enter"
+
+#: selectx.py:402
+msgid "Add Py Enter"
+msgstr "Add Py Enter"
+
+#: selectx.py:472
+#, python-format
+msgid "New text - %s"
+msgstr "New text - %s"
+
+#: selectx.py:507
+#, python-format
+msgid "Selected Tab #%s"
+msgstr "Selected Tab #%s"
+
+#: selectx.py:530 selectx.py:561 selectx.py:572
+#, python-format
+msgid "Save Text: %s"
+msgstr "Save Text: %s"
+
+#: selectx.py:542
+msgid "Save File"
+msgstr "Save File"
+
+#: selectx.py:552 selectx.py:581
+msgid "Stop Save Text"
+msgstr "Stop Save Text"
+
+#: selectx.py:573 selectx.py:670
+#, python-format
+msgid "SelectX - %s"
+msgstr "SelectX - %s"
+
+#: selectx.py:592
+msgid "Open File"
+msgstr "Open File"
+
+#: selectx.py:594
+msgid ""
+"All Files (*);;Text Files (*.txt *.log *.TXT *.LOG);;Python Files (*.py *.PY "
+"*.py3 *.PY3);;C/C++ Files (*.c *.cc *.cpp *.c++ *.cxx *.h *.hh *.hpp *.hxx *."
+"CPP *.H *.c *.C)"
+msgstr ""
+"All Files (*);;Text Files (*.txt *.log *.TXT *.LOG);;Python Files (*.py *.PY "
+"*.py3 *.PY3);;C/C++ Files (*.c *.cc *.cpp *.c++ *.cxx *.h *.hh *.hpp *.hxx *."
+"CPP *.H *.c *.C)"
+
+#: selectx.py:605 selectx.py:631
+#, python-format
+msgid "Start reading: %s"
+msgstr "Start reading: %s"
+
+#: selectx.py:609
+msgid "Stop Open Text"
+msgstr "Stop Open Text"
+
+#: selectx.py:665
+#, python-format
+msgid "Open Text: %s"
+msgstr "Open Text: %s"
+
+#: selectx.py:689
+msgid "Confirm Exit SelectX"
+msgstr "Confirm Exit SelectX"
+
+#: selectx.py:690
+msgid "Are you sure to Exit?"
+msgstr "Are you sure to Exit?"
+
+#: selectx.py:694
+msgid "Close Stoped"
+msgstr "Close Stoped"
+
+#: selectx.py:697
+msgid "Confirm Close Tab"
+msgstr "Confirm Close Tab"
+
+#: selectx.py:698
+msgid "Are you sure to Close Tab?"
+msgstr "Are you sure to Close Tab?"
+
+#: selectx.py:706
+msgid "Undo Text"
+msgstr "Undo Text"
+
+#: selectx.py:710
+msgid "Redo Text"
+msgstr "Redo Text"
+
+#: selectx.py:720
+msgid "Copy Text"
+msgstr "Copy Text"
+
+#: selectx.py:724
+msgid "Cut Text"
+msgstr "Cut Text"
+
+#: selectx.py:728
+msgid "Paste Text"
+msgstr "Paste Text"
+
+#: selectx.py:736
+msgid "Hide Non Printabale"
+msgstr "Hide Non Printabale"
+
+#: selectx.py:739
+msgid "Show Non Printabale"
+msgstr "Show Non Printabale"
+
+#: selectx.py:746
+msgid "Show Line Numbers"
+msgstr "Show Line Numbers"
+
+#: selectx.py:748
+msgid "Hide Line Numbers"
+msgstr "Hide Line Numbers"
+
+#: selectx.py:755
+msgid "SelectX Find Dialog"
+msgstr "SelectX Find Dialog"
+
+#: selectx.py:755
+msgid "Enter text to find:"
+msgstr "Enter text to find:"
+
+#: selectx.py:758
+#, python-format
+msgid "Finded: %s"
+msgstr "Funded: %s"
+
+#: selectx.py:761
+#, python-format
+msgid "Not finded: %s"
+msgstr "Not funded: %s"
+
+#: selectx.py:764
+msgid "Find Canseled"
+msgstr "Find Canseled"
+
+#: selectx.py:778 selectx.py:784 selectx.py:790
+#, python-format
+msgid "Zoom Rate: %s"
+msgstr "Zoom Rate: %s"
+
+#: selectx.py:808
+msgid "Enter media URL"
+msgstr "Enter media URL"
+
+#: selectx.py:809
+msgid "Enter you favorit on-line radio URL:"
+msgstr "Enter you favorite on-line radio URL:"
+
+#: selectx.py:825
+#, python-format
+msgid "okPlayer play: %s"
+msgstr "okPlayer play: %s"
+
+#: selectx.py:828
+msgid "okPlayer stop"
+msgstr "okPlayer stop"
+
+#: selectx.py:831
+msgid "About SelectX"
+msgstr "About SelectX"
+
+#: selectx.py:839
+msgid "Ok"
+msgstr "Ok"
+
+#: selectx.py:842
+msgid "Keys SelectX"
+msgstr "Keys SelectX"
+
+#: selectx.py:923
+msgid "Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}"
+msgstr "Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}"
+
+#: selectx.py:925
+msgid "Symbols: {} | Rows: {} | Line: {} | Column: {}"
+msgstr "Symbols: {} | Rows: {} | Line: {} | Column: {}"

@@ -2,6 +2,7 @@
 '''SelectX - easy eXtendable text editor for developers writed on Python. Licensed by GPL3.'''
 #!/usr/bin/python -m cProfile -s time ./selectx.py |less -o ./pof.log     #<<<<profiler run
 import sys, os, re, encodings
+from gettext import gettext as _
 
 
 try:
@@ -9,10 +10,10 @@ try:
 
     LIB_USE = "PySide"
 except ImportError:
-    print """Try to use PyQt4
+    print _(u"""Try to use PyQt4
 (license - http://www.riverbankcomputing.co.uk/software/pyqt/license )
 instead of PySide
-(license - LGPL - http://www.gnu.org/copyleft/lesser.html )"""
+(license - LGPL - http://www.gnu.org/copyleft/lesser.html )""")
     from PyQt4 import QtGui, QtCore
 
     LIB_USE = "PyQt4"
@@ -20,9 +21,9 @@ instead of PySide
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
 
-__version__ = '''0.5.2.12'''
+__version__ = '''0.6.0.1'''
 
-KEYS_HELP = '''Keypresses:  Action:
+KEYS_HELP = _(u'''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
 Delete     Deletes the character to the right of the cursor.
 Ctrl+C     Copy the selected text to the clipboard.
@@ -49,17 +50,17 @@ Ctrl+Home  Moves the cursor to the beginning of the text.
 End    Moves the cursor to the end of the line.
 Ctrl+End   Moves the cursor to the end of the text.
 Alt+Wheel  Scrolls the page horizontally (the Wheel is the mouse wheel).
-Ctrl+Wheel     Zooms the text.'''
+Ctrl+Wheel     Zooms the text.''')
 
-CONSOLE_USAGE = '''
+CONSOLE_USAGE = _(u'''
 [KEY]...[FILE]
 Keys:
 --ForceEmbededIcons         Use embeded icons theme
 -h, --help                  Print this help message
 --version                   Print version info
-'''
+''')
 
-VERSION_INFO = "SelectX. Text editor licenced by GPL3. Ver. %s"
+VERSION_INFO = _(u"SelectX. Text editor licenced by GPL3. Ver. %s")
 
 #icon theme for very soft and very micro os ;) (based on http://tango.freedesktop.org/Tango_Icon_Library)
 TANGO_ICONS = {'office_calendar':"""/* XPM */
@@ -196,10 +197,10 @@ class SelectX(QtGui.QMainWindow):
         self.initUI()
         try:
             if len(sys.argv)<3:
-                print 'Try Open This File -> %s' % sys.argv[1]
+                print _(u'Try Open This File -> %s') % sys.argv[1]
                 self.openExistFile(sys.argv[1])
             else:
-                print 'Too many args'
+                print _(u'Too many args')
                 print CONSOLE_USAGE
         except IndexError:
             #print 'not open File'
@@ -215,13 +216,13 @@ class SelectX(QtGui.QMainWindow):
         self.setGeometry(100, 100, 400, 400)
         self.setWindowIcon(self.getNewIcon("edit-select-all"))
         self.setMinimumSize(200,150)
-        self.setWindowTitle('SelectX')
+        self.setWindowTitle(_(u'SelectX'))
         self.mainTab = QtGui.QTabWidget(self)
         self.mainTab.setTabsClosable(True)
         self.mainTab.setMovable(True)
         self.setCentralWidget(self.mainTab)
         self.cWidget=TextEditX(parent=self)
-        tabId = self.mainTab.addTab(self.cWidget, "New Text")
+        tabId = self.mainTab.addTab(self.cWidget, _(u"New Text"))
         self.mainTab.tabCloseRequested.connect(self.closeTab)
         self.mainTab.currentChanged.connect(self.changeTab)
 
@@ -250,109 +251,109 @@ class SelectX(QtGui.QMainWindow):
     def makeMenu(self):
         menubar = self.menuBar()
 
-        self.toolbar = self.addToolBar("File")
+        self.toolbar = self.addToolBar(_(u"File"))
         self.toolbar.setMovable(True)
 
-        fileMenu = menubar.addMenu('&File')
-        #self.addActionParamX('New', 'Ctrl+N', 'Create new file', self.newFile, \
+        fileMenu = menubar.addMenu(_(u'&File'))
+        #self.addActionParamX(_(u'New'), 'Ctrl+N', _(u'Create new file'), self.newFile, \
         #fileMenu, 'document-new', self.toolbar)
-        self.addActionParamX('New Tab', 'Ctrl+T', 'Create new tab', self.newTab, \
+        self.addActionParamX(_(u'New Tab'), 'Ctrl+T', _(u'Create new tab'), self.newTab, \
         fileMenu, 'tab-new', self.toolbar)
-        #self.addActionParamX('Open in new tab', 'Ctrl+Shift+O', 'Set open a file in new tab', self.setOpenInNewTab, \
+        #self.addActionParamX(_(u'Open in new tab'), 'Ctrl+Shift+O', _(u'Set open a file in new tab'), self.setOpenInNewTab, \
         #fileMenu, 'document-open', checkAble=True)
-        self.addActionParamX('Open', 'Ctrl+O', 'Open a file', self.openFile, \
+        self.addActionParamX(_(u'Open'), 'Ctrl+O', _(u'Open a file'), self.openFile, \
         fileMenu, 'document-open', self.toolbar)
-        self.addActionParamX('Save', 'Ctrl+S', 'Save current file', \
+        self.addActionParamX(_(u'Save'), 'Ctrl+S', _(u'Save current file'), \
         self.saveFile, fileMenu, 'document-save', self.toolbar)
-        self.addActionParamX('Save As...', 'Ctrl+Shift+S', 'Save as new file', \
+        self.addActionParamX(_(u'Save As...'), 'Ctrl+Shift+S', _(u'Save as new file'), \
         self.saveFileAs, fileMenu, 'document-save-as', self.toolbar)
         fileMenu.addSeparator()
-        self.addActionParamX('Preview', 'Ctrl+L', 'File Preview', \
+        self.addActionParamX(_(u'Preview'), 'Ctrl+L', _(u'File Preview'), \
         self.filePreview, fileMenu, 'document-print-preview', self.toolbar)
-        self.addActionParamX('Print', 'Ctrl+P', 'File Print', \
+        self.addActionParamX(_(u'Print'), 'Ctrl+P', _(u'File Print'), \
         self.filePrint, fileMenu, 'document-print', self.toolbar)
         fileMenu.addSeparator()
-        self.addActionParamX('Close Tab', 'Ctrl+Shift+Q', 'Close current tab', \
+        self.addActionParamX(_(u'Close Tab'), 'Ctrl+Shift+Q', _(u'Close current tab'), \
         self.closeTab, fileMenu, 'window-close')
-        self.addActionParamX('Exit', 'Ctrl+Q', 'Exit SelectX', \
+        self.addActionParamX(_(u'Exit'), 'Ctrl+Q', _(u'Exit SelectX'), \
         self.checkExitProgram, fileMenu, 'application-exit')
 
-        self.toolbar = self.addToolBar("Edit")
+        self.toolbar = self.addToolBar(_(u"Edit"))
         self.toolbar.setMovable(True)
-        editMenu = menubar.addMenu('&Edit')
-        self.addActionParamX('Undo', 'Ctrl+Z', 'Undo last text edit', \
+        editMenu = menubar.addMenu(_(u'&Edit'))
+        self.addActionParamX(_(u'Undo'), 'Ctrl+Z', _(u'Undo last text edit'), \
         self.undoText, editMenu, 'edit-undo', self.toolbar)
-        self.addActionParamX('Redo', 'Ctrl+Y', 'Redo last text edit', \
+        self.addActionParamX(_(u'Redo'), 'Ctrl+Y', _(u'Redo last text edit'), \
         self.redoText, editMenu, 'edit-redo', self.toolbar)
         editMenu.addSeparator()
-        self.addActionParamX('Copy', 'Ctrl+C', 'Copy selected text', \
+        self.addActionParamX(_(u'Copy'), 'Ctrl+C', _(u'Copy selected text'), \
         self.copyText, editMenu, 'edit-copy', self.toolbar)
-        self.addActionParamX('Cut', 'Ctrl+X', 'Cut selected text', \
+        self.addActionParamX(_(u'Cut'), 'Ctrl+X', _(u'Cut selected text'), \
         self.cutText, editMenu, 'edit-cut', self.toolbar)
-        self.addActionParamX('Paste', 'Ctrl+V', 'Paste text', self.pasteText, \
+        self.addActionParamX(_(u'Paste'), 'Ctrl+V', _(u'Paste text'), self.pasteText, \
         editMenu, 'edit-paste', self.toolbar)
         editMenu.addSeparator()
-        #self.addActionParamX('Find', 'Ctrl+Shift+F', 'Find text', self.findText, \
+        #self.addActionParamX(_(u'Find'), 'Ctrl+Shift+F', _(u'Find text'), self.findText, \
         #editMenu, 'edit-find', self.toolbar)
-        self.addActionParamX('Find and replace', 'Ctrl+F', 'Find and replace words in your document', Find(self).show, \
+        self.addActionParamX(_(u'Find and replace'), 'Ctrl+F', _(u'Find and replace words in your document'), Find(self).show, \
         editMenu, 'edit-find-replace', self.toolbar)
 
-        self.toolbar = self.addToolBar("Select")
+        self.toolbar = self.addToolBar(_(u"Select"))
         self.toolbar.setMovable(True)
-        selectMenu = menubar.addMenu('&Select')
-        self.addActionParamX('SelectAll', 'Ctrl+A', 'Select all text in editor', \
+        selectMenu = menubar.addMenu(_(u'&Select'))
+        self.addActionParamX(_(u'SelectAll'), 'Ctrl+A', _(u'Select all text in editor'), \
         self.selectAll, selectMenu, 'edit-select-all', self.toolbar)
-        #self.addActionParamX('Select For Copy By Words', 'Ctrl+Shift+A', 'Set Select For Copy By Words', \
+        #self.addActionParamX(_(u'Select For Copy By Words'), 'Ctrl+Shift+A', _(u'Set Select For Copy By Words'), \
         #self.setSelectByWords, selectMenu, 'edit-select', self.toolbar, checkAble=True)
 
-        self.toolbar = self.addToolBar("View")
+        self.toolbar = self.addToolBar(_(u"View"))
         self.toolbar.setMovable(True)
-        viewMenu = menubar.addMenu('&View')
+        viewMenu = menubar.addMenu(_(u'&View'))
         
         highlighterSubmenu = QtGui.QMenu(viewMenu)
-        highlighterSubmenu.setTitle("&Highlighter")
+        highlighterSubmenu.setTitle(_(u"&Highlighter"))
         viewMenu.addMenu(highlighterSubmenu)
         self.highlighterGroup = QtGui.QActionGroup(self, exclusive=True)
-        self.nonHi = self.addActionParamX('None', False, 'None Highlighter', \
+        self.nonHi = self.addActionParamX(_(u'None'), False, _(u'None Highlighter'), \
         self.putHighlighter, highlighterSubmenu,  False, None, 
         True, True, True, self.highlighterGroup)
-        self.cppHi = self.addActionParamX('Cpp', False, 'Cpp Highlighter', \
+        self.cppHi = self.addActionParamX(_(u'Cpp'), False, _(u'Cpp Highlighter'), \
         lambda: self.putHighlighter('cpp'), highlighterSubmenu, False, None, 
         True, False, True, self.highlighterGroup)
-        self.pyHi = self.addActionParamX('Python', False, 'Python Highlighter', \
+        self.pyHi = self.addActionParamX(_(u'Python'), False, _(u'Python Highlighter'), \
         lambda: self.putHighlighter('py'), highlighterSubmenu, False, None, 
         True, False, True, self.highlighterGroup)
         
         zoomSubmenu = QtGui.QMenu(viewMenu)
-        zoomSubmenu.setTitle("&Zoom")
+        zoomSubmenu.setTitle(_(u"&Zoom"))
         viewMenu.addMenu(zoomSubmenu)
-        self.addActionParamX('Zoom In', 'Ctrl++', 'Zoom In text in editor', \
+        self.addActionParamX(_(u'Zoom In'), 'Ctrl++', _(u'Zoom In text in editor'), \
         self.viewZoomIn, zoomSubmenu, 'zoom-in', self.toolbar)
-        self.addActionParamX('Zoom Out', 'Ctrl+-', 'Zoom Out text in editor', \
+        self.addActionParamX(_(u'Zoom Out'), 'Ctrl+-', _(u'Zoom Out text in editor'), \
         self.viewZoomOut, zoomSubmenu, 'zoom-out', self.toolbar)
-        self.addActionParamX('Zoom Original', 'Ctrl+0', 'Zoom original text in editor', \
+        self.addActionParamX(_(u'Zoom Original'), 'Ctrl+0', _(u'Zoom original text in editor'), \
         self.viewZoomOriginal, zoomSubmenu, 'zoom-original', self.toolbar)
         viewMenu.addSeparator()
-        self.addActionParamX('Font', 'F8', 'Font select dialog', \
+        self.addActionParamX(_(u'Font'), 'F8', _(u'Font select dialog'), \
         self.viewFont, viewMenu, 'preferences-desktop-font', self.toolbar)
         viewMenu.addSeparator()
-        self.nonPrintOn = self.addActionParamX('Show/Hide non-printabale', 'Ctrl+H', 'Show/Hide non-printabale symbols', self.inverseNonPrintabale, \
+        self.nonPrintOn = self.addActionParamX(_(u'Show/Hide non-printabale'), 'Ctrl+H', _(u'Show/Hide non-printabale symbols'), self.inverseNonPrintabale, \
         viewMenu, 'media_record', self.toolbar, checkAble=True, returnName=True)
-        self.nonPyEnter = self.addActionParamX('Pythonic Enter', 'Ctrl+Shift+P', 'On/Off Pythonic Enter Style', self.inversePyEnter, \
+        self.nonPyEnter = self.addActionParamX(_(u'Pythonic Enter'), 'Ctrl+Shift+P', _(u'On/Off Pythonic Enter Style'), self.inversePyEnter, \
         viewMenu, 'media_skip_backward', self.toolbar, checkAble=True, returnName=True)
-        self.nonLineNumbers = self.addActionParamX('Line Numbers', 'Ctrl+Shift+L', 'On/Off PLine Numbers', self.inverseLineNumbering, \
+        self.nonLineNumbers = self.addActionParamX(_(u'Line Numbers'), 'Ctrl+Shift+L', _(u'On/Off PLine Numbers'), self.inverseLineNumbering, \
         viewMenu, 'office_calendar', self.toolbar, checkAble=True, returnName=True)
 
-        self.toolbar = self.addToolBar("Help")
+        self.toolbar = self.addToolBar(_(u"Help"))
         self.toolbar.setMovable(True)
-        helpMenu = menubar.addMenu('&Help')
-        self.addActionParamX('Help', 'F1', 'Keys Help', self.keyHelp, helpMenu, \
+        helpMenu = menubar.addMenu(_(u'&Help'))
+        self.addActionParamX(_(u'Help'), 'F1', _(u'Keys Help'), self.keyHelp, helpMenu, \
         'help-contents', self.toolbar)
-        self.addActionParamX('About', 'F9', 'About editot', self.aboutHelp, \
+        self.addActionParamX(_(u'About'), 'F9', _(u'About editor'), self.aboutHelp, \
         helpMenu, 'help-about')
-        self.addActionParamX("About &Qt", 'Shift+F9', 'About current QT', QtGui.qApp.aboutQt, \
+        self.addActionParamX(_(u"About &Qt"), 'Shift+F9', _(u'About current QT'), QtGui.qApp.aboutQt, \
         helpMenu, 'help-about')
-        self.okPlay = self.addActionParamX('Ok Player', 'Ctrl+Shift+F12', 'On/Off Ok Player', self._okPlayer, \
+        self.okPlay = self.addActionParamX(_(u'Ok Player'), 'Ctrl+Shift+F12', _(u'On/Off Ok Player'), self._okPlayer, \
         helpMenu, 'media_playback_start', self.toolbar, checkAble=True, returnName=True)
         self.okPlay.setEnabled(False)
         self.okPlay.setVisible(False)
@@ -395,10 +396,10 @@ class SelectX(QtGui.QMainWindow):
         currentWidget = self.cWidget.edit
         if currentWidget.pythonicEnterOn:
             currentWidget.pythonicEnterOn = False
-            self.statusBar().showMessage('Hide Py Enter')
+            self.statusBar().showMessage(_(u'Hide Py Enter'))
         else:
             currentWidget.pythonicEnterOn = True
-            self.statusBar().showMessage('Add Py Enter')
+            self.statusBar().showMessage(_(u'Add Py Enter'))
 
     def getNewIcon(self, IconName):
         newIcon = QtGui.QIcon.fromTheme(IconName)
@@ -461,14 +462,14 @@ class SelectX(QtGui.QMainWindow):
     def newFile(self):
         self.cWidget.edit.clear()
         self.path=None
-        self.statusBar().showMessage('New Text')
-        self.setWindowTitle('SelectX')
+        self.statusBar().showMessage(_(u'New Text'))
+        self.setWindowTitle(_(u'SelectX'))
 
     def newTab(self):
         self.newDocNumber += 1
         self.cWidget = TextEditX(parent=self)
         
-        tabId = self.mainTab.addTab(self.cWidget, "New text - %s"%self.newDocNumber)
+        tabId = self.mainTab.addTab(self.cWidget, _(u"New text - %s")%self.newDocNumber)
         self.mainTab.setCurrentWidget(self.cWidget)
         self.setHighlighter()
         self.changeTab(tabId)
@@ -503,7 +504,7 @@ class SelectX(QtGui.QMainWindow):
             self.nonHi.setChecked(True)
             self.cppHi.setChecked(False)
             self.pyHi.setChecked(False)
-        self.statusBar().showMessage('Selected Tab #%s' % (tabIndex+1))
+        self.statusBar().showMessage(_(u'Selected Tab #%s') % (tabIndex+1))
 
     def closeTab(self, tabIndex):
         if self.mainTab.count()==1:
@@ -526,7 +527,7 @@ class SelectX(QtGui.QMainWindow):
                     #filedata = codecs.encode(filedata, 'utf8')
                     f.write(filedata)
                     f.close()
-                    self.statusBar().showMessage('Save Text: %s' % self.path)
+                    self.statusBar().showMessage(_(u'Save Text: %s') % self.path)
                     pass
                 #f = open(self.path, 'w')
             except IOError:
@@ -536,14 +537,10 @@ class SelectX(QtGui.QMainWindow):
 
     def saveFileAs(self):
         import codecs
-        if self.startPath:
-            filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File', \
-            self.startPath)
-        else:
-            #for windows
+        if not self.startPath:
             self.startPath = './'
-            filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File', \
-            self.startPath)
+        filename = QtGui.QFileDialog.getSaveFileName(self, _(u'Save File'), \
+        self.startPath)
             
         #print str(filename)
         if filename:
@@ -552,7 +549,7 @@ class SelectX(QtGui.QMainWindow):
                     #print 'type(filename)-'+str(filename)
                     filename = filename[0]
                 else:
-                    self.statusBar().showMessage('Stop Save Text')
+                    self.statusBar().showMessage(_(u'Stop Save Text'))
                     return
             self.path = filename
             try:
@@ -561,7 +558,7 @@ class SelectX(QtGui.QMainWindow):
                     #filedata = codecs.encode(filedata, 'utf8')
                     f.write(filedata)
                     f.close()
-                    self.statusBar().showMessage('Save Text: %s' % self.path)
+                    self.statusBar().showMessage(_(u'Save Text: %s') % self.path)
                     pass
                 #f = open(self.path, 'w')
                 #f = open(self.path, 'w')
@@ -572,8 +569,8 @@ class SelectX(QtGui.QMainWindow):
             #f.close()
             #self.path = filename
             self.startPath = self.path[:-len(getFileName(self.path))]
-            self.statusBar().showMessage('Save Text: %s' % filename)
-            self.setWindowTitle('SelectX - %s' % filename)
+            self.statusBar().showMessage(_(u'Save Text: %s') % filename)
+            self.setWindowTitle(_(u'SelectX - %s') % filename)
             curtabind = self.mainTab.currentIndex()
 
             self.mainTab.setTabToolTip (curtabind, '%s' % self.path)
@@ -581,7 +578,7 @@ class SelectX(QtGui.QMainWindow):
             self.mainTab.setTabText(curtabind, '%s' % newFileName)
             self.setHighlighter()
         else:
-            self.statusBar().showMessage('Stop Save Text')
+            self.statusBar().showMessage(_(u'Stop Save Text'))
 
     def setOpenInNewTab(self):
         self.openInNewTab = not(self.openInNewTab)
@@ -589,18 +586,13 @@ class SelectX(QtGui.QMainWindow):
 
     def openFile(self):
         ###to see http://www.rkblog.rk.edu.pl/w/p/simple-text-editor-pyqt4/
-        if self.startPath:
-            self.path = QtGui.QFileDialog.getOpenFileName(self, 'Open File', \
-            self.startPath, \
-             "All Files (*);;Text Files (*.txt *.log *.TXT *.LOG);;Python Files (*.py *.PY *.py3 *.PY3);;C/C++ Files (*.c *.cc *.cpp *.c++ *.cxx *.h *.hh *.hpp *.hxx *.CPP *.H *.c *.C)" \
-            )
-        else:
+        if not self.startPath:
             #for windows
             self.startPath = './'
-            self.path = QtGui.QFileDialog.getOpenFileName(self, 'Open File', \
-            self.startPath, \
-             "All Files (*);;Text Files (*.txt *.log *.TXT *.LOG);;Python Files (*.py *.PY *.py3 *.PY3);;C/C++ Files (*.c *.cc *.cpp *.c++ *.cxx *.h *.hh *.hpp *.hxx *.CPP *.H *.c *.C)" \
-            )
+        self.path = QtGui.QFileDialog.getOpenFileName(self, _(u'Open File'), \
+        self.startPath, \
+         _(u"All Files (*);;Text Files (*.txt *.log *.TXT *.LOG);;Python Files (*.py *.PY *.py3 *.PY3);;C/C++ Files (*.c *.cc *.cpp *.c++ *.cxx *.h *.hh *.hpp *.hxx *.CPP *.H *.c *.C)") \
+        )
 
         if self.path:
             if type(self.path) is tuple: #for PySide
@@ -610,11 +602,11 @@ class SelectX(QtGui.QMainWindow):
             self.startPath = self.path[:-len(getFileName(self.path))]
             if self.checkNotEmptyText() and self.path:
                 self.newTab()
-                self.statusBar().showMessage('Start reading: %s' % self.path)
+                self.statusBar().showMessage(_(u'Start reading: %s') % self.path)
         
             self.openExistFile(self.path)
         else:
-            self.statusBar().showMessage('Stop Open Text')
+            self.statusBar().showMessage(_(u'Stop Open Text'))
         #if self.path:
             #print
             #if type(self.path) is tuple: #for PySide
@@ -627,7 +619,7 @@ class SelectX(QtGui.QMainWindow):
                 #self.newTab()
             #self.openExistFile(self.path)
         #else:
-            #self.statusBar().showMessage('Stop Open Text')
+            #self.statusBar().showMessage(_(u'Stop Open Text'))
 
     def checkNotEmptyText(self):
         if len(self.cWidget.edit.toPlainText()) > 0:
@@ -636,7 +628,7 @@ class SelectX(QtGui.QMainWindow):
 
     def openExistFile(self, filePath):
         import codecs
-        self.statusBar().showMessage('Start reading: %s' % self.path)
+        self.statusBar().showMessage(_(u'Start reading: %s') % self.path)
         self.path = filePath
         inFile = QtCore.QFile(self.path)
         
@@ -670,12 +662,12 @@ class SelectX(QtGui.QMainWindow):
             self.cWidget.edit.clear()
             self.setHighlighter()
             self.cWidget.edit.insertPlainText(text)
-            self.statusBar().showMessage('Open Text: %s' % self.path)
+            self.statusBar().showMessage(_(u'Open Text: %s') % self.path)
             curtabind = self.mainTab.currentIndex()
 
             self.mainTab.setTabToolTip (curtabind, '%s' % self.path)
             self.mainTab.setTabText(curtabind, '%s' % getFileName(self.path))
-            self.setWindowTitle('SelectX - %s' % self.path)
+            self.setWindowTitle(_(u'SelectX - %s') % self.path)
         #else:
             #print 'Can Not Open This File -> %s' % self.path
             #self.path = None
@@ -694,16 +686,16 @@ class SelectX(QtGui.QMainWindow):
             self.cWidget.edit.document().print_(dialog.printer())
 
     def checkExitProgram(self):
-        reply_exit = QtGui.QMessageBox.question(self, 'Confirm Exit SelectX', \
-        "Are you sure to Exit?", QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, \
+        reply_exit = QtGui.QMessageBox.question(self, _(u'Confirm Exit SelectX'), \
+        _(u"Are you sure to Exit?"), QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, \
         QtGui.QMessageBox.No)
         if reply_exit==QtGui.QMessageBox.Yes:
             self.close()
-        self.statusBar().showMessage('Close Stoped')
+        self.statusBar().showMessage(_(u'Close Stoped'))
 
     def checkCloseTab(self, idTab=None):
-        reply_exit = QtGui.QMessageBox.question(self, 'Confirm Close Tab', \
-        "Are you sure to Close Tab?", QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, \
+        reply_exit = QtGui.QMessageBox.question(self, _(u'Confirm Close Tab'), \
+        _(u"Are you sure to Close Tab?"), QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, \
         QtGui.QMessageBox.No)
         if reply_exit==QtGui.QMessageBox.Yes:
             return True
@@ -711,29 +703,29 @@ class SelectX(QtGui.QMainWindow):
 
     def undoText(self):
         self.cWidget.edit.undo()
-        self.statusBar().showMessage('Undo Text')
+        self.statusBar().showMessage(_(u'Undo Text'))
 
     def redoText(self):
         self.cWidget.edit.redo()
-        self.statusBar().showMessage('Redo Text')
+        self.statusBar().showMessage(_(u'Redo Text'))
 
     def copyText(self):
         if self.selectForCopyByWords:
 
             self.cursorMain = self.cWidget.edit.cursorRect()
-            print self.cursorMain
-            print 'self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()'
-            print self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()
+            #print self.cursorMain
+            #print 'self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()'
+            #print self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()
         self.cWidget.edit.copy()
-        self.statusBar().showMessage('Copy Text')
+        self.statusBar().showMessage(_(u'Copy Text'))
 
     def cutText(self):
         self.cWidget.edit.cut()
-        self.statusBar().showMessage('Cut Text')
+        self.statusBar().showMessage(_(u'Cut Text'))
 
     def pasteText(self):
         self.cWidget.edit.paste()
-        self.statusBar().showMessage('Paste Text')
+        self.statusBar().showMessage(_(u'Paste Text'))
 
     def inverseNonPrintabale(self):
         edit = self.cWidget.edit
@@ -741,35 +733,35 @@ class SelectX(QtGui.QMainWindow):
         option = QtGui.QTextOption()
         if doc.defaultTextOption().flags():
             option.setFlags(QtGui.QTextOption.Flag())
-            self.statusBar().showMessage('Hide Non Printabale')
+            self.statusBar().showMessage(_(u'Hide Non Printabale'))
         else:
             option.setFlags(QtGui.QTextOption.ShowTabsAndSpaces)
-            self.statusBar().showMessage('Show Non Printabale')
+            self.statusBar().showMessage(_(u'Show Non Printabale'))
         doc.setDefaultTextOption(option)
 
     def inverseLineNumbering(self):
         bar = self.cWidget.number_bar
         bar.paintLineNumber = not bar.paintLineNumber
         if bar.paintLineNumber:
-           self.statusBar().showMessage('Show Line Numbers')
+           self.statusBar().showMessage(_(u'Show Line Numbers'))
         else:
-            self.statusBar().showMessage('Hide Line Numbers')
+            self.statusBar().showMessage(_(u'Hide Line Numbers'))
         bar.update()
 
     def findText(self):
         cursor = self.cWidget.edit.textCursor()
         textSelected = cursor.selectedText()
         text_find, find_ok = QtGui.QInputDialog.getText(self, \
-        'SelectX Find Dialog', 'Enter text to find:', QtGui.QLineEdit.Normal,  textSelected)
+        _(u'SelectX Find Dialog'), _(u'Enter text to find:'), QtGui.QLineEdit.Normal,  textSelected)
         if find_ok:
             if self.cWidget.edit.find(str(text_find)):
-                self.statusBar().showMessage('Finded: %s' % text_find)
+                self.statusBar().showMessage(_(u'Finded: %s') % text_find)
                 return
             else:
-                self.statusBar().showMessage('Not finded: %s' % text_find)
+                self.statusBar().showMessage(_(u'Not finded: %s') % text_find)
                 return
             return
-        self.statusBar().showMessage('Find Canseled')
+        self.statusBar().showMessage(_(u'Find Canseled'))
 
     def selectAll(self):
         self.cWidget.edit.selectAll()
@@ -783,19 +775,19 @@ class SelectX(QtGui.QMainWindow):
         currentw = self.cWidget.edit
         currentw.zoomIn(1)
         currentw.zoomRate += 1
-        self.statusBar().showMessage('Zoom Rate: %s' % currentw.zoomRate)
+        self.statusBar().showMessage(_(u'Zoom Rate: %s') % currentw.zoomRate)
 
     def viewZoomOut(self):
         currentw = self.cWidget.edit
         currentw.zoomOut(1)
         currentw.zoomRate -= 1
-        self.statusBar().showMessage('Zoom Rate: %s' % currentw.zoomRate)
+        self.statusBar().showMessage(_(u'Zoom Rate: %s') % currentw.zoomRate)
 
     def viewZoomOriginal(self):
         currentw = self.cWidget.edit
         currentw.zoomIn(-currentw.zoomRate)
         currentw.zoomRate = 0
-        self.statusBar().showMessage('Zoom Rate: %s' % currentw.zoomRate)
+        self.statusBar().showMessage(_(u'Zoom Rate: %s') % currentw.zoomRate)
 
     def viewFont(self):
         font, ok = QtGui.QFontDialog.getFont(self.cWidget.edit.qFont, self)
@@ -813,8 +805,8 @@ class SelectX(QtGui.QMainWindow):
                 
         if self.okRun:
             self.text_url, play_ok = QtGui.QInputDialog.getText(self, \
-            'Enter media URL', \
-            'Enter you favorit on-line radio URL:', \
+            _(u'Enter media URL'), \
+            _(u'Enter you favorit on-line radio URL:'), \
             QtGui.QLineEdit.Normal, \
             self.text_url)
             if play_ok:
@@ -830,24 +822,24 @@ class SelectX(QtGui.QMainWindow):
                 self.playSource.Type = Phonon.MediaSource.Url
                 self.okMediaPlayer = Phonon.createPlayer(Phonon.MusicCategory, self.playSource)#Phonon.MediaObject()
                 self.okMediaPlayer.play()
-                self.statusBar().showMessage('okPlayer play: %s'%self.text_url)
+                self.statusBar().showMessage(_(u'okPlayer play: %s')%self.text_url)
         else:
             self.okMediaPlayer.stop()
-            self.statusBar().showMessage('okPlayer stop')
+            self.statusBar().showMessage(_(u'okPlayer stop'))
 
     def aboutHelp(self):
-        QtGui.QMessageBox.about(self, 'About SelectX', \
-        "SelectX. Text editor licenced by GPL3. Ver. %s" % __version__)
+        QtGui.QMessageBox.about(self, _(u'About SelectX'), \
+        _(u"SelectX. Text editor licenced by GPL3. Ver. %s") % __version__)
         self.statusBar().showMessage(VERSION_INFO % \
         __version__)
         self.ok += 1
         if self.ok>9:
             self.okPlay.setEnabled(True)
             self.okPlay.setVisible(True)
-            self.statusBar().showMessage('Ok')
+            self.statusBar().showMessage(_(u'Ok'))
 
     def keyHelp(self):
-        QtGui.QMessageBox.information(self, 'Keys SelectX', KEYS_HELP, \
+        QtGui.QMessageBox.information(self, _(u'Keys SelectX'), KEYS_HELP, \
         QtGui.QMessageBox.Ok)
         print ok
 
@@ -928,9 +920,9 @@ class TextEditBaseX(QtGui.QTextEdit):
         rows = currentDoc.lineCount()
         if  cursor.hasSelection():
             block = cursor.selectionEnd() - cursor.selectionStart()
-            self.parentControl.parent.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}".format(symb, rows, line, col, block))
+            self.parentControl.parent.statusBar().showMessage(_(u"Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}").format(symb, rows, line, col, block))
         else:
-            self.parentControl.parent.statusBar().showMessage("Symbols: {} | Rows: {} | Line: {} | Column: {}".format(symb, rows, line, col))
+            self.parentControl.parent.statusBar().showMessage(_(u"Symbols: {} | Rows: {} | Line: {} | Column: {}").format(symb, rows, line, col))
             pass
         if self.enterPressed:
             self.enterPressed=False
@@ -1450,7 +1442,7 @@ class Find(QtGui.QDialog):
     def find(self):
 
         # Grab the parent's text
-        text = self.parent.mainTab.currentWidget().toPlainText()
+        text = self.parent.mainTab.currentWidget().edit.toPlainText()
 
         # And the text to find
         query = self.findField.toPlainText()
@@ -1491,12 +1483,12 @@ class Find(QtGui.QDialog):
         else:
 
             # We set the cursor to the end if the search was unsuccessful
-            self.parent.mainTab.currentWidget().moveCursor(QtGui.QTextCursor.End)
+            self.parent.mainTab.currentWidget().edit.moveCursor(QtGui.QTextCursor.End)
 
     def replace(self):
 
         # Grab the text cursor
-        cursor = self.parent.mainTab.currentWidget().textCursor()
+        cursor = self.parent.mainTab.currentWidget().edit.textCursor()
 
         # Security
         if self.lastMatch and cursor.hasSelection():
@@ -1506,7 +1498,7 @@ class Find(QtGui.QDialog):
             cursor.insertText(self.replaceField.toPlainText())
 
             # And set the new cursor
-            self.parent.mainTab.currentWidget().setTextCursor(cursor)
+            self.parent.mainTab.currentWidget().edit.setTextCursor(cursor)
 
     def replaceAll(self):
 
@@ -1542,7 +1534,7 @@ class Find(QtGui.QDialog):
     def moveCursor(self,start,end):
 
         # We retrieve the QTextCursor object from the parent's QTextEdit
-        cursor = self.parent.mainTab.currentWidget().textCursor()
+        cursor = self.parent.mainTab.currentWidget().edit.textCursor()
 
         # Then we set the position to the beginning of the last match
         cursor.setPosition(start)
@@ -1552,7 +1544,7 @@ class Find(QtGui.QDialog):
         cursor.movePosition(QtGui.QTextCursor.Right,QtGui.QTextCursor.KeepAnchor,end - start)
 
         # And finally we set this new cursor as the parent's
-        self.parent.mainTab.currentWidget().setTextCursor(cursor)
+        self.parent.mainTab.currentWidget().edit.setTextCursor(cursor)
 
 
 def main():
