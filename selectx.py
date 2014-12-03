@@ -3,7 +3,17 @@
 #!/usr/bin/python -m cProfile -s time ./selectx.py |less -o ./pof.log     #<<<<profiler run
 import sys, os, re, encodings
 from gettext import gettext as _
+import gettext
+#print gettext.bindtextdomain('SelectX','/home/a10/dev/')
+#lang1 = gettext.translation('SelectX', languages=['ru'])
+#lang1.install()
 
+
+import locale
+import os
+
+current_locale, encoding = locale.getdefaultlocale()
+print current_locale, encoding
 
 try:
     from PySide import QtGui, QtCore
@@ -21,7 +31,7 @@ instead of PySide
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
 
-__version__ = '''0.6.0.1'''
+__version__ = '''0.6.0.3'''
 
 KEYS_HELP = _(u'''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -60,7 +70,7 @@ Keys:
 --version                   Print version info
 ''')
 
-VERSION_INFO = _(u"SelectX. Text editor licenced by GPL3. Ver. %s")
+VERSION_INFO = _(u"SelectX. Text editor licensed by GPL3. Ver. %s")
 
 #icon theme for very soft and very micro os ;) (based on http://tango.freedesktop.org/Tango_Icon_Library)
 TANGO_ICONS = {'office_calendar':"""/* XPM */
@@ -301,7 +311,7 @@ class SelectX(QtGui.QMainWindow):
         self.toolbar = self.addToolBar(_(u"Select"))
         self.toolbar.setMovable(True)
         selectMenu = menubar.addMenu(_(u'&Select'))
-        self.addActionParamX(_(u'SelectAll'), 'Ctrl+A', _(u'Select all text in editor'), \
+        self.addActionParamX(_(u'Select All'), 'Ctrl+A', _(u'Select all text in editor'), \
         self.selectAll, selectMenu, 'edit-select-all', self.toolbar)
         #self.addActionParamX(_(u'Select For Copy By Words'), 'Ctrl+Shift+A', _(u'Set Select For Copy By Words'), \
         #self.setSelectByWords, selectMenu, 'edit-select', self.toolbar, checkAble=True)
@@ -755,17 +765,17 @@ class SelectX(QtGui.QMainWindow):
         _(u'SelectX Find Dialog'), _(u'Enter text to find:'), QtGui.QLineEdit.Normal,  textSelected)
         if find_ok:
             if self.cWidget.edit.find(str(text_find)):
-                self.statusBar().showMessage(_(u'Finded: %s') % text_find)
+                self.statusBar().showMessage(_(u'Found: %s') % text_find)
                 return
             else:
-                self.statusBar().showMessage(_(u'Not finded: %s') % text_find)
+                self.statusBar().showMessage(_(u'Not found: %s') % text_find)
                 return
             return
-        self.statusBar().showMessage(_(u'Find Canseled'))
+        self.statusBar().showMessage(_(u'Find Canceled'))
 
     def selectAll(self):
         self.cWidget.edit.selectAll()
-        #self.statusBar().showMessage('Select All Text')
+        #self.statusBar().showMessage(_(u''Select All Text'))
         self.cursorPosition()
 
     def setSelectByWords(self):
@@ -829,7 +839,7 @@ class SelectX(QtGui.QMainWindow):
 
     def aboutHelp(self):
         QtGui.QMessageBox.about(self, _(u'About SelectX'), \
-        _(u"SelectX. Text editor licenced by GPL3. Ver. %s") % __version__)
+        _(u"SelectX. Text editor licensed by GPL3. Ver. %s") % __version__)
         self.statusBar().showMessage(VERSION_INFO % \
         __version__)
         self.ok += 1
