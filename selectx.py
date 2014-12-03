@@ -1,19 +1,36 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 '''SelectX - easy eXtendable text editor for developers writed on Python. Licensed by GPL3.'''
 #!/usr/bin/python -m cProfile -s time ./selectx.py |less -o ./pof.log     #<<<<profiler run
 import sys, os, re, encodings
 from gettext import gettext as _
 import gettext
+#print gettext.textdomain('messages')
 #print gettext.bindtextdomain('SelectX','/home/a10/dev/')
 #lang1 = gettext.translation('SelectX', languages=['ru'])
 #lang1.install()
-
-
 import locale
 import os
 
+APPNAME = "SelectX"
+TRANSLATION_ROOT = os.path.join(os.getcwd(), "po/locales")
+
+#try:
+#    l = os.environ['LC_MESSAGES']
+#    t = gettext.translation(APPNAME, TRANSLATION_ROOT,
+#                            [l])
+#except KeyError:
+#    t = gettext.translation(APPNAME,
+#                            TRANSLATION_ROOT)
+
 current_locale, encoding = locale.getdefaultlocale()
 print current_locale, encoding
+#if current_locale[:2].lower()=='ru':
+    #mess=gettext.translation(APPNAME)
+    #lang1 = gettext.translation(APPNAME, languages=['ru_RU'])
+    #lang1.install()
+#lang1 = gettext.translation('SelectX', languages=['ru'])
+#lang1.install()
 
 try:
     from PySide import QtGui, QtCore
@@ -31,7 +48,7 @@ instead of PySide
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
 
-__version__ = '''0.6.0.3'''
+__version__ = '''0.6.0.4'''
 
 KEYS_HELP = _(u'''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
