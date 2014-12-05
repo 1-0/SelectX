@@ -6,6 +6,7 @@ import sys, os, re, encodings
 import gettext, locale
 
 current_locale, encoding = locale.getdefaultlocale()
+#print current_locale
 if current_locale[:2].lower()=='ru':
     t = gettext.translation('SelectX', './locale/', fallback=True, languages=['ru_UA'])
     t.install()
@@ -29,7 +30,7 @@ instead of PySide
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
 
-__version__ = '''0.6.0.7'''
+__version__ = '''0.6.0.8'''
 
 KEYS_HELP = _(u'''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
