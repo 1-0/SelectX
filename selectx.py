@@ -5,14 +5,647 @@
 import sys, os, re, encodings
 import gettext, locale
 
-current_locale, encoding = locale.getdefaultlocale()
-#print current_locale
-if current_locale[:2].lower()=='ru':
-    t = gettext.translation('SelectX', './locale/', fallback=True, languages=['ru_UA'])
-    t.install()
-else:
-    t = gettext.translation('SelectX', './locale/', fallback=True)
-_ = t.ugettext
+def localGettextX():
+    po_dict = {'ru': '''
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SelectX 0.6.0.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-12-03 13:24+0200\n"
+"PO-Revision-Date: 2014-12-06 00:07+0300\n"
+"Last-Translator: 1-0 <1_0@usa.com>\n"
+"Language-Team: X <1_0@usa.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"Language: ru\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+#: selectx.py:23
+msgid ""
+"Try to use PyQt4\n"
+"(license - http://www.riverbankcomputing.co.uk/software/pyqt/license )\n"
+"instead of PySide\n"
+"(license - LGPL - http://www.gnu.org/copyleft/lesser.html )"
+msgstr ""
+"Попытка использовать PyQt4\n"
+"(лицензия - http://www.riverbankcomputing.co.uk/software/pyqt/license )\n"
+"вместо PySide\n"
+"(лицензия - LGPL - http://www.gnu.org/copyleft/lesser.html )"
+#: selectx.py:36
+msgid ""
+"Keypresses:  Action:\n"
+"Backspace  Deletes the character to the left of the cursor.\n"
+"Delete     Deletes the character to the right of the cursor.\n"
+"Ctrl+C     Copy the selected text to the clipboard.\n"
+"Ctrl+Insert    Copy the selected text to the clipboard.\n"
+"Ctrl+K     Deletes to the end of the line.\n"
+"Ctrl+V     Pastes the clipboard text into text edit.\n"
+"Shift+Insert   Pastes the clipboard text into text edit.\n"
+"Ctrl+X     Deletes the selected text and copies it to the clipboard.\n"
+"Shift+Delete   Deletes the selected text and copies it to the clipboard.\n"
+"Ctrl+Z     Undoes the last operation.\n"
+"Ctrl+Y     Redoes the last operation.\n"
+"LeftArrow  Moves the cursor one character to the left.\n"
+"Ctrl+LeftArrow     Moves the cursor one word to the left.\n"
+"RightArrow     Moves the cursor one character to the right.\n"
+"Ctrl+RightArrow    Moves the cursor one word to the right.\n"
+"UpArrow    Moves the cursor one line up.\n"
+"Ctrl+UpArrow   Moves the cursor one word up.\n"
+"DownArrow  Moves the cursor one line down.\n"
+"Ctrl+Down Arrow    Moves the cursor one word down.\n"
+"PageUp     Moves the cursor one page up.\n"
+"PageDown   Moves the cursor one page down.\n"
+"Home   Moves the cursor to the beginning of the line.\n"
+"Ctrl+Home  Moves the cursor to the beginning of the text.\n"
+"End    Moves the cursor to the end of the line.\n"
+"Ctrl+End   Moves the cursor to the end of the text.\n"
+"Alt+Wheel  Scrolls the page horizontally (the Wheel is the mouse wheel).\n"
+"Ctrl+Wheel     Zooms the text."
+msgstr ""
+"Нажатая клавиша:  Действие:\n"
+"Backspace  Удаляет символ слева от курсора.\n"
+"Delete     Удаляет символ справа от курсора.\n"
+"Ctrl+C     Копирует выбранный текст в буфер обмена.\n"
+"Ctrl+Insert    Копирует выбранный текст в буфер обмена.\n"
+"Ctrl+K     Удаляет до конца строки.\n"
+"Ctrl+V     Вставляет текст в текстовый редактор.\n"
+"Shift+Insert   Вставляет текст в текстовый редактор.\n"
+"Ctrl+X     Удаляет выбранный текст и копирует его в буфер обмена.\n"
+"Shift+Delete   Удаляет выбранный текст и копирует его в буфер обмена.\n"
+"Ctrl+Z     Отменяет последнее действие.\n"
+"Ctrl+Y     Выполняет последнее действие.\n"
+"СтрелкаВлево  Передвигает курсор на один символ влево.\n"
+"Ctrl+СтрелкаВлево     Передвигает курсор на одно слово влево.\n"
+"СтрелкаВправо     Передвигает курсор на один символ вправо.\n"
+"Ctrl+СтрелкаВправо    Передвигает курсор на одно слово вправо.\n"
+"СтрелкаВверх    Передвигает курсор на одну строку вверх.\n"
+"Ctrl+СтрелкаВверх   Передвигает курсор на одно слово вверх.\n"
+"СтрелкаВниз  Передвигает курсор на одну строку вниз.\n"
+"Ctrl+СтрелкаВниз   Передвигает курсор на одно слово вниз.\n"
+"PageUp     Передвигает курсор на одну страницу вверх.\n"
+"PageDown   Передвигает курсор на одну страницу вниз.\n"
+"Home   Передвигает курсор в начало строки.\n"
+"Ctrl+Home  Передвигает курсор в начало текста.\n"
+"End    Передвигает курсор в конец строки.\n"
+"Ctrl+End   Передвигает курсор в конец текста.\n"
+"Alt+Колесо  Прокручивает страницу горизонтально (Колесо - колесо мышки).\n"
+"Ctrl+Колесо     Масштабирует текст."
+#: selectx.py:65
+msgid ""
+"\n"
+"[KEY]...[FILE]\n"
+"Keys:\n"
+"--ForceEmbededIcons         Use embeded icons theme\n"
+"-h, --help                  Print this help message\n"
+"--version                   Print version info\n"
+msgstr ""
+"\n"
+"[КЛЮЧ]...[ФАЙЛ]\n"
+"Ключи:\n"
+"--ForceEmbededIcons         Использовать встроенную тему иконок\n"
+"-h, --help                  Вывести это сообщение помощь\n"
+"--version                  Вывести информацию о версии\n"
+#: selectx.py:73 selectx.py:842
+#, python-format
+msgid "SelectX. Text editor licensed by GPL3. Ver. %s"
+msgstr "SelectX. Текстовый редактор лицензированный по GPL3. Версия %s."
+#: selectx.py:210
+#, python-format
+msgid "Try Open This File -> %s"
+msgstr "Попытка открыть этот файл -> %s"
+#: selectx.py:213
+msgid "Too many args"
+msgstr "Слишком много параметров"
+#: selectx.py:229 selectx.py:476
+msgid "SelectX"
+msgstr "SelectX"
+#: selectx.py:235 selectx.py:475
+msgid "New Text"
+msgstr "Новый текст"
+#: selectx.py:264
+msgid "File"
+msgstr "Файл"
+#: selectx.py:267
+msgid "&File"
+msgstr "&Файл"
+#: selectx.py:270
+msgid "New Tab"
+msgstr "Новая вкладка"
+#: selectx.py:270
+msgid "Create new tab"
+msgstr "Создать новую вкладку"
+#: selectx.py:274
+msgid "Open"
+msgstr "Открыть"
+#: selectx.py:274
+msgid "Open a file"
+msgstr "Открыть файл"
+#: selectx.py:276
+msgid "Save"
+msgstr "Сохранить"
+#: selectx.py:276
+msgid "Save current file"
+msgstr "Сохранить текущий файл"
+#: selectx.py:278
+msgid "Save As..."
+msgstr "Сохранить как..."
+#: selectx.py:278
+msgid "Save as new file"
+msgstr "Сохранить как новый файл"
+#: selectx.py:281
+msgid "Preview"
+msgstr "Предпросмотр"
+#: selectx.py:281
+msgid "File Preview"
+msgstr "Предпросмотр файла"
+#: selectx.py:283
+msgid "Print"
+msgstr "Печать"
+#: selectx.py:283
+msgid "File Print"
+msgstr "Пачать файла"
+#: selectx.py:286
+msgid "Close Tab"
+msgstr "Закрыть вкладку"
+#: selectx.py:286
+msgid "Close current tab"
+msgstr "Закрыть текущую вкладку"
+#: selectx.py:288
+msgid "Exit"
+msgstr "Выход"
+#: selectx.py:288
+msgid "Exit SelectX"
+msgstr "Выйти из SelectX"
+#: selectx.py:291
+msgid "Edit"
+msgstr "Редактировать"
+#: selectx.py:293
+msgid "&Edit"
+msgstr "&Редактировать"
+#: selectx.py:294
+msgid "Undo"
+msgstr "Отменить"
+#: selectx.py:294
+msgid "Undo last text edit"
+msgstr "Отменить последнюю правку текста"
+#: selectx.py:296
+msgid "Redo"
+msgstr "Вернуть"
+#: selectx.py:296
+msgid "Redo last text edit"
+msgstr "Вернуть последнюю отмену правки текста"
+#: selectx.py:299
+msgid "Copy"
+msgstr "Копировать"
+#: selectx.py:299
+msgid "Copy selected text"
+msgstr "Копировать выделенный текст"
+#: selectx.py:301
+msgid "Cut"
+msgstr "Вырезать"
+#: selectx.py:301
+msgid "Cut selected text"
+msgstr "Вырезать выделенный текст"
+#: selectx.py:303
+msgid "Paste"
+msgstr "Вставить"
+#: selectx.py:303
+msgid "Paste text"
+msgstr "Вставить текст"
+#: selectx.py:308
+msgid "Find and replace"
+msgstr "Найти и заменить"
+#: selectx.py:308
+msgid "Find and replace words in your document"
+msgstr "Найти и заменить слова в Вашем документе"
+#: selectx.py:311
+msgid "Select"
+msgstr "Выбрать"
+#: selectx.py:313
+msgid "&Select"
+msgstr "Вы&брать"
+#: selectx.py:314
+msgid "Select All"
+msgstr "Выбрать всё"
+#: selectx.py:314
+msgid "Select all text in editor"
+msgstr "Выбрать весь текст в редакторе"
+#: selectx.py:319
+msgid "View"
+msgstr "Вид"
+#: selectx.py:321
+msgid "&View"
+msgstr "&Вид"
+#: selectx.py:324
+msgid "&Highlighter"
+msgstr "&Подсветка синтаксиса"
+#: selectx.py:327
+msgid "None"
+msgstr "Отсутствует"
+#: selectx.py:327
+msgid "None Highlighter"
+msgstr "Отсутствует подсветка синтаксиса"
+#: selectx.py:330
+msgid "Cpp"
+msgstr "С++"
+#: selectx.py:330
+msgid "Cpp Highlighter"
+msgstr "Подсветка синтаксиса С++"
+#: selectx.py:333
+msgid "Python"
+msgstr "Python"
+#: selectx.py:333
+msgid "Python Highlighter"
+msgstr "Подсветка синтаксиса Python"
+#: selectx.py:338
+msgid "&Zoom"
+msgstr "&Масштаб"
+#: selectx.py:340
+msgid "Zoom In"
+msgstr "Увеличить масштаб"
+#: selectx.py:340
+msgid "Zoom In text in editor"
+msgstr "Увеличить масштаб текста в редакторе"
+#: selectx.py:342
+msgid "Zoom Out"
+msgstr "Уменьшить масштаб"
+#: selectx.py:342
+msgid "Zoom Out text in editor"
+msgstr "Уменьшить масштаб текста в редакторе"
+#: selectx.py:344
+msgid "Zoom Original"
+msgstr "Начальный масштаб"
+#: selectx.py:344
+msgid "Zoom original text in editor"
+msgstr "Начальный масштаб текста в редакторе"
+#: selectx.py:347
+msgid "Font"
+msgstr "Шрифт"
+#: selectx.py:347
+msgid "Font select dialog"
+msgstr "Диалог выбора шрифта"
+#: selectx.py:350
+msgid "Show/Hide non-printabale"
+msgstr "Отобразить/спрятать непечатаемые"
+#: selectx.py:350
+msgid "Show/Hide non-printabale symbols"
+msgstr "Отобразить/спрятать непечатаемые символы"
+#: selectx.py:352
+msgid "Pythonic Enter"
+msgstr "\"Pythonic\" новой строки"
+#: selectx.py:352
+msgid "On/Off Pythonic Enter Style"
+msgstr "Включить/выключить \"Pythonic\" стиль новой строки"
+#: selectx.py:354
+msgid "Line Numbers"
+msgstr "Номерация строк"
+#: selectx.py:354
+msgid "On/Off PLine Numbers"
+msgstr "Включить/Выключить номерацию строк"
+#: selectx.py:357 selectx.py:360
+msgid "Help"
+msgstr "Помощь"
+#: selectx.py:359
+msgid "&Help"
+msgstr "&Помощь"
+#: selectx.py:360
+msgid "Keys Help"
+msgstr "Помощь по клавишам"
+#: selectx.py:362
+msgid "About"
+msgstr "О программе"
+#: selectx.py:362
+msgid "About editor"
+msgstr "О редакторе"
+#: selectx.py:364
+msgid "About &Qt"
+msgstr "О версии &Qt"
+#: selectx.py:364
+msgid "About current QT"
+msgstr "О текущей версии QT"
+#: selectx.py:366
+msgid "Ok Player"
+msgstr "Ok проигрыватель"
+#: selectx.py:366
+msgid "On/Off Ok Player"
+msgstr "Включить/выключить Ok проигрыватель"
+#: selectx.py:409
+msgid "Hide Py Enter"
+msgstr "Выключить \"Pythonic\" новые строки"
+#: selectx.py:412
+msgid "Add Py Enter"
+msgstr "Включить \"Pythonic\" новые строки"
+#: selectx.py:482
+#, python-format
+msgid "New text - %s"
+msgstr "Новый текст - %s"
+#: selectx.py:517
+#, python-format
+msgid "Selected Tab #%s"
+msgstr "Выбрана вкладка №%s"
+#: selectx.py:540 selectx.py:571 selectx.py:582
+#, python-format
+msgid "Save Text: %s"
+msgstr "Сохранение текста: %s"
+#: selectx.py:552
+msgid "Save File"
+msgstr "Сохранение файла"
+#: selectx.py:562 selectx.py:591
+msgid "Stop Save Text"
+msgstr "Прекращено сохранение текста"
+#: selectx.py:583 selectx.py:680
+#, python-format
+msgid "SelectX - %s"
+msgstr "SelectX - %s"
+#: selectx.py:602
+msgid "Open File"
+msgstr "Открыть файл"
+#: selectx.py:604
+msgid ""
+"All Files (*);;Text Files (*.txt *.log *.TXT *.LOG);;Python Files (*.py *.PY "
+"*.py3 *.PY3);;C/C++ Files (*.c *.cc *.cpp *.c++ *.cxx *.h *.hh *.hpp *.hxx *."
+"CPP *.H *.c *.C)"
+msgstr ""
+"Все файлы (*);;Текстовые файлы (*.txt *.log *.TXT *.LOG);;Python файлы (*.py "
+"*.PY *.py3 *.PY3);;C/C++ файлы(*.c *.cc *.cpp *.c++ *.cxx *.h *.hh *.hpp *."
+"hxx *.CPP *.H *.c *.C)"
+#: selectx.py:615 selectx.py:641
+#, python-format
+msgid "Start reading: %s"
+msgstr "Начато чтение: %s"
+#: selectx.py:619
+msgid "Stop Open Text"
+msgstr "Прекращено открытие текста"
+#: selectx.py:675
+#, python-format
+msgid "Open Text: %s"
+msgstr "Открыть текст: %s"
+#: selectx.py:699
+msgid "Confirm Exit SelectX"
+msgstr "Подтвердить выход из SelectX"
+#: selectx.py:700
+msgid "Are you sure to Exit?"
+msgstr "Вы уверенны, что хотите выйти?"
+#: selectx.py:704
+msgid "Close Stoped"
+msgstr "Закрытие прекращено"
+#: selectx.py:707
+msgid "Confirm Close Tab"
+msgstr "Подтвердите закрытие вкладки"
+#: selectx.py:708
+msgid "Are you sure to Close Tab?"
+msgstr "Вы уверенны, что хотите закрыть вкладку?"
+#: selectx.py:716
+msgid "Undo Text"
+msgstr "Отмена текста"
+#: selectx.py:720
+msgid "Redo Text"
+msgstr "Возврат текста"
+#: selectx.py:730
+msgid "Copy Text"
+msgstr "Копирование текста"
+#: selectx.py:734
+msgid "Cut Text"
+msgstr "Вырезание текста"
+#: selectx.py:738
+msgid "Paste Text"
+msgstr "Вставка текста"
+#: selectx.py:746
+msgid "Hide Non Printabale"
+msgstr "Спрятать непечатаемые"
+#: selectx.py:749
+msgid "Show Non Printabale"
+msgstr "Показать непечатаемые"
+#: selectx.py:756
+msgid "Show Line Numbers"
+msgstr "Показать номера линий"
+#: selectx.py:758
+msgid "Hide Line Numbers"
+msgstr "Спрятать номера линий"
+#: selectx.py:765
+msgid "SelectX Find Dialog"
+msgstr "SelectX Диалог поиска"
+#: selectx.py:765
+msgid "Enter text to find:"
+msgstr "Введите текст для поиска:"
+#: selectx.py:768
+#, python-format
+msgid "Found: %s"
+msgstr "Найдено: %s"
+#: selectx.py:771
+#, python-format
+msgid "Not found: %s"
+msgstr "Не найдено: %s"
+#: selectx.py:774
+msgid "Find Canceled"
+msgstr "Поиск отменен"
+#: selectx.py:788 selectx.py:794 selectx.py:800
+#, python-format
+msgid "Zoom Rate: %s"
+msgstr "Коэффициент масштабирования: %s"
+#: selectx.py:818
+msgid "Enter media URL"
+msgstr "Введите URL мультимедиа"
+#: selectx.py:819
+msgid "Enter you favorit on-line radio URL:"
+msgstr "Введите URL Вашей любимой он-лайн радиостанции"
+#: selectx.py:835
+#, python-format
+msgid "okPlayer play: %s"
+msgstr "okPlayer проигрывает: %s"
+#: selectx.py:838
+msgid "okPlayer stop"
+msgstr "okPlayer остановлен"
+#: selectx.py:841
+msgid "About SelectX"
+msgstr "О SelectX"
+#: selectx.py:849
+msgid "Ok"
+msgstr "Ok"
+#: selectx.py:852
+msgid "Keys SelectX"
+msgstr "Клавиши SelectX"
+#: selectx.py:933
+msgid "Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}"
+msgstr "Символы: {} | Строки: {} | Строки: {} | Колонки: {} | Выбрано: {}"
+#: selectx.py:935
+msgid "Symbols: {} | Rows: {} | Line: {} | Column: {}"
+msgstr "Символы: {} | Строки: {} | Строки: {} | Колонки: {}"
+'''}
+    
+    current_locale, encoding = locale.getdefaultlocale()
+    #print current_locale
+    if current_locale[:2].lower()in po_dict.keys():
+        t = GetLocalFromtext(po_dict [current_locale[:2]])
+        t = gettext.translation('SelectX', './locale/', fallback=True, languages=['ru_UA'])
+        #t.install()
+    else:
+        t = gettext.translation('SelectX', './locale/', fallback=True)
+    return t.ugettext
+
+def GetLocalFromtext(poText):
+    #print poText
+    return
+
+MESSAGES = {}
+
+
+
+def add(id, str, fuzzy):
+    "Add a non-fuzzy translation to the dictionary."
+    global MESSAGES
+    if not fuzzy and str:
+        MESSAGES[id] = str
+
+
+
+def generate():
+    "Return the generated output."
+    global MESSAGES
+    keys = MESSAGES.keys()
+    # the keys are sorted in the .mo file
+    keys.sort()
+    offsets = []
+    ids = strs = ''
+    for id in keys:
+        # For each string, we need size and file offset.  Each string is NUL
+        # terminated; the NUL does not count into the size.
+        offsets.append((len(ids), len(id), len(strs), len(MESSAGES[id])))
+        ids += id + '\0'
+        strs += MESSAGES[id] + '\0'
+    output = ''
+    # The header is 7 32-bit unsigned integers.  We don't use hash tables, so
+    # the keys start right after the index tables.
+    # translated string.
+    keystart = 7*4+16*len(keys)
+    # and the values start after the keys
+    valuestart = keystart + len(ids)
+    koffsets = []
+    voffsets = []
+    # The string table first has the list of keys, then the list of values.
+    # Each entry has first the size of the string, then the file offset.
+    for o1, l1, o2, l2 in offsets:
+        koffsets += [l1, o1+keystart]
+        voffsets += [l2, o2+valuestart]
+    offsets = koffsets + voffsets
+    output = struct.pack("Iiiiiii",
+                         0x950412deL,       # Magic
+                         0,                 # Version
+                         len(keys),         # # of entries
+                         7*4,               # start of key index
+                         7*4+len(keys)*8,   # start of value index
+                         0, 0)              # size and offset of hash table
+    output += array.array("i", offsets).tostring()
+    output += ids
+    output += strs
+    return output
+
+# based on msgfmt.py Written by Martin v. Löwis <loewis@informatik.hu-berlin.de>
+
+def makeTempPo(filename, outfile):
+    ID = 1
+    STR = 2
+
+    # Compute .mo name from .po name and arguments
+    if filename.endswith('.po'):
+        infile = filename
+    else:
+        infile = filename + '.po'
+    if outfile is None:
+        outfile = os.path.splitext(infile)[0] + '.mo'
+
+    try:
+        lines = open(infile).readlines()
+    except IOError, msg:
+        print >> sys.stderr, msg
+        sys.exit(1)
+
+    section = None
+    fuzzy = 0
+
+    # Parse the catalog
+    lno = 0
+    for l in lines:
+        lno += 1
+        # If we get a comment line after a msgstr, this is a new entry
+        if l[0] == '#' and section == STR:
+            add(msgid, msgstr, fuzzy)
+            section = None
+            fuzzy = 0
+        # Record a fuzzy mark
+        if l[:2] == '#,' and 'fuzzy' in l:
+            fuzzy = 1
+        # Skip comments
+        if l[0] == '#':
+            continue
+        # Now we are in a msgid section, output previous section
+        if l.startswith('msgid') and not l.startswith('msgid_plural'):
+            if section == STR:
+                add(msgid, msgstr, fuzzy)
+            section = ID
+            l = l[5:]
+            msgid = msgstr = ''
+            is_plural = False
+        # This is a message with plural forms
+        elif l.startswith('msgid_plural'):
+            if section != ID:
+                print >> sys.stderr, 'msgid_plural not preceded by msgid on %s:%d' %\
+                    (infile, lno)
+                sys.exit(1)
+            l = l[12:]
+            msgid += '\0' # separator of singular and plural
+            is_plural = True
+        # Now we are in a msgstr section
+        elif l.startswith('msgstr'):
+            section = STR
+            if l.startswith('msgstr['):
+                if not is_plural:
+                    print >> sys.stderr, 'plural without msgid_plural on %s:%d' %\
+                        (infile, lno)
+                    sys.exit(1)
+                l = l.split(']', 1)[1]
+                if msgstr:
+                    msgstr += '\0' # Separator of the various plural forms
+            else:
+                if is_plural:
+                    print >> sys.stderr, 'indexed msgstr required for plural on  %s:%d' %\
+                        (infile, lno)
+                    sys.exit(1)
+                l = l[6:]
+        # Skip empty lines
+        l = l.strip()
+        if not l:
+            continue
+        l = ast.literal_eval(l)
+        if section == ID:
+            msgid += l
+        elif section == STR:
+            msgstr += l
+        else:
+            print >> sys.stderr, 'Syntax error on %s:%d' % (infile, lno), \
+                  'before:'
+            print >> sys.stderr, l
+            sys.exit(1)
+    # Add last entry
+    if section == STR:
+        add(msgid, msgstr, fuzzy)
+
+    # Compute output
+    output = generate()
+
+    try:
+        open(outfile,"wb").write(output)
+    except IOError,msg:
+        print >> sys.stderr, msg
+
+
+_ = localGettextX()
 
 try:
     from PySide import QtGui, QtCore
@@ -30,7 +663,7 @@ instead of PySide
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
 
-__version__ = '''0.6.0.8'''
+__version__ = '''0.6.0.9'''
 
 KEYS_HELP = _(u'''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
@@ -304,7 +937,7 @@ class SelectX(QtGui.QMainWindow):
         editMenu.addSeparator()
         #self.addActionParamX(_(u'Find'), 'Ctrl+Shift+F', _(u'Find text'), self.findText, \
         #editMenu, 'edit-find', self.toolbar)
-        self.addActionParamX(_(u'Find and replace'), 'Ctrl+F', _(u'Find and replace words in your document'), Find(self).show, \
+        self.addActionParamX(_(u'Find and replace'), 'Ctrl+F', _(u'Find and replace words in your document'), FindDialog(self).show, \
         editMenu, 'edit-find-replace', self.toolbar)
 
         self.toolbar = self.addToolBar(_(u"Select"))
@@ -1363,7 +1996,7 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
             return False
 
 
-class Find(QtGui.QDialog):
+class FindDialog(QtGui.QDialog):
     '''Extended find/replase dialouge based on http://www.binpress.com/tutorial/building-a-text-editor-with-pyqt-part-3/147'''
     def __init__(self, parent = None):
 
