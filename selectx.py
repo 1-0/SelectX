@@ -10,22 +10,27 @@ import array
 
 import gettext, locale
 
+__version__ = '''0.6.1.3'''
+osSep = os.path.sep
+
+
 def getDirsForTranslations(baseDir = None, LocaleName = 'ru_UA'):
     from os.path import expanduser
     if not baseDir:
-        baseDir = expanduser('~/')
+        baseDir = expanduser('~'+osSep)
+        #print 'baseDir-'+baseDir
         
-    if not (os.path.isdir(baseDir+'.config/')):
-        os.makedirs(baseDir+'.config/')
-    if not (os.path.isdir(baseDir+'.config/SelectX/')):
-        os.makedirs(baseDir+'.config/SelectX/locale/')
-    if not (os.path.isdir(baseDir+'.config/SelectX/locale/')):
-        os.makedirs(baseDir+'.config/SelectX/locale/')
-    baseDirTranslate = baseDir+'.config/SelectX/locale/'
-    localePath=baseDirTranslate+LocaleName+'/'
+    if not (os.path.isdir(baseDir+'.config'+osSep)):
+        os.makedirs(baseDir+'.config'+osSep)
+    if not (os.path.isdir(baseDir+'.config'+osSep+'SelectX'+osSep)):
+        os.makedirs(baseDir+'.config'+osSep+'SelectX'+osSep+'locale'+osSep)
+    if not (os.path.isdir(baseDir+'.config'+osSep+'SelectX'+osSep+'locale'+osSep)):
+        os.makedirs(baseDir+'.config'+osSep+'SelectX'+osSep+'locale'+osSep)
+    baseDirTranslate = baseDir+'.config'+osSep+'SelectX'+osSep+'locale'+osSep
+    localePath=baseDirTranslate+LocaleName+osSep
     if not (os.path.isdir(localePath)):
         os.makedirs(localePath)
-    localePath += 'LC_MESSAGES/'
+    localePath += 'LC_MESSAGES'+osSep
     if not (os.path.isdir(localePath)):
         os.makedirs(localePath)
     #print baseDir+'.config/SelectX/locale/ru_UA/LC_MESSAGES/'
@@ -626,6 +631,7 @@ msgstr "Символы: {} | Строки: {} | Строки: {} | Колонк�
 '''}
     
     current_locale, encoding = locale.getdefaultlocale()
+    #print 'current_locale, encoding-'+str((current_locale, encoding))
     #print current_locale
     if current_locale[:2].lower()in po_dict.keys():
         
@@ -653,7 +659,9 @@ msgstr "Символы: {} | Строки: {} | Строки: {} | Колонк�
         t.install()
         #print 't -'+str(t)
     else:
+        #print 'getDirsForTranslations()[0]-'+str(getDirsForTranslations()[0])
         t = gettext.translation('SelectX', getDirsForTranslations()[0], fallback=True)
+        #print 't-'+str(t)
     return t.ugettext
 
 def GetLocalFromtext(poText):
@@ -716,6 +724,7 @@ def generateMo():
 # based on msgfmt.py Written by Martin v. Löwis <loewis@informatik.hu-berlin.de>
 
 def makeMo(filename, outfile):
+    #print 'filename, outfile-'+str((filename, outfile))
     ID = 1
     STR = 2
 
@@ -813,6 +822,7 @@ def makeMo(filename, outfile):
 
 
 _ = localGettextX()
+localGettextX = None
 
 try:
     from PySide import QtGui, QtCore
@@ -830,7 +840,6 @@ instead of PySide
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
 
-__version__ = '''0.6.0.11'''
 
 KEYS_HELP = _(u'''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
