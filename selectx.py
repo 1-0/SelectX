@@ -10,31 +10,35 @@ import array
 
 import gettext, locale
 
-__version__ = '''0.6.1.4'''
-osSep = os.path.sep
+__version__ = '''0.6.1.8'''
+#osSep = os.path.sep
 
 
 def getDirsForTranslations(baseDir = None, LocaleName = 'ru_UA'):
+    def addPath(pathPart):
+        return pathPart+os.path.sep
+    
     from os.path import expanduser
     if not baseDir:
-        baseDir = expanduser('~'+osSep)
+        baseDir = addPath(expanduser('~'))
         #print 'baseDir-'+baseDir
-        
-    if not (os.path.isdir(baseDir+'.config'+osSep)):
-        os.makedirs(baseDir+'.config'+osSep)
-    if not (os.path.isdir(baseDir+'.config'+osSep+'SelectX'+osSep)):
-        os.makedirs(baseDir+'.config'+osSep+'SelectX'+osSep+'locale'+osSep)
-    if not (os.path.isdir(baseDir+'.config'+osSep+'SelectX'+osSep+'locale'+osSep)):
-        os.makedirs(baseDir+'.config'+osSep+'SelectX'+osSep+'locale'+osSep)
-    baseDirTranslate = baseDir+'.config'+osSep+'SelectX'+osSep+'locale'+osSep
-    localePath=baseDirTranslate+LocaleName+osSep
+    baseDir += addPath('.config')
+    if not (os.path.isdir(baseDir)):
+        os.makedirs(baseDir)
+    baseDir += addPath('SelectX')
+    if not (os.path.isdir(baseDir)):
+        os.makedirs(baseDir)
+    baseDir += addPath('locale')
+    if not (os.path.isdir(baseDir)):
+        os.makedirs(baseDir)
+    localePath=baseDir+LocaleName+os.path.sep
     if not (os.path.isdir(localePath)):
         os.makedirs(localePath)
-    localePath += 'LC_MESSAGES'+osSep
+    localePath += addPath('LC_MESSAGES')
     if not (os.path.isdir(localePath)):
         os.makedirs(localePath)
     #print baseDir+'.config/SelectX/locale/ru_UA/LC_MESSAGES/'
-    return baseDirTranslate, localePath
+    return baseDir, localePath
     
 #print getDirsForTranslations()
 
@@ -46,7 +50,7 @@ def localGettextX():
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: SelectX 0.6.0.11\\n"
+"Project-Id-Version: SelectX 0.6.0.7\\n"
 "Report-Msgid-Bugs-To: \\n"
 "POT-Creation-Date: 2014-12-03 13:24+0200\\n"
 "PO-Revision-Date: 2014-12-06 00:07+0300\\n"
@@ -631,103 +635,36 @@ msgstr "Символы: {} | Строки: {} | Строки: {} | Колонк�
 '''}
     
     current_locale, encoding = locale.getdefaultlocale()
-    #print 'current_locale, encoding-'+str((current_locale, encoding))
-    #print current_locale
-    if current_locale[:2].lower()in po_dict.keys():
-        
-        filePo = open(getDirsForTranslations()[1]+'SelectX.po', "wb")
-        #print 'filePo-'+str(filePo)
-        if filePo:
-            #print po_dict[current_locale[:2]]
-            #print >>filePo, po_dict[current_locale[:2]]
-            #filePo.writelines(po_dict[current_locale[:2]])
-            filePo.write(po_dict[current_locale[:2]])
-            #pass
-            #filePo.close()
-        else:
-            return
-            #pass
-        #filePO.write(po_dict[current_locale[:2]])
+    poString = None
+    if current_locale.lower() in po_dict.keys():
+        poString = po_dict[current_locale]
+    elif current_locale[:2].lower() in po_dict.keys():
+        poString = po_dict[current_locale[:2]]
+    if poString:
+        #newPo = poString.replace('\\"', '\\\"')
+        #poString = newPo.replace('\\\"', '\\\\"')
+        #print poString
+        baseDirLocale, baseDirPo = getDirsForTranslations(LocaleName = current_locale)
+        filePo = open(baseDirPo+'SelectX.po', "w")
+        filePo.write(poString)
         filePo.close()
-        
-        
-        makeMo(getDirsForTranslations()[1]+'SelectX.po', getDirsForTranslations()[1]+'SelectX.mo')
-        #makeTempPo(po_dict[current_locale[:2]])
-        #t = gettext.translation('SelectX', '''locale/''', fallback=True, languages=['ru_UA'])
-        t = gettext.translation('SelectX', getDirsForTranslations()[0], fallback=True, languages=['ru_UA'])
-        #print 'getDirsForTranslations()[0]-'+str(getDirsForTranslations()[0])
-        t.install()
-        #print 't -'+str(t)
+        makeMo(baseDirPo + 'SelectX.po', baseDirPo + 'SelectX.mo', current_locale)
+        t = gettext.translation('SelectX', baseDirLocale, fallback=True, languages=['ru_UA'])
+        #t.install()
     else:
-        #print 'getDirsForTranslations()[0]-'+str(getDirsForTranslations()[0])
         t = gettext.translation('SelectX', getDirsForTranslations()[0], fallback=True)
-        #print 't-'+str(t)
     return t.ugettext
 
-def GetLocalFromtext(poText):
-    #print poText
-    return
-
-MESSAGES = {}
-
-
-
-def add(id, str, fuzzy):
-    "Add a non-fuzzy translation to the dictionary."
-    global MESSAGES
-    if not fuzzy and str:
-        MESSAGES[id] = str
-
-
-
-def generateMo():
-    "Return the generated output."
-    global MESSAGES
-    keys = MESSAGES.keys()
-    # the keys are sorted in the .mo file
-    keys.sort()
-    offsets = []
-    ids = strs = ''
-    for id in keys:
-        # For each string, we need size and file offset.  Each string is NUL
-        # terminated; the NUL does not count into the size.
-        offsets.append((len(ids), len(id), len(strs), len(MESSAGES[id])))
-        ids += id + '\0'
-        strs += MESSAGES[id] + '\0'
-    output = ''
-    # The header is 7 32-bit unsigned integers.  We don't use hash tables, so
-    # the keys start right after the index tables.
-    # translated string.
-    keystart = 7*4+16*len(keys)
-    # and the values start after the keys
-    valuestart = keystart + len(ids)
-    koffsets = []
-    voffsets = []
-    # The string table first has the list of keys, then the list of values.
-    # Each entry has first the size of the string, then the file offset.
-    for o1, l1, o2, l2 in offsets:
-        koffsets += [l1, o1+keystart]
-        voffsets += [l2, o2+valuestart]
-    offsets = koffsets + voffsets
-    output = struct.pack("Iiiiiii",
-                         0x950412deL,       # Magic
-                         0,                 # Version
-                         len(keys),         # # of entries
-                         7*4,               # start of key index
-                         7*4+len(keys)*8,   # start of value index
-                         0, 0)              # size and offset of hash table
-    output += array.array("i", offsets).tostring()
-    output += ids
-    output += strs
-    return output
-
+def makeMo(filename, outfile, current_locale):
 # based on msgfmt.py Written by Martin v. Löwis <loewis@informatik.hu-berlin.de>
-
-def makeMo(filename, outfile):
-    #print 'filename, outfile-'+str((filename, outfile))
+    def add(id, str, fuzzy, MESSAGES):
+        "Add a non-fuzzy translation to the dictionary."
+        if not fuzzy and str:
+            MESSAGES[id] = str
+            
+    MESSAGES = {}
     ID = 1
     STR = 2
-
     # Compute .mo name from .po name and arguments
     if filename.endswith('.po'):
         infile = filename
@@ -735,23 +672,20 @@ def makeMo(filename, outfile):
         infile = filename + '.po'
     if outfile is None:
         outfile = os.path.splitext(infile)[0] + '.mo'
-
     try:
         lines = open(infile).readlines()
     except IOError, msg:
         print >> sys.stderr, msg
         sys.exit(1)
-
     section = None
     fuzzy = 0
-
     # Parse the catalog
     lno = 0
     for l in lines:
         lno += 1
         # If we get a comment line after a msgstr, this is a new entry
         if l[0] == '#' and section == STR:
-            add(msgid, msgstr, fuzzy)
+            add(msgid, msgstr, fuzzy, MESSAGES)
             section = None
             fuzzy = 0
         # Record a fuzzy mark
@@ -763,7 +697,7 @@ def makeMo(filename, outfile):
         # Now we are in a msgid section, output previous section
         if l.startswith('msgid') and not l.startswith('msgid_plural'):
             if section == STR:
-                add(msgid, msgstr, fuzzy)
+                add(msgid, msgstr, fuzzy, MESSAGES)
             section = ID
             l = l[5:]
             msgid = msgstr = ''
@@ -810,23 +744,58 @@ def makeMo(filename, outfile):
             sys.exit(1)
     # Add last entry
     if section == STR:
-        add(msgid, msgstr, fuzzy)
-
+        add(msgid, msgstr, fuzzy, MESSAGES)
     # Compute output
-    output = generateMo()
-
+    keys = MESSAGES.keys()
+    # the keys are sorted in the .mo file
+    keys.sort()
+    offsets = []
+    ids = strs = ''
+    for id in keys:
+        # For each string, we need size and file offset.  Each string is NUL
+        # terminated; the NUL does not count into the size.
+        offsets.append((len(ids), len(id), len(strs), len(MESSAGES[id])))
+        ids += id + '\0'
+        strs += MESSAGES[id] + '\0'
+    output = ''
+    # The header is 7 32-bit unsigned integers.  We don't use hash tables, so
+    # the keys start right after the index tables.
+    # translated string.
+    keystart = 7*4+16*len(keys)
+    # and the values start after the keys
+    valuestart = keystart + len(ids)
+    koffsets = []
+    voffsets = []
+    # The string table first has the list of keys, then the list of values.
+    # Each entry has first the size of the string, then the file offset.
+    for o1, l1, o2, l2 in offsets:
+        koffsets += [l1, o1+keystart]
+        voffsets += [l2, o2+valuestart]
+    offsets = koffsets + voffsets
+    output = struct.pack("Iiiiiii",
+                         0x950412deL,       # Magic
+                         0,                 # Version
+                         len(keys),         # # of entries
+                         7*4,               # start of key index
+                         7*4+len(keys)*8,   # start of value index
+                         0, 0)              # size and offset of hash table
+    output += array.array("i", offsets).tostring()
+    output += ids
+    output += strs
+    
     try:
         open(outfile,"wb").write(output)
     except IOError,msg:
         print >> sys.stderr, msg
 
-
 _ = localGettextX()
-localGettextX = None
+#getDirsForTranslations = None
+#localGettextX = None
+#makeMo = None
+
 
 try:
     from PySide import QtGui, QtCore
-
     LIB_USE = "PySide"
 except ImportError:
     print _(u"""Try to use PyQt4
@@ -834,7 +803,6 @@ except ImportError:
 instead of PySide
 (license - LGPL - http://www.gnu.org/copyleft/lesser.html )""")
     from PyQt4 import QtGui, QtCore
-
     LIB_USE = "PyQt4"
 
 #from PyQt4 import QtGui, QtCore #for use in tests
@@ -2424,10 +2392,6 @@ def getCodecsAliasesList(newlist = []):
         if not encodings_aliases[kkk] in newlist:
             newlist.append(encodings_aliases[kkk])
     return sorted(newlist)
-
-#print 'getCodecsList()'+str(getCodecsList())
-#print 'getCodecsAliasesList()'+str(getCodecsList())
-#print 'getQtCodecsList()'+str(getQtCodecsList())
 
 def usage():
     print sys.argv[0] + '\n' + VERSION_INFO % __version__ + CONSOLE_USAGE
