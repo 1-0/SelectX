@@ -10,7 +10,7 @@ import array
 
 import gettext, locale
 
-__version__ = '''0.6.1.3'''
+__version__ = '''0.6.1.4'''
 osSep = os.path.sep
 
 
@@ -1657,9 +1657,9 @@ class SelectX(QtGui.QMainWindow):
             self.statusBar().showMessage(_(u'Ok'))
 
     def keyHelp(self):
-        QtGui.QMessageBox.information(self, _(u'Keys SelectX'), KEYS_HELP, \
+        ok = QtGui.QMessageBox.information(self, _(u'Keys SelectX'), KEYS_HELP, \
         QtGui.QMessageBox.Ok)
-        print ok
+        #print ok
 
 class TextEditBaseX(QtGui.QTextEdit):
     def __init__(self, parent = None):
