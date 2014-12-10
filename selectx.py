@@ -5,6 +5,29 @@
 import sys, os, re, encodings
 import gettext, locale
 
+def getDirsForTranslations(baseDir = None, LocaleName = 'ru_UA'):
+    from os.path import expanduser
+    if not baseDir:
+        baseDir = expanduser('~/')
+        
+    if not (os.path.isdir(baseDir+'.config/')):
+        os.makedirs(baseDir+'.config/')
+    if not (os.path.isdir(baseDir+'.config/SelectX/')):
+        os.makedirs(baseDir+'.config/SelectX/locale/')
+    if not (os.path.isdir(baseDir+'.config/SelectX/locale/')):
+        os.makedirs(baseDir+'.config/SelectX/locale/')
+    baseDirTranslate = baseDir+'.config/SelectX/locale/'
+    localePath=baseDirTranslate+LocaleName+'/'
+    if not (os.path.isdir(localePath)):
+        os.makedirs(localePath)
+    localePath += 'LC_MESSAGES/'
+    if not (os.path.isdir(localePath)):
+        os.makedirs(localePath)
+    #print baseDir+'.config/SelectX/locale/ru_UA/LC_MESSAGES/'
+    return baseDirTranslate
+    
+#print getDirsForTranslations()
+
 def localGettextX():
     po_dict = {'ru': '''
 # SOME DESCRIPTIVE TITLE.
@@ -663,7 +686,7 @@ instead of PySide
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
 
-__version__ = '''0.6.0.9'''
+__version__ = '''0.6.0.10'''
 
 KEYS_HELP = _(u'''Keypresses:  Action:
 Backspace  Deletes the character to the left of the cursor.
