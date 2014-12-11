@@ -11,7 +11,7 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.1.10'''
+__version__ = '''0.6.1.11'''
 #osSep = os.path.sep
 
 
@@ -681,7 +681,10 @@ msgstr "Найти и заменить"
     if poString:
         #poString = re.sub('\\n', '\\\\n', poString)
         #poString = re.sub('\\\"', '\\\\\"', poString)
-        #newPo = poString.replace(r'\\n', '\\n')
+        #poString = poString.replace('\n"\n', '\\n"\n')
+        #poString = poString.replace('\/\"', '\/\/\"')
+        #poString = poString.replace('\"', '\\"')
+        #print poString
         #poString = newPo.replace(r'\\\"', '\\\"')
         #print poString
         baseDirLocale, baseDirPo = getDirsForTranslations(LocaleName = current_locale)
