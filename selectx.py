@@ -11,9 +11,10 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.1.11'''
+__version__ = '''0.6.1.12'''
 #osSep = os.path.sep
 
+#msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 
 def getDirsForTranslations(baseDir = None, LocaleName = 'ru_UA'):
     def addPath(pathPart):
@@ -44,114 +45,114 @@ def getDirsForTranslations(baseDir = None, LocaleName = 'ru_UA'):
 #print getDirsForTranslations()
 
 def localGettextX():
-    po_dict = {'ru': '''# SOME DESCRIPTIVE TITLE.
+    po_dict = {'ru': r'''# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # 10 <1_0@usa.com>, 2014.
 msgid ""
 msgstr ""
-"Project-Id-Version: SelectX 0.6.0.7\\n"
-"Report-Msgid-Bugs-To: \\n"
-"POT-Creation-Date: 2014-12-11 16:02+0200\\n"
-"PO-Revision-Date: 2014-12-11 16:26+0300\\n"
-"Last-Translator: 10 <1_0@usa.com>\\n"
-"Language-Team: 10\\n"
-"Language: ru\\n"
-"MIME-Version: 1.0\\n"
-"Content-Type: text/plain; charset=UTF-8\\n"
-"Content-Transfer-Encoding: 8bit\\n"
+"Project-Id-Version: SelectX 0.6.0.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-12-11 16:02+0200\n"
+"PO-Revision-Date: 2014-12-11 16:26+0300\n"
+"Last-Translator: 10 <1_0@usa.com>\n"
+"Language-Team: 10\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\\n"
-"X-Generator: Poedit 1.5.4\\n"
-"X-Poedit-SourceCharset: UTF-8\\n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
 #: selectx.py:801
 msgid ""
-"Try to use PyQt4\\n"
-"(license - http://www.riverbankcomputing.co.uk/software/pyqt/license )\\n"
-"instead of PySide\\n"
+"Try to use PyQt4\n"
+"(license - http://www.riverbankcomputing.co.uk/software/pyqt/license )\n"
+"instead of PySide\n"
 "(license - LGPL - http://www.gnu.org/copyleft/lesser.html )"
 msgstr ""
-"Попытка использовать PyQt4\\n"
-"(лицензия - http://www.riverbankcomputing.co.uk/software/pyqt/license )\\n"
-"вместо PySide\\n"
+"Попытка использовать PyQt4\n"
+"(лицензия - http://www.riverbankcomputing.co.uk/software/pyqt/license )\n"
+"вместо PySide\n"
 "(лицензия - LGPL - http://www.gnu.org/copyleft/lesser.html )"
 
 #: selectx.py:812
 msgid ""
-"Keypresses:  Action:\\n"
-"Backspace  Deletes the character to the left of the cursor.\\n"
-"Delete     Deletes the character to the right of the cursor.\\n"
-"Ctrl+C     Copy the selected text to the clipboard.\\n"
-"Ctrl+Insert    Copy the selected text to the clipboard.\\n"
-"Ctrl+K     Deletes to the end of the line.\\n"
-"Ctrl+V     Pastes the clipboard text into text edit.\\n"
-"Shift+Insert   Pastes the clipboard text into text edit.\\n"
-"Ctrl+X     Deletes the selected text and copies it to the clipboard.\\n"
-"Shift+Delete   Deletes the selected text and copies it to the clipboard.\\n"
-"Ctrl+Z     Undoes the last operation.\\n"
-"Ctrl+Y     Redoes the last operation.\\n"
-"LeftArrow  Moves the cursor one character to the left.\\n"
-"Ctrl+LeftArrow     Moves the cursor one word to the left.\\n"
-"RightArrow     Moves the cursor one character to the right.\\n"
-"Ctrl+RightArrow    Moves the cursor one word to the right.\\n"
-"UpArrow    Moves the cursor one line up.\\n"
-"Ctrl+UpArrow   Moves the cursor one word up.\\n"
-"DownArrow  Moves the cursor one line down.\\n"
-"Ctrl+Down Arrow    Moves the cursor one word down.\\n"
-"PageUp     Moves the cursor one page up.\\n"
-"PageDown   Moves the cursor one page down.\\n"
-"Home   Moves the cursor to the beginning of the line.\\n"
-"Ctrl+Home  Moves the cursor to the beginning of the text.\\n"
-"End    Moves the cursor to the end of the line.\\n"
-"Ctrl+End   Moves the cursor to the end of the text.\\n"
-"Alt+Wheel  Scrolls the page horizontally (the Wheel is the mouse wheel).\\n"
+"Keypresses:  Action:\n"
+"Backspace  Deletes the character to the left of the cursor.\n"
+"Delete     Deletes the character to the right of the cursor.\n"
+"Ctrl+C     Copy the selected text to the clipboard.\n"
+"Ctrl+Insert    Copy the selected text to the clipboard.\n"
+"Ctrl+K     Deletes to the end of the line.\n"
+"Ctrl+V     Pastes the clipboard text into text edit.\n"
+"Shift+Insert   Pastes the clipboard text into text edit.\n"
+"Ctrl+X     Deletes the selected text and copies it to the clipboard.\n"
+"Shift+Delete   Deletes the selected text and copies it to the clipboard.\n"
+"Ctrl+Z     Undoes the last operation.\n"
+"Ctrl+Y     Redoes the last operation.\n"
+"LeftArrow  Moves the cursor one character to the left.\n"
+"Ctrl+LeftArrow     Moves the cursor one word to the left.\n"
+"RightArrow     Moves the cursor one character to the right.\n"
+"Ctrl+RightArrow    Moves the cursor one word to the right.\n"
+"UpArrow    Moves the cursor one line up.\n"
+"Ctrl+UpArrow   Moves the cursor one word up.\n"
+"DownArrow  Moves the cursor one line down.\n"
+"Ctrl+Down Arrow    Moves the cursor one word down.\n"
+"PageUp     Moves the cursor one page up.\n"
+"PageDown   Moves the cursor one page down.\n"
+"Home   Moves the cursor to the beginning of the line.\n"
+"Ctrl+Home  Moves the cursor to the beginning of the text.\n"
+"End    Moves the cursor to the end of the line.\n"
+"Ctrl+End   Moves the cursor to the end of the text.\n"
+"Alt+Wheel  Scrolls the page horizontally (the Wheel is the mouse wheel).\n"
 "Ctrl+Wheel     Zooms the text."
 msgstr ""
-"Нажатая клавиша:  Действие:\\n"
-"Backspace  Удаляет символ слева от курсора.\\n"
-"Delete     Удаляет символ справа от курсора.\\n"
-"Ctrl+C     Копирует выбранный текст в буфер обмена.\\n"
-"Ctrl+Insert    Копирует выбранный текст в буфер обмена.\\n"
-"Ctrl+K     Удаляет до конца строки.\\n"
-"Ctrl+V     Вставляет текст в текстовый редактор.\\n"
-"Shift+Insert   Вставляет текст в текстовый редактор.\\n"
-"Ctrl+X     Удаляет выбранный текст и копирует его в буфер обмена.\\n"
-"Shift+Delete   Удаляет выбранный текст и копирует его в буфер обмена.\\n"
-"Ctrl+Z     Отменяет последнее действие.\\n"
-"Ctrl+Y     Выполняет последнее действие.\\n"
-"СтрелкаВлево  Передвигает курсор на один символ влево.\\n"
-"Ctrl+СтрелкаВлево     Передвигает курсор на одно слово влево.\\n"
-"СтрелкаВправо     Передвигает курсор на один символ вправо.\\n"
-"Ctrl+СтрелкаВправо    Передвигает курсор на одно слово вправо.\\n"
-"СтрелкаВверх    Передвигает курсор на одну строку вверх.\\n"
-"Ctrl+СтрелкаВверх   Передвигает курсор на одно слово вверх.\\n"
-"СтрелкаВниз  Передвигает курсор на одну строку вниз.\\n"
-"Ctrl+СтрелкаВниз   Передвигает курсор на одно слово вниз.\\n"
-"PageUp     Передвигает курсор на одну страницу вверх.\\n"
-"PageDown   Передвигает курсор на одну страницу вниз.\\n"
-"Home   Передвигает курсор в начало строки.\\n"
-"Ctrl+Home  Передвигает курсор в начало текста.\\n"
-"End    Передвигает курсор в конец строки.\\n"
-"Ctrl+End   Передвигает курсор в конец текста.\\n"
-"Alt+Колесо  Прокручивает страницу горизонтально (Колесо - колесо мышки).\\n"
+"Нажатая клавиша:  Действие:\n"
+"Backspace  Удаляет символ слева от курсора.\n"
+"Delete     Удаляет символ справа от курсора.\n"
+"Ctrl+C     Копирует выбранный текст в буфер обмена.\n"
+"Ctrl+Insert    Копирует выбранный текст в буфер обмена.\n"
+"Ctrl+K     Удаляет до конца строки.\n"
+"Ctrl+V     Вставляет текст в текстовый редактор.\n"
+"Shift+Insert   Вставляет текст в текстовый редактор.\n"
+"Ctrl+X     Удаляет выбранный текст и копирует его в буфер обмена.\n"
+"Shift+Delete   Удаляет выбранный текст и копирует его в буфер обмена.\n"
+"Ctrl+Z     Отменяет последнее действие.\n"
+"Ctrl+Y     Выполняет последнее действие.\n"
+"СтрелкаВлево  Передвигает курсор на один символ влево.\n"
+"Ctrl+СтрелкаВлево     Передвигает курсор на одно слово влево.\n"
+"СтрелкаВправо     Передвигает курсор на один символ вправо.\n"
+"Ctrl+СтрелкаВправо    Передвигает курсор на одно слово вправо.\n"
+"СтрелкаВверх    Передвигает курсор на одну строку вверх.\n"
+"Ctrl+СтрелкаВверх   Передвигает курсор на одно слово вверх.\n"
+"СтрелкаВниз  Передвигает курсор на одну строку вниз.\n"
+"Ctrl+СтрелкаВниз   Передвигает курсор на одно слово вниз.\n"
+"PageUp     Передвигает курсор на одну страницу вверх.\n"
+"PageDown   Передвигает курсор на одну страницу вниз.\n"
+"Home   Передвигает курсор в начало строки.\n"
+"Ctrl+Home  Передвигает курсор в начало текста.\n"
+"End    Передвигает курсор в конец строки.\n"
+"Ctrl+End   Передвигает курсор в конец текста.\n"
+"Alt+Колесо  Прокручивает страницу горизонтально (Колесо - колесо мышки).\n"
 "Ctrl+Колесо     Масштабирует текст."
 
 #: selectx.py:841
 msgid ""
-"\\n"
-"[KEY]...[FILE]\\n"
-"Keys:\\n"
-"--ForceEmbededIcons         Use embeded icons theme\\n"
-"-h, --help                  Print this help message\\n"
-"--version                   Print version info\\n"
+"\n"
+"[KEY]...[FILE]\n"
+"Keys:\n"
+"--ForceEmbededIcons         Use embeded icons theme\n"
+"-h, --help                  Print this help message\n"
+"--version                   Print version info\n"
 msgstr ""
-"\\n"
-"[КЛЮЧ]...[ФАЙЛ]\\n"
-"Ключи:\\n"
-"--ForceEmbededIcons         Использовать встроенную тему иконок\\n"
-"-h, --help                  Вывести это сообщение помощь\\n"
-"--version                  Вывести информацию о версии\\n"
+"\n"
+"[КЛЮЧ]...[ФАЙЛ]\n"
+"Ключи:\n"
+"--ForceEmbededIcons         Использовать встроенную тему иконок\n"
+"-h, --help                  Вывести это сообщение помощь\n"
+"--version                  Вывести информацию о версии\n"
 
 #: selectx.py:849 selectx.py:1618
 #, python-format
@@ -401,11 +402,11 @@ msgstr "Отобразить/спрятать непечатаемые симв�
 
 #: selectx.py:1128
 msgid "Pythonic Enter"
-msgstr "\\"Pythonic\\" новой строки"
+msgstr "\"Pythonic\" новой строки"
 
 #: selectx.py:1128
 msgid "On/Off Pythonic Enter Style"
-msgstr "Включить/выключить \\"Pythonic\\" стиль новой строки"
+msgstr "Включить/выключить \"Pythonic\" стиль новой строки"
 
 #: selectx.py:1130
 msgid "Line Numbers"
@@ -453,11 +454,11 @@ msgstr "Включить/выключить Ok проигрыватель"
 
 #: selectx.py:1185
 msgid "Hide Py Enter"
-msgstr "Выключить \\"Pythonic\\" новые строки"
+msgstr "Выключить \"Pythonic\" новые строки"
 
 #: selectx.py:1188
 msgid "Add Py Enter"
-msgstr "Включить \\"Pythonic\\" новые строки"
+msgstr "Включить \"Pythonic\" новые строки"
 
 #: selectx.py:1258
 #, python-format
@@ -679,16 +680,7 @@ msgstr "Найти и заменить"
     elif current_locale[:2].lower() in po_dict.keys():
         poString = po_dict[current_locale[:2]]
     if poString:
-        #poString = re.sub('\\n', '\\\\n', poString)
-        #poString = re.sub('\\\"', '\\\\\"', poString)
-        #poString = poString.replace('\n"\n', '\\n"\n')
-        #poString = poString.replace('\/\"', '\/\/\"')
-        #poString = poString.replace('\"', '\\"')
-        #print poString
-        #poString = newPo.replace(r'\\\"', '\\\"')
-        #print poString
         baseDirLocale, baseDirPo = getDirsForTranslations(LocaleName = current_locale)
-        #filePo = codecs.open(baseDirPo+'SelectX.po', "wb", 'string-escape')
         filePo = open(baseDirPo+'SelectX.po', "w")
         filePo.write(poString)
         filePo.close()
