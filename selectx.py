@@ -11,11 +11,11 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.1.18'''
+__version__ = '''0.6.1.19'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
-#makespec selectx.py          #<<<<<<making exe for very micro and very soft os
+#makespec -w selectx.py          #<<<<<<making exe for very micro and very soft os
 #pyinstaller selectx.spec   #<<<<<< by use PyWin Pyinstaller 
 #based on http://asakasinsky.blogspot.com/2011/06/pyqt4-exe.html
 
@@ -27,7 +27,10 @@ def getDirsForTranslations(baseDir = None, LocaleName = 'ru_UA'):
     if not baseDir:
         baseDir = addPath(expanduser('~'))
         #print 'baseDir-'+baseDir
-    if not os.path.isdir(baseDir+addPath('.config')+ addPath('SelectX')+addPath('locale')):
+    if os.path.isdir(baseDir+addPath('.config')+ addPath('SelectX')+addPath('locale')):
+        baseDir = baseDir+addPath('.config')+ addPath('SelectX')+addPath('locale')
+    else:
+        print baseDir
         baseDir += addPath('.config')
         if not (os.path.isdir(baseDir)):
             os.makedirs(baseDir)
@@ -37,8 +40,6 @@ def getDirsForTranslations(baseDir = None, LocaleName = 'ru_UA'):
         baseDir += addPath('locale')
         if not (os.path.isdir(baseDir)):
             os.makedirs(baseDir)
-    else:
-        baseDir = baseDir+addPath('.config')+ addPath('SelectX')+addPath('locale')
     localePath=baseDir+LocaleName+os.path.sep
     if not (os.path.isdir(localePath)):
         os.makedirs(localePath)
