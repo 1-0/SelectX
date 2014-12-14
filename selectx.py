@@ -11,7 +11,7 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.1.15'''
+__version__ = '''0.6.1.16'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
@@ -2391,10 +2391,10 @@ def getFileName(pathName, separatorSymbol=None):
             return pathName.split(separatorSymbol)[-1]
         except AttributeError:
             return None
-    elif ( '\\' in pathName ) :
-        return pathName.split('\\')[-1]
+    #elif ( '\\' in pathName ) :
+        #return pathName.split('\\')[-1]
     else:
-        return pathName.split('/')[-1]
+        return pathName.split(os.path.sep)[-1]
 
 def getQtCodecsList():
     newlist=[]
