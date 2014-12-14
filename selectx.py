@@ -11,7 +11,7 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.1.16'''
+__version__ = '''0.6.1.18'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
@@ -27,15 +27,18 @@ def getDirsForTranslations(baseDir = None, LocaleName = 'ru_UA'):
     if not baseDir:
         baseDir = addPath(expanduser('~'))
         #print 'baseDir-'+baseDir
-    baseDir += addPath('.config')
-    if not (os.path.isdir(baseDir)):
-        os.makedirs(baseDir)
-    baseDir += addPath('SelectX')
-    if not (os.path.isdir(baseDir)):
-        os.makedirs(baseDir)
-    baseDir += addPath('locale')
-    if not (os.path.isdir(baseDir)):
-        os.makedirs(baseDir)
+    if not os.path.isdir(baseDir+addPath('.config')+ addPath('SelectX')+addPath('locale')):
+        baseDir += addPath('.config')
+        if not (os.path.isdir(baseDir)):
+            os.makedirs(baseDir)
+        baseDir += addPath('SelectX')
+        if not (os.path.isdir(baseDir)):
+            os.makedirs(baseDir)
+        baseDir += addPath('locale')
+        if not (os.path.isdir(baseDir)):
+            os.makedirs(baseDir)
+    else:
+        baseDir = baseDir+addPath('.config')+ addPath('SelectX')+addPath('locale')
     localePath=baseDir+LocaleName+os.path.sep
     if not (os.path.isdir(localePath)):
         os.makedirs(localePath)
