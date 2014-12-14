@@ -11,7 +11,7 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.1.20'''
+__version__ = '''0.6.1.21'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
@@ -1058,6 +1058,7 @@ class SelectX(QtGui.QMainWindow):
         self.setHighlighter()
         self.changeTab(tabId)
         self.show()
+        
 
     def removeTab(self, index):
         widget = self.mainTab.widget(index)
@@ -1186,10 +1187,29 @@ class SelectX(QtGui.QMainWindow):
         helpMenu, 'media_playback_start', self.toolbar, checkAble=True, returnName=True)
         self.okPlay.setEnabled(self.ok>9)
         self.okPlay.setVisible(self.ok>9)
+        self.okVolume = self.addActionParamX(_(u'Ok Volume'), 'Ctrl+Shift+F11', _(u'Volume Ok Player'), self._setOkVolume, \
+        helpMenu, 'media_playback_start', self.toolbar, checkAble=False, returnName=True)
+        self.okVolume.setEnabled(False)
+        self.okVolume.setVisible(False)
+        
 
 
         return menubar
 
+    def _setOkVolume(self):
+        if self.ok>9:
+            VolumeDialog(self, self.aOutput)
+            #if LIB_USE == "PySide":
+                #from PySide.phonon import Phonon
+            #else:
+                #from PyQt4.phonon import Phonon
+            #newOkVolume = Phonon.VolumeSlider(self.aOutput, self)
+            #print str(newOkVolume)
+            
+        #self.aOutput = Phonon.AudioOutput()
+        #self.aOutput.setMuted(False)
+        #self.aOutput.setVolume(10)
+                
 
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
     TopActLevel, IconName=None, toolBar=None, checkAble=False, \
@@ -1629,15 +1649,20 @@ class SelectX(QtGui.QMainWindow):
                     from PySide.phonon import Phonon
                 else:
                     from PyQt4.phonon import Phonon
-                self.aOutput = Phonon.AudioOutput()
-                self.aOutput.setMuted(False)
-                self.aOutput.setVolume(10)
+                self.okVolume.setEnabled(True)
+                self.okVolume.setVisible(True)
+        
                 self.playSource = Phonon.MediaSource(QtCore.QUrl(self.text_url))
                 self.playSource.setAutoDelete(False)
                 self.playSource.Type = Phonon.MediaSource.Url
                 self.okMediaPlayer = Phonon.createPlayer(Phonon.MusicCategory, self.playSource)#Phonon.MediaObject()
+                self.aOutput = Phonon.AudioOutput()
+                #self.aOutput.setMuted(False)
+                #self.aOutput.setVolume(10)
+                Phonon.createPath(self.okMediaPlayer, self.aOutput)
                 self.okMediaPlayer.play()
                 self.statusBar().showMessage(_(u'okPlayer play: %s')%self.text_url)
+                
         else:
             self.okMediaPlayer.stop()
             self.statusBar().showMessage(_(u'okPlayer stop'))
@@ -1647,7 +1672,8 @@ class SelectX(QtGui.QMainWindow):
         _(u"SelectX. Text editor licensed by GPL3. Ver. %s") % __version__)
         self.statusBar().showMessage(VERSION_INFO % \
         __version__)
-        self.ok += 1
+        if self.ok<10:
+            self.ok += 1
         if self.ok>9:
             self.okPlay.setEnabled(True)
             self.okPlay.setVisible(True)
@@ -2155,62 +2181,75 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
             return False
 
 
+class VolumeDialog(QtGui.QDialog):
+    '''Extended find/replase dialouge based on http://www.binpress.com/tutorial/building-a-text-editor-with-pyqt-part-3/147'''
+    def __init__(self, parent, aOutput):
+
+        QtGui.QDialog.__init__(self, parent)
+        self.setModal(False)
+        self.parent = parent
+        self.aOutput = aOutput
+        self.initUI()
+        self.show()
+
+    def initUI(self):
+        if LIB_USE == "PySide":
+            from PySide.phonon import Phonon
+        else:
+            from PyQt4.phonon import Phonon
+        print str(self.aOutput.outputDevice())
+        self.newOkVolume = Phonon.VolumeSlider(self.aOutput, self)
+        self.newOkVolume.setTracking (True)
+        #self.newOkVolume.setMaximumVolume(2.0)
+        #print str(self.newOkVolume)
+
+        self.OkButton = QtGui.QPushButton(_(u"Ok"),self)
+        self.OkButton.clicked.connect(self.Ok)
+
+        layout = QtGui.QGridLayout()
+
+        layout.addWidget(self.newOkVolume)
+        layout.addWidget(self.OkButton)
+        self.setWindowTitle(_(u"Set Ok"))
+        self.setLayout(layout)
+        
+    def Ok(self):
+        #self.aOutput.setVolumeDecibel(1000)
+        self.close()
+        
+        
 class FindDialog(QtGui.QDialog):
     '''Extended find/replase dialouge based on http://www.binpress.com/tutorial/building-a-text-editor-with-pyqt-part-3/147'''
     def __init__(self, parent = None):
 
         QtGui.QDialog.__init__(self, parent)
-
         self.setModal(True)
-
         self.parent = parent
-
         self.lastMatch = None
-
         self.initUI()
 
     def initUI(self):
-
-        # Button to search the document for something
         findButton = QtGui.QPushButton(_(u"Find"),self)
         findButton.clicked.connect(self.find)
-
-        # Button to replace the last finding
         replaceButton = QtGui.QPushButton(_(u"Replace"),self)
         replaceButton.clicked.connect(self.replace)
-
-        # Button to remove all findings
         allButton = QtGui.QPushButton(_(u"Replace all"),self)
         allButton.clicked.connect(self.replaceAll)
-
-        # Normal mode - radio button
         self.normalRadio = QtGui.QRadioButton(_(u"Normal"),self)
         self.normalRadio.toggled.connect(self.normalMode)
-
-        # Regular Expression Mode - radio button
         self.regexRadio = QtGui.QRadioButton(_(u"RegEx"),self)
         self.regexRadio.toggled.connect(self.regexMode)
-
-        # The field into which to type the query
         self.findField = QtGui.QTextEdit(self)
         self.findField.setAcceptRichText(False)
         #self.findField.resize(250,50)
 
-        # The field into which to type the text to replace the
-        # queried text
         self.replaceField = QtGui.QTextEdit(self)
         self.replaceField.setAcceptRichText(False)
         #self.replaceField.resize(250,50)
 
         optionsLabel = QtGui.QLabel(_(u"Options: "),self)
-
-        # Case Sensitivity option
         self.caseSens = QtGui.QCheckBox(_(u"Case sensitive"),self)
-
-        # Whole Words option
         self.wholeWords = QtGui.QCheckBox(_(u"Whole words"),self)
-
-        # Layout the objects on the screen
         layout = QtGui.QGridLayout()
 
         layout.addWidget(self.findField,1,0,1,4)
@@ -2221,11 +2260,11 @@ class FindDialog(QtGui.QDialog):
         layout.addWidget(self.replaceField,3,0,1,4)
         layout.addWidget(replaceButton,4,0,1,2)
         layout.addWidget(allButton,4,2,1,2)
-
-        # Add some spacing
         spacer = QtGui.QWidget(self)
 
-        spacer.setFixedSize(0,10)
+        spacer.setFixedSize(0,1)
+
+        #spacer.setFixedSize(0,10)
 
         layout.addWidget(spacer,5,0)
 
