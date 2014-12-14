@@ -1001,12 +1001,13 @@ static char * format_text_bold_xpm[] = {
 
 class SelectX(QtGui.QMainWindow):
 
-    def __init__(self, ForseEmbededIcons = None):
+    def __init__(self, ForseEmbededIcons = None, ok = 0):
         super(SelectX, self).__init__()
         #pixmap = QtGui.QPixmap()
         #pixmap.loadFromData(TANGO_ICONS["edit-select-all"])
         #splashScreen = QtGui.QSplashScreen(pixmap)
         #init class constants
+        self.ok = ok
         self.nonPrintFlag = True
         self.newDocNumber = 0
         self.path = os.getenv('HOME')
@@ -1017,15 +1018,15 @@ class SelectX(QtGui.QMainWindow):
         else:
             self.useThemeIcons = True
             
-        self.ok = 0
         self.okRun = False
         self.text_url = False
 
         self.initUI()
         try:
             if len(sys.argv)<3:
-                print _(u'Try Open This File -> %s') % sys.argv[1]
-                self.openExistFile(sys.argv[1])
+                if not sys.argv[1]=='--ok':
+                    print _(u'Try Open This File -> %s') % sys.argv[1]
+                    self.openExistFile(sys.argv[1])
             else:
                 print _(u'Too many args')
                 print CONSOLE_USAGE
@@ -1182,8 +1183,8 @@ class SelectX(QtGui.QMainWindow):
         helpMenu, 'help-about')
         self.okPlay = self.addActionParamX(_(u'Ok Player'), 'Ctrl+Shift+F12', _(u'On/Off Ok Player'), self._okPlayer, \
         helpMenu, 'media_playback_start', self.toolbar, checkAble=True, returnName=True)
-        self.okPlay.setEnabled(False)
-        self.okPlay.setVisible(False)
+        self.okPlay.setEnabled(self.ok>9)
+        self.okPlay.setVisible(self.ok>9)
 
 
         return menubar
@@ -1252,14 +1253,6 @@ class SelectX(QtGui.QMainWindow):
         extention = str(getFileName(self.path, '.')).lower()
         self.putHighlighter(extention)
         
-    #def putPyHighlighter(self, extention=None):
-        ##print 'putPyHighlighter-'+str(extention)
-        #self.putHighlighter('py')
-        
-    #def putCppHighlighter(self, extention=None):
-        ##print 'putCppHighlighter-'+str(extention)
-        #self.putHighlighter('cpp')
-        
     def putHighlighter(self, extention = None):
         if extention in ['c', 'cc','cpp', 'c++', 'cxx', 'h', 'hh', 'hpp', 'hxx']:
             if self.cWidget.edit.highlighterType:
@@ -1282,9 +1275,6 @@ class SelectX(QtGui.QMainWindow):
         else:
             pass
             
-            #self.highlighter = self.NoneHigHlighter()
-        #else:
-            #self.highlighter = PythonHighlighter(self.cWidget.edit.document())
 
     def newFile(self):
         self.cWidget.edit.clear()
@@ -1888,12 +1878,9 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 class TextEditX(QtGui.QFrame):
 #based on https://john.nachtimwald.com/2009/08/15/qtextedit-with-line-numbers/
     class NumberBar(QtGui.QWidget):
-
         def __init__(self, *args):
             QtGui.QWidget.__init__(self, *args)
             self.edit = None
-            # This is used to update the width of the control.
-            # It is the highest line that is currently visibile.
             self.highest_line = 0
 
         def setTextEdit(self, edit):
@@ -1904,7 +1891,6 @@ class TextEditX(QtGui.QFrame):
             Updates the number bar to display the current set of numbers.
             Also, adjusts the width of the number bar if necessary.
             '''
-            # The + 4 is used to compensate for the current line being bold.
             width = self.fontMetrics().width(str(self.highest_line)) + 4
             if self.width() != width:
                 self.setFixedWidth(width)
@@ -1920,20 +1906,15 @@ class TextEditX(QtGui.QFrame):
                 painter = QtGui.QPainter(self)
     
                 line_count = 0
-                # Iterate over all text blocks in the document.
                 block = self.edit.document().begin()
                 while block.isValid():
                     line_count += 1
     
-                    # The top left position of the block in the document
                     position = self.edit.document().documentLayout().blockBoundingRect(block).topLeft()
-    
-                    # Check if the position of the block is out side of the visible
-                    # area.
+                    
                     if position.y() > page_bottom:
                         break
     
-                    # We want the line number for the selected line to be bold.
                     bold = False
                     if block == current_block:
                         bold = True
@@ -1941,11 +1922,8 @@ class TextEditX(QtGui.QFrame):
                         font.setBold(True)
                         painter.setFont(font)
     
-                    # Draw the line number right justified at the y position of the
-                    # line. 3 is a magic padding number. drawText(x, y, text).
                     painter.drawText(self.width() - font_metrics.width(str(line_count)) - 3, round(position.y()) - contents_y + font_metrics.ascent(), str(line_count))
     
-                    # Remove the bold style if it was set previously.
                     if bold:
                         font = painter.font()
                         font.setBold(False)
@@ -1966,7 +1944,6 @@ class TextEditX(QtGui.QFrame):
         self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Sunken)
 
         self.edit = TextEditBaseX(parent=self)
-        #self.edit = QtGui.QTextEdit()
         self.edit.setFrameStyle(QtGui.QFrame.NoFrame)
         self.edit.setAcceptRichText(False)
 
@@ -1976,7 +1953,6 @@ class TextEditX(QtGui.QFrame):
 
         hbox = QtGui.QHBoxLayout(self)
         hbox.setSpacing(0)
-        #hbox.setMargin(0)
         hbox.addWidget(self.number_bar)
         hbox.addWidget(self.edit)
 
@@ -2379,6 +2355,8 @@ def main():
         sys.exit()
     elif sys.argv[1]=='--ForceEmbededIcons':
         runWindow(True)
+    elif sys.argv[1]=='--ok':
+        runWindow(True, 10)
     elif sys.argv[1]=='--version':
         print VERSION_INFO % __version__
         sys.exit()
@@ -2435,12 +2413,12 @@ def usage():
     print sys.argv[0] + '\n' + VERSION_INFO % __version__ + CONSOLE_USAGE
 
 
-def runWindow(ForceIcons = None):
+def runWindow(ForceIcons = None, ok=0):
     app = QtGui.QApplication(sys.argv)
     if ForceIcons:
-        selxnotepad = SelectX(ForceIcons)
+        selxnotepad = SelectX(ForceIcons, ok)
     else:
-        selxnotepad = SelectX()
+        selxnotepad = SelectX(ok = ok)
     sys.exit(app.exec_())
 
 
