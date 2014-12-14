@@ -11,13 +11,10 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.1.19'''
+__version__ = '''0.6.1.20'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
-#makespec -w selectx.py          #<<<<<<making exe for very micro and very soft os
-#pyinstaller selectx.spec   #<<<<<< by use PyWin Pyinstaller 
-#based on http://asakasinsky.blogspot.com/2011/06/pyqt4-exe.html
 
 def getDirsForTranslations(baseDir = None, LocaleName = 'ru_UA'):
     def addPath(pathPart):
