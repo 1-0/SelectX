@@ -1,0 +1,2 @@
+include README LICENSE setup.py
+global-exclude *pyc

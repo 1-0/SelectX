@@ -11,10 +11,11 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.1.21'''
+__version__ = '''0.6.1.33'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
+#python setup.py sdist upload        #<<<<pypi upload
 
 def getDirsForTranslations(baseDir = None, LocaleName = 'ru_UA'):
     def addPath(pathPart):
@@ -680,10 +681,12 @@ msgstr "Найти и заменить"
     current_locale, encoding = locale.getdefaultlocale()
     #print 'current_locale, encoding '+str((current_locale, encoding ))
     poString = None
-    if current_locale.lower() in po_dict.keys():
+    if current_locale and current_locale.lower() in po_dict.keys():
         poString = po_dict[current_locale]
-    elif current_locale[:2].lower() in po_dict.keys():
+    elif current_locale and current_locale[:2].lower() in po_dict.keys():
         poString = po_dict[current_locale[:2]]
+    else:
+        return gettext.gettext
     if poString:
         baseDirLocale, baseDirPo = getDirsForTranslations(LocaleName = current_locale)
         filePo = open(baseDirPo+'SelectX.po', "w")
@@ -835,6 +838,8 @@ _ = localGettextX()
 #localGettextX = None
 #makeMo = None
 
+#from PySide import QtGui, QtCore
+#LIB_USE = "PySide"
 
 try:
     from PySide import QtGui, QtCore
@@ -1645,10 +1650,12 @@ class SelectX(QtGui.QMainWindow):
             QtGui.QLineEdit.Normal, \
             self.text_url)
             if play_ok:
+                #from PySide.phonon import Phonon
                 if LIB_USE == "PySide":
                     from PySide.phonon import Phonon
                 else:
                     from PyQt4.phonon import Phonon
+                    #pass
                 self.okVolume.setEnabled(True)
                 self.okVolume.setVisible(True)
         
@@ -2193,10 +2200,12 @@ class VolumeDialog(QtGui.QDialog):
         self.show()
 
     def initUI(self):
+        #from PySide.phonon import Phonon
         if LIB_USE == "PySide":
             from PySide.phonon import Phonon
         else:
             from PyQt4.phonon import Phonon
+            #pass
         print str(self.aOutput.outputDevice())
         self.newOkVolume = Phonon.VolumeSlider(self.aOutput, self)
         self.newOkVolume.setTracking (True)
