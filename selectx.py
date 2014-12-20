@@ -11,7 +11,7 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.1.33'''
+__version__ = '''0.6.1.35'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
@@ -851,6 +851,7 @@ instead of PySide
 (license - LGPL - http://www.gnu.org/copyleft/lesser.html )""")
     from PyQt4 import QtGui, QtCore
     LIB_USE = "PyQt4"
+#Phonon = None
 
 #from PyQt4 import QtGui, QtCore #for use in tests
 #LIB_USE = "PyQt4"
@@ -1499,9 +1500,10 @@ class SelectX(QtGui.QMainWindow):
                 
             #text = str(text)
                 
-            self.cWidget.edit.clear()
+            #self.cWidget.edit.clear()
             self.setHighlighter()
-            self.cWidget.edit.insertPlainText(text)
+            self.cWidget.edit.setPlainText(text)
+            
             self.statusBar().showMessage(_(u'Open Text: %s') % self.path)
             curtabind = self.mainTab.currentIndex()
 
@@ -1651,10 +1653,11 @@ class SelectX(QtGui.QMainWindow):
             self.text_url)
             if play_ok:
                 #from PySide.phonon import Phonon
+                global Phonon
                 if LIB_USE == "PySide":
-                    from PySide.phonon import Phonon
+                    from PySide.phonon import Phonon as Phonon
                 else:
-                    from PyQt4.phonon import Phonon
+                    from PyQt4.phonon import Phonon as Phonon
                     #pass
                 self.okVolume.setEnabled(True)
                 self.okVolume.setVisible(True)
@@ -2201,12 +2204,12 @@ class VolumeDialog(QtGui.QDialog):
 
     def initUI(self):
         #from PySide.phonon import Phonon
-        if LIB_USE == "PySide":
-            from PySide.phonon import Phonon
-        else:
-            from PyQt4.phonon import Phonon
-            #pass
-        print str(self.aOutput.outputDevice())
+        #if LIB_USE == "PySide":
+            #from PySide.phonon import Phonon
+        #else:
+            #from PyQt4.phonon import Phonon
+            ##pass
+        #print str(self.aOutput.outputDevice())
         self.newOkVolume = Phonon.VolumeSlider(self.aOutput, self)
         self.newOkVolume.setTracking (True)
         #self.newOkVolume.setMaximumVolume(2.0)
