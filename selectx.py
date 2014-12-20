@@ -11,7 +11,7 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.1.35'''
+__version__ = '''0.6.1.36'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
@@ -1043,6 +1043,8 @@ class SelectX(QtGui.QMainWindow):
 
         #splashScreen.close()
         #self.installEventFilter(self)
+        global TANGO_ICONS
+        TANGO_ICONS = None
 
     def initUI(self):
         self.MenuBar = self.makeMenu()
@@ -2195,7 +2197,7 @@ class VolumeDialog(QtGui.QDialog):
     '''Extended find/replase dialouge based on http://www.binpress.com/tutorial/building-a-text-editor-with-pyqt-part-3/147'''
     def __init__(self, parent, aOutput):
 
-        QtGui.QDialog.__init__(self, parent)
+        QtGui.QDialog.__init__(self, parent, 0x00000000- 0x08000000)
         self.setModal(False)
         self.parent = parent
         self.aOutput = aOutput
