@@ -11,7 +11,7 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.2.4'''
+__version__ = '''0.6.2.6'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
@@ -1143,7 +1143,7 @@ class SelectX(QtGui.QMainWindow):
         self.addActionParamX(_(u'Select All'), 'Ctrl+A', _(u'Select all text in editor'), \
         self.selectAll, selectMenu, 'edit-select-all', self.toolbar)
         self.addActionParamX(_(u'Select For Copy By Words'), 'Ctrl+Shift+A', _(u'Set Select For Copy By Words'), \
-        self.setSelectByWords, selectMenu, 'edit-select', self.toolbar, checkAble=True)
+        self.setSelectByWords, selectMenu, 'edit-select', None, checkAble=True)
 
         self.toolbar = self.addToolBar(_(u"View"))
         self.toolbar.setMovable(True)
@@ -1555,6 +1555,15 @@ class SelectX(QtGui.QMainWindow):
         self.cWidget.edit.redo()
         self.statusBar().showMessage(_(u'Redo Text'))
 
+    def wordsCountDialog(self):
+        
+        wordsCount, wordsCount_ok = QtGui.QInputDialog.getText(self, \
+        _(u'Enter words number'), _(u'Enter words number for copy:'), QtGui.QLineEdit.Normal,  str(self.wordsForSelect))
+        #_(u'Enter words number'), _(u'Enter words number for copy:'),spinnerQ)
+        if wordsCount_ok:
+            self.wordsForSelect = int(wordsCount)
+        wordsCount = self.wordsForSelect
+                
     def copyText(self):
         cursor = self.cWidget.edit.textCursor()
         if cursor.hasSelection():
@@ -1562,11 +1571,11 @@ class SelectX(QtGui.QMainWindow):
                 #spinnerQ =  QtGui.QSpinBox()
                 #spinnerQ.setValue(self.wordsForSelect)
                 #spinnerQ.setMinimum(1)
-                wordsCount, wordsCount_ok = QtGui.QInputDialog.getText(self, \
-                _(u'Enter words number'), _(u'Enter words number for copy:'), QtGui.QLineEdit.Normal,  str(self.wordsForSelect))
-                #_(u'Enter words number'), _(u'Enter words number for copy:'),spinnerQ)
-                if wordsCount_ok:
-                    self.wordsForSelect = int(wordsCount)
+                #wordsCount, wordsCount_ok = QtGui.QInputDialog.getText(self, \
+                #_(u'Enter words number'), _(u'Enter words number for copy:'), QtGui.QLineEdit.Normal,  str(self.wordsForSelect))
+                ##_(u'Enter words number'), _(u'Enter words number for copy:'),spinnerQ)
+                #if wordsCount_ok:
+                    #self.wordsForSelect = int(wordsCount)
                 wordsCount = self.wordsForSelect
                 wordsSpliter = ' '
                 if u'\u2029' in cursor.selectedText():
@@ -1664,6 +1673,8 @@ class SelectX(QtGui.QMainWindow):
 
     def setSelectByWords(self):
         self.selectForCopyByWords = not(self.selectForCopyByWords)
+        if self.selectForCopyByWords:
+            self.wordsCountDialog()
 
     def viewZoomIn(self):
         currentw = self.cWidget.edit
