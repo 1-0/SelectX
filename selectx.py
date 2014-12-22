@@ -11,7 +11,7 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.2.2'''
+__version__ = '''0.6.2.4'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
@@ -1027,6 +1027,7 @@ class SelectX(QtGui.QMainWindow):
             
         self.okRun = False
         self.text_url = False
+        self.wordsForSelect = 2
 
         self.initUI()
         try:
@@ -1558,7 +1559,15 @@ class SelectX(QtGui.QMainWindow):
         cursor = self.cWidget.edit.textCursor()
         if cursor.hasSelection():
             if self.selectForCopyByWords:
-                wordsCount = 2
+                #spinnerQ =  QtGui.QSpinBox()
+                #spinnerQ.setValue(self.wordsForSelect)
+                #spinnerQ.setMinimum(1)
+                wordsCount, wordsCount_ok = QtGui.QInputDialog.getText(self, \
+                _(u'Enter words number'), _(u'Enter words number for copy:'), QtGui.QLineEdit.Normal,  str(self.wordsForSelect))
+                #_(u'Enter words number'), _(u'Enter words number for copy:'),spinnerQ)
+                if wordsCount_ok:
+                    self.wordsForSelect = int(wordsCount)
+                wordsCount = self.wordsForSelect
                 wordsSpliter = ' '
                 if u'\u2029' in cursor.selectedText():
                     selectedRows=cursor.selectedText().split(u'\u2029')
