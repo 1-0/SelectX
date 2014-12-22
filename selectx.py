@@ -11,7 +11,7 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.2.6'''
+__version__ = '''0.6.2.7'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
@@ -56,10 +56,10 @@ def localGettextX():
 # 10 <1_0@usa.com>, 2014.
 msgid ""
 msgstr ""
-"Project-Id-Version: SelectX 0.6.0.7\n"
+"Project-Id-Version: SelectX 0.6.2.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-11 16:02+0200\n"
-"PO-Revision-Date: 2014-12-11 16:26+0300\n"
+"POT-Creation-Date: 2014-12-22 16:22+0200\n"
+"PO-Revision-Date: 2014-12-22 16:28+0300\n"
 "Last-Translator: 10 <1_0@usa.com>\n"
 "Language-Team: 10\n"
 "Language: ru\n"
@@ -71,7 +71,7 @@ msgstr ""
 "X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-#: selectx.py:801
+#: selectx.py:848
 msgid ""
 "Try to use PyQt4\n"
 "(license - http://www.riverbankcomputing.co.uk/software/pyqt/license )\n"
@@ -83,7 +83,7 @@ msgstr ""
 "вместо PySide\n"
 "(лицензия - LGPL - http://www.gnu.org/copyleft/lesser.html )"
 
-#: selectx.py:812
+#: selectx.py:860
 msgid ""
 "Keypresses:  Action:\n"
 "Backspace  Deletes the character to the left of the cursor.\n"
@@ -143,7 +143,7 @@ msgstr ""
 "Alt+Колесо  Прокручивает страницу горизонтально (Колесо - колесо мышки).\n"
 "Ctrl+Колесо     Масштабирует текст."
 
-#: selectx.py:841
+#: selectx.py:889
 msgid ""
 "\n"
 "[KEY]...[FILE]\n"
@@ -159,345 +159,361 @@ msgstr ""
 "-h, --help                  Вывести это сообщение помощь\n"
 "--version                  Вывести информацию о версии\n"
 
-#: selectx.py:849 selectx.py:1618
+#: selectx.py:897 selectx.py:1745
 #, python-format
 msgid "SelectX. Text editor licensed by GPL3. Ver. %s"
 msgstr "SelectX. Текстовый редактор лицензированный по GPL3. Версия %s."
 
-#: selectx.py:986
+#: selectx.py:1036
 #, python-format
 msgid "Try Open This File -> %s"
 msgstr "Попытка открыть этот файл -> %s"
 
-#: selectx.py:989
+#: selectx.py:1039
 msgid "Too many args"
 msgstr "Слишком много параметров"
 
-#: selectx.py:1005 selectx.py:1252
+#: selectx.py:1057 selectx.py:1313
 msgid "SelectX"
 msgstr "SelectX"
 
-#: selectx.py:1011 selectx.py:1251
+#: selectx.py:1063 selectx.py:1312
 msgid "New Text"
 msgstr "Новый текст"
 
-#: selectx.py:1040
+#: selectx.py:1093
 msgid "File"
 msgstr "Файл"
 
-#: selectx.py:1043
+#: selectx.py:1096
 msgid "&File"
 msgstr "&Файл"
 
-#: selectx.py:1046
+#: selectx.py:1099
 msgid "New Tab"
 msgstr "Новая вкладка"
 
-#: selectx.py:1046
+#: selectx.py:1099
 msgid "Create new tab"
 msgstr "Создать новую вкладку"
 
-#: selectx.py:1050
+#: selectx.py:1103
 msgid "Open"
 msgstr "Открыть"
 
-#: selectx.py:1050
+#: selectx.py:1103
 msgid "Open a file"
 msgstr "Открыть файл"
 
-#: selectx.py:1052
+#: selectx.py:1105
 msgid "Save"
 msgstr "Сохранить"
 
-#: selectx.py:1052
+#: selectx.py:1105
 msgid "Save current file"
 msgstr "Сохранить текущий файл"
 
-#: selectx.py:1054
+#: selectx.py:1107
 msgid "Save As..."
 msgstr "Сохранить как..."
 
-#: selectx.py:1054
+#: selectx.py:1107
 msgid "Save as new file"
 msgstr "Сохранить как новый файл"
 
-#: selectx.py:1057
+#: selectx.py:1110
 msgid "Preview"
 msgstr "Предпросмотр"
 
-#: selectx.py:1057
+#: selectx.py:1110
 msgid "File Preview"
 msgstr "Предпросмотр файла"
 
-#: selectx.py:1059
+#: selectx.py:1112
 msgid "Print"
 msgstr "Печать"
 
-#: selectx.py:1059
+#: selectx.py:1112
 msgid "File Print"
 msgstr "Пачать файла"
 
-#: selectx.py:1062
+#: selectx.py:1115
 msgid "Close Tab"
 msgstr "Закрыть вкладку"
 
-#: selectx.py:1062
+#: selectx.py:1115
 msgid "Close current tab"
 msgstr "Закрыть текущую вкладку"
 
-#: selectx.py:1064
+#: selectx.py:1117
 msgid "Exit"
 msgstr "Выход"
 
-#: selectx.py:1064
+#: selectx.py:1117
 msgid "Exit SelectX"
 msgstr "Выйти из SelectX"
 
-#: selectx.py:1067
+#: selectx.py:1120
 msgid "Edit"
 msgstr "Редактировать"
 
-#: selectx.py:1069
+#: selectx.py:1122
 msgid "&Edit"
 msgstr "&Редактировать"
 
-#: selectx.py:1070
+#: selectx.py:1123
 msgid "Undo"
 msgstr "Отменить"
 
-#: selectx.py:1070
+#: selectx.py:1123
 msgid "Undo last text edit"
 msgstr "Отменить последнюю правку текста"
 
-#: selectx.py:1072
+#: selectx.py:1125
 msgid "Redo"
 msgstr "Вернуть"
 
-#: selectx.py:1072
+#: selectx.py:1125
 msgid "Redo last text edit"
 msgstr "Вернуть последнюю отмену правки текста"
 
-#: selectx.py:1075
+#: selectx.py:1128
 msgid "Copy"
 msgstr "Копировать"
 
-#: selectx.py:1075
+#: selectx.py:1128
 msgid "Copy selected text"
 msgstr "Копировать выделенный текст"
 
-#: selectx.py:1077
+#: selectx.py:1130
 msgid "Cut"
 msgstr "Вырезать"
 
-#: selectx.py:1077
+#: selectx.py:1130
 msgid "Cut selected text"
 msgstr "Вырезать выделенный текст"
 
-#: selectx.py:1079
+#: selectx.py:1132
 msgid "Paste"
 msgstr "Вставить"
 
-#: selectx.py:1079
+#: selectx.py:1132
 msgid "Paste text"
 msgstr "Вставить текст"
 
-#: selectx.py:1084
+#: selectx.py:1137
 msgid "Find and replace"
 msgstr "Найти и заменить"
 
-#: selectx.py:1084
+#: selectx.py:1137
 msgid "Find and replace words in your document"
 msgstr "Найти и заменить слова в Вашем документе"
 
-#: selectx.py:1087
+#: selectx.py:1140
 msgid "Select"
 msgstr "Выбрать"
 
-#: selectx.py:1089
+#: selectx.py:1142
 msgid "&Select"
 msgstr "Вы&брать"
 
-#: selectx.py:1090
+#: selectx.py:1143
 msgid "Select All"
 msgstr "Выбрать всё"
 
-#: selectx.py:1090
+#: selectx.py:1143
 msgid "Select all text in editor"
 msgstr "Выбрать весь текст в редакторе"
 
-#: selectx.py:1095
+#: selectx.py:1145
+msgid "Select For Copy By Words"
+msgstr "Выбор для копирования по-словам"
+
+#: selectx.py:1145
+msgid "Set Select For Copy By Words"
+msgstr "Задать выбор для копирования по-словам"
+
+#: selectx.py:1148
 msgid "View"
 msgstr "Вид"
 
-#: selectx.py:1097
+#: selectx.py:1150
 msgid "&View"
 msgstr "&Вид"
 
-#: selectx.py:1100
+#: selectx.py:1153
 msgid "&Highlighter"
 msgstr "&Подсветка синтаксиса"
 
-#: selectx.py:1103
+#: selectx.py:1156
 msgid "None"
 msgstr "Отсутствует"
 
-#: selectx.py:1103
+#: selectx.py:1156
 msgid "None Highlighter"
 msgstr "Отсутствует подсветка синтаксиса"
 
-#: selectx.py:1106
+#: selectx.py:1159
 msgid "Cpp"
 msgstr "С++"
 
-#: selectx.py:1106
+#: selectx.py:1159
 msgid "Cpp Highlighter"
 msgstr "Подсветка синтаксиса С++"
 
-#: selectx.py:1109
+#: selectx.py:1162
 msgid "Python"
 msgstr "Python"
 
-#: selectx.py:1109
+#: selectx.py:1162
 msgid "Python Highlighter"
 msgstr "Подсветка синтаксиса Python"
 
-#: selectx.py:1114
+#: selectx.py:1167
 msgid "&Zoom"
 msgstr "&Масштаб"
 
-#: selectx.py:1116
+#: selectx.py:1169
 msgid "Zoom In"
 msgstr "Увеличить масштаб"
 
-#: selectx.py:1116
+#: selectx.py:1169
 msgid "Zoom In text in editor"
 msgstr "Увеличить масштаб текста в редакторе"
 
-#: selectx.py:1118
+#: selectx.py:1171
 msgid "Zoom Out"
 msgstr "Уменьшить масштаб"
 
-#: selectx.py:1118
+#: selectx.py:1171
 msgid "Zoom Out text in editor"
 msgstr "Уменьшить масштаб текста в редакторе"
 
-#: selectx.py:1120
+#: selectx.py:1173
 msgid "Zoom Original"
 msgstr "Начальный масштаб"
 
-#: selectx.py:1120
+#: selectx.py:1173
 msgid "Zoom original text in editor"
 msgstr "Начальный масштаб текста в редакторе"
 
-#: selectx.py:1123
+#: selectx.py:1176
 msgid "Font"
 msgstr "Шрифт"
 
-#: selectx.py:1123
+#: selectx.py:1176
 msgid "Font select dialog"
 msgstr "Диалог выбора шрифта"
 
-#: selectx.py:1126
+#: selectx.py:1179
 msgid "Show/Hide non-printabale"
 msgstr "Отобразить/спрятать непечатаемые"
 
-#: selectx.py:1126
+#: selectx.py:1179
 msgid "Show/Hide non-printabale symbols"
 msgstr "Отобразить/спрятать непечатаемые символы"
 
-#: selectx.py:1128
+#: selectx.py:1181
 msgid "Pythonic Enter"
 msgstr "\"Pythonic\" новой строки"
 
-#: selectx.py:1128
+#: selectx.py:1181
 msgid "On/Off Pythonic Enter Style"
 msgstr "Включить/выключить \"Pythonic\" стиль новой строки"
 
-#: selectx.py:1130
+#: selectx.py:1183
 msgid "Line Numbers"
 msgstr "Номерация строк"
 
-#: selectx.py:1130
+#: selectx.py:1183
 msgid "On/Off PLine Numbers"
 msgstr "Включить/Выключить номерацию строк"
 
-#: selectx.py:1133 selectx.py:1136
+#: selectx.py:1186 selectx.py:1189
 msgid "Help"
 msgstr "Помощь"
 
-#: selectx.py:1135
+#: selectx.py:1188
 msgid "&Help"
 msgstr "&Помощь"
 
-#: selectx.py:1136
+#: selectx.py:1189
 msgid "Keys Help"
 msgstr "Помощь по клавишам"
 
-#: selectx.py:1138
+#: selectx.py:1191
 msgid "About"
 msgstr "О программе"
 
-#: selectx.py:1138
+#: selectx.py:1191
 msgid "About editor"
 msgstr "О редакторе"
 
-#: selectx.py:1140
+#: selectx.py:1193
 msgid "About &Qt"
 msgstr "О версии &Qt"
 
-#: selectx.py:1140
+#: selectx.py:1193
 msgid "About current QT"
 msgstr "О текущей версии QT"
 
-#: selectx.py:1142
+#: selectx.py:1195
 msgid "Ok Player"
 msgstr "Ok проигрыватель"
 
-#: selectx.py:1142
+#: selectx.py:1195
 msgid "On/Off Ok Player"
 msgstr "Включить/выключить Ok проигрыватель"
 
-#: selectx.py:1185
+#: selectx.py:1199
+msgid "Ok Volume"
+msgstr "Ok громкость"
+
+#: selectx.py:1199
+msgid "Volume Ok Player"
+msgstr "Громкость Ok проигрывателя"
+
+#: selectx.py:1257
 msgid "Hide Py Enter"
 msgstr "Выключить \"Pythonic\" новые строки"
 
-#: selectx.py:1188
+#: selectx.py:1260
 msgid "Add Py Enter"
 msgstr "Включить \"Pythonic\" новые строки"
 
-#: selectx.py:1258
+#: selectx.py:1319
 #, python-format
 msgid "New text - %s"
 msgstr "Новый текст - %s"
 
-#: selectx.py:1293
+#: selectx.py:1354
 #, python-format
 msgid "Selected Tab #%s"
 msgstr "Выбрана вкладка №%s"
 
-#: selectx.py:1316 selectx.py:1347 selectx.py:1358
+#: selectx.py:1376 selectx.py:1406 selectx.py:1417
 #, python-format
 msgid "Save Text: %s"
 msgstr "Сохранение текста: %s"
 
-#: selectx.py:1328
+#: selectx.py:1387
 msgid "Save File"
 msgstr "Сохранение файла"
 
-#: selectx.py:1338 selectx.py:1367
+#: selectx.py:1397 selectx.py:1426
 msgid "Stop Save Text"
 msgstr "Прекращено сохранение текста"
 
-#: selectx.py:1359 selectx.py:1456
+#: selectx.py:1418 selectx.py:1516
 #, python-format
 msgid "SelectX - %s"
 msgstr "SelectX - %s"
 
-#: selectx.py:1378
+#: selectx.py:1437
 msgid "Open File"
 msgstr "Открыть файл"
 
-#: selectx.py:1380
+#: selectx.py:1439
 msgid ""
 "All Files (*);;Text Files (*.txt *.log *.TXT *.LOG);;Python Files (*.py *.PY "
 "*.py3 *.PY3);;C/C++ Files (*.c *.cc *.cpp *.c++ *.cxx *.h *.hh *.hpp *.hxx *."
@@ -507,175 +523,188 @@ msgstr ""
 "*.PY *.py3 *.PY3);;C/C++ файлы(*.c *.cc *.cpp *.c++ *.cxx *.h *.hh *.hpp *."
 "hxx *.CPP *.H *.c *.C)"
 
-#: selectx.py:1391 selectx.py:1417
+#: selectx.py:1450 selectx.py:1476
 #, python-format
 msgid "Start reading: %s"
 msgstr "Начато чтение: %s"
 
-#: selectx.py:1395
+#: selectx.py:1455
 msgid "Stop Open Text"
 msgstr "Прекращено открытие текста"
 
-#: selectx.py:1451
+#: selectx.py:1511
 #, python-format
 msgid "Open Text: %s"
 msgstr "Открыть текст: %s"
 
-#: selectx.py:1475
+#: selectx.py:1535
 msgid "Confirm Exit SelectX"
 msgstr "Подтвердить выход из SelectX"
 
-#: selectx.py:1476
+#: selectx.py:1536
 msgid "Are you sure to Exit?"
 msgstr "Вы уверенны, что хотите выйти?"
 
-#: selectx.py:1480
+#: selectx.py:1540
 msgid "Close Stoped"
 msgstr "Закрытие прекращено"
 
-#: selectx.py:1483
+#: selectx.py:1543
 msgid "Confirm Close Tab"
 msgstr "Подтвердите закрытие вкладки"
 
-#: selectx.py:1484
+#: selectx.py:1544
 msgid "Are you sure to Close Tab?"
 msgstr "Вы уверенны, что хотите закрыть вкладку?"
 
-#: selectx.py:1492
+#: selectx.py:1552
 msgid "Undo Text"
 msgstr "Отмена текста"
 
-#: selectx.py:1496
+#: selectx.py:1556
 msgid "Redo Text"
 msgstr "Возврат текста"
 
-#: selectx.py:1506
+#: selectx.py:1561
+msgid "Enter words number"
+msgstr "Введите число слов"
+
+#: selectx.py:1561
+msgid "Enter words number for copy:"
+msgstr "Введите число слов для копирования"
+
+#: selectx.py:1623
 msgid "Copy Text"
 msgstr "Копирование текста"
 
-#: selectx.py:1510
+#: selectx.py:1627
 msgid "Cut Text"
 msgstr "Вырезание текста"
 
-#: selectx.py:1514
+#: selectx.py:1631
 msgid "Paste Text"
 msgstr "Вставка текста"
 
-#: selectx.py:1522
+#: selectx.py:1639
 msgid "Hide Non Printabale"
 msgstr "Спрятать непечатаемые"
 
-#: selectx.py:1525
+#: selectx.py:1642
 msgid "Show Non Printabale"
 msgstr "Показать непечатаемые"
 
-#: selectx.py:1532
+#: selectx.py:1649
 msgid "Show Line Numbers"
 msgstr "Показать номера линий"
 
-#: selectx.py:1534
+#: selectx.py:1651
 msgid "Hide Line Numbers"
 msgstr "Спрятать номера линий"
 
-#: selectx.py:1541
+#: selectx.py:1658
 msgid "SelectX Find Dialog"
 msgstr "SelectX Диалог поиска"
 
-#: selectx.py:1541
+#: selectx.py:1658
 msgid "Enter text to find:"
 msgstr "Введите текст для поиска:"
 
-#: selectx.py:1544
+#: selectx.py:1661
 #, python-format
 msgid "Found: %s"
 msgstr "Найдено: %s"
 
-#: selectx.py:1547
+#: selectx.py:1664
 #, python-format
 msgid "Not found: %s"
 msgstr "Не найдено: %s"
 
-#: selectx.py:1550
+#: selectx.py:1667
 msgid "Find Canceled"
 msgstr "Поиск отменен"
 
-#: selectx.py:1564 selectx.py:1570 selectx.py:1576
+#: selectx.py:1683 selectx.py:1689 selectx.py:1695
 #, python-format
 msgid "Zoom Rate: %s"
 msgstr "Коэффициент масштабирования: %s"
 
-#: selectx.py:1594
+#: selectx.py:1713
 msgid "Enter media URL"
 msgstr "Введите URL мультимедиа"
 
-#: selectx.py:1595
+#: selectx.py:1714
 msgid "Enter you favorit on-line radio URL:"
 msgstr "Введите URL Вашей любимой он-лайн радиостанции"
 
-#: selectx.py:1611
+#: selectx.py:1737
 #, python-format
 msgid "okPlayer play: %s"
 msgstr "okPlayer проигрывает: %s"
 
-#: selectx.py:1614
+#: selectx.py:1741
 msgid "okPlayer stop"
 msgstr "okPlayer остановлен"
 
-#: selectx.py:1617
+#: selectx.py:1744
 msgid "About SelectX"
 msgstr "О SelectX"
 
-#: selectx.py:1625
+#: selectx.py:1753 selectx.py:2281
 msgid "Ok"
 msgstr "Ok"
 
-#: selectx.py:1628
+#: selectx.py:1756
 msgid "Keys SelectX"
 msgstr "Клавиши SelectX"
 
-#: selectx.py:1709
+#: selectx.py:1837
 msgid "Symbols: {} | Rows: {} | Line: {} | Column: {} | Selected: {}"
-msgstr "Символы: {} | Строки: {} | Строки: {} | Колонки: {} | Выбрано: {}"
+msgstr "Символы: {} | Строки: {} | Строка: {} | Колонка: {} | Выбрано: {}"
 
-#: selectx.py:1711
+#: selectx.py:1839
 msgid "Symbols: {} | Rows: {} | Line: {} | Column: {}"
-msgstr "Символы: {} | Строки: {} | Строки: {} | Колонки: {}"
+msgstr "Символы: {} | Строки: {} | Строка: {} | Колонка: {}"
 
-#: selectx.py:2160
+#: selectx.py:2288
+msgid "Set Ok"
+msgstr "Установите Ok"
+
+#: selectx.py:2307
 msgid "Find"
 msgstr "Найти"
 
-#: selectx.py:2164
+#: selectx.py:2309
 msgid "Replace"
 msgstr "Заменить"
 
-#: selectx.py:2168
+#: selectx.py:2311
 msgid "Replace all"
 msgstr "Заменить всё"
 
-#: selectx.py:2172
+#: selectx.py:2313
 msgid "Normal"
 msgstr "Обычный"
 
-#: selectx.py:2176
+#: selectx.py:2315
 msgid "RegEx"
 msgstr "RegEx"
 
-#: selectx.py:2190
+#: selectx.py:2325
 msgid "Options: "
 msgstr "Параметры: "
 
-#: selectx.py:2193
+#: selectx.py:2326
 msgid "Case sensitive"
 msgstr "Чувствительно к регистру"
 
-#: selectx.py:2196
+#: selectx.py:2327
 msgid "Whole words"
 msgstr "Целое слово"
 
-#: selectx.py:2222
+#: selectx.py:2351
 msgid "Find and Replace"
 msgstr "Найти и заменить"
+
 '''}
     
     current_locale, encoding = locale.getdefaultlocale()
