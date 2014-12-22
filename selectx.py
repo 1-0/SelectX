@@ -11,7 +11,7 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.1.36'''
+__version__ = '''0.6.2.2'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
@@ -1141,8 +1141,8 @@ class SelectX(QtGui.QMainWindow):
         selectMenu = menubar.addMenu(_(u'&Select'))
         self.addActionParamX(_(u'Select All'), 'Ctrl+A', _(u'Select all text in editor'), \
         self.selectAll, selectMenu, 'edit-select-all', self.toolbar)
-        #self.addActionParamX(_(u'Select For Copy By Words'), 'Ctrl+Shift+A', _(u'Set Select For Copy By Words'), \
-        #self.setSelectByWords, selectMenu, 'edit-select', self.toolbar, checkAble=True)
+        self.addActionParamX(_(u'Select For Copy By Words'), 'Ctrl+Shift+A', _(u'Set Select For Copy By Words'), \
+        self.setSelectByWords, selectMenu, 'edit-select', self.toolbar, checkAble=True)
 
         self.toolbar = self.addToolBar(_(u"View"))
         self.toolbar.setMovable(True)
@@ -1447,8 +1447,9 @@ class SelectX(QtGui.QMainWindow):
             if self.checkNotEmptyText() and self.path:
                 self.newTab()
                 self.statusBar().showMessage(_(u'Start reading: %s') % self.path)
-        
-            self.openExistFile(self.path)
+                
+            if self.path<>u'':
+                self.openExistFile(self.path)
         else:
             self.statusBar().showMessage(_(u'Stop Open Text'))
         #if self.path:
@@ -1554,14 +1555,54 @@ class SelectX(QtGui.QMainWindow):
         self.statusBar().showMessage(_(u'Redo Text'))
 
     def copyText(self):
-        if self.selectForCopyByWords:
-
-            self.cursorMain = self.cWidget.edit.cursorRect()
-            #print self.cursorMain
-            #print 'self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()'
-            #print self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()
-        self.cWidget.edit.copy()
-        self.statusBar().showMessage(_(u'Copy Text'))
+        cursor = self.cWidget.edit.textCursor()
+        if cursor.hasSelection():
+            if self.selectForCopyByWords:
+                wordsCount = 2
+                wordsSpliter = ' '
+                if u'\u2029' in cursor.selectedText():
+                    selectedRows=cursor.selectedText().split(u'\u2029')
+                else:
+                    selectedRows=cursor.selectedText().split('\n')
+                #selectedRows=cursor.selectedText().split('\n')
+                #selectedRows=cursor.selectedText().split(u'\u2029')
+                resultString = ''
+                #print 'selectedRows-'+str(selectedRows)
+                for rrr in selectedRows:
+                    wordsInRow = rrr.split(wordsSpliter)
+                    if len(wordsInRow)>wordsCount:
+                        nnn = 0
+                        while nnn < wordsCount:
+                            resultString += wordsInRow[nnn]+wordsSpliter
+                            nnn += 1
+                        resultString += '\n'
+                    else:
+                        resultString += rrr+'\n'
+                    
+                #print 'resultString-'+resultString
+                clipQ = QtGui.QClipboard()
+                clipQ.setText(resultString)
+    
+                #self.cursorMain = self.cWidget.edit.cursorRect()
+                #currentDoc = self.cWidget.edit.document()
+                #line = cursor.blockNumber() + 1
+                #col = cursor.columnNumber()
+                #currentText = currentWidget.toPlainText()
+                #symb = len(currentText)
+                #symb = currentDoc.characterCount()-1
+                #rows = currentDoc.lineCount()
+                #tb = cursor.block()
+                #print 'tb.text()-'+ tb.text()
+                #print 'currentDoc.blockCount()-'+str(currentDoc.blockCount())
+                #print 'cursor.selectedText()-'+ cursor.selectedText()
+                #print 'cursor.selectionStart()-'+str(cursor.selectionStart())
+                #print 'cursor.selectionEnd()-'+str(cursor.selectionEnd())
+                #print self.cursorMain
+                #print 'self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()'
+                #print self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()
+            else:
+                self.cWidget.edit.copy()
+            self.statusBar().showMessage(_(u'Copy Text'))
 
     def cutText(self):
         self.cWidget.edit.cut()
