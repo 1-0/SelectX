@@ -3,15 +3,12 @@
 '''SelectX - easy eXtendable text editor for developers writed on Python. Licensed by GPL3.'''
 #!/usr/bin/python -m cProfile -s time ./selectx.py |less -o ./pof.log     #<<<<profiler run
 import sys, os, re, encodings
-import ast
-import getopt
-import struct
-import array
+import ast, getopt, struct, array
 import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.2.7'''
+__version__ = '''0.6.2.9'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
@@ -1211,6 +1208,8 @@ class SelectX(QtGui.QMainWindow):
         viewMenu, 'media_skip_backward', self.toolbar, checkAble=True, returnName=True)
         self.nonLineNumbers = self.addActionParamX(_(u'Line Numbers'), 'Ctrl+Shift+L', _(u'On/Off PLine Numbers'), self.inverseLineNumbering, \
         viewMenu, 'office_calendar', self.toolbar, checkAble=True, returnName=True)
+        
+        self.addPlugins(menubar)
 
         self.toolbar = self.addToolBar(_(u"Help"))
         self.toolbar.setMovable(True)
@@ -1248,6 +1247,11 @@ class SelectX(QtGui.QMainWindow):
         #self.aOutput.setMuted(False)
         #self.aOutput.setVolume(10)
                 
+
+    def addPlugins(self, menuLink):
+        print 'addPlugins'
+        pass
+
 
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
     TopActLevel, IconName=None, toolBar=None, checkAble=False, \
@@ -1754,11 +1758,11 @@ class SelectX(QtGui.QMainWindow):
                 self.okVolume.setEnabled(True)
                 self.okVolume.setVisible(True)
         
+                self.aOutput = Phonon.AudioOutput(Phonon.MusicCategory)
                 self.playSource = Phonon.MediaSource(QtCore.QUrl(self.text_url))
                 self.playSource.setAutoDelete(False)
                 self.playSource.Type = Phonon.MediaSource.Url
                 self.okMediaPlayer = Phonon.createPlayer(Phonon.MusicCategory, self.playSource)#Phonon.MediaObject()
-                self.aOutput = Phonon.AudioOutput()
                 #self.aOutput.setMuted(False)
                 #self.aOutput.setVolume(10)
                 Phonon.createPath(self.okMediaPlayer, self.aOutput)
@@ -2302,8 +2306,10 @@ class VolumeDialog(QtGui.QDialog):
             #from PyQt4.phonon import Phonon
             ##pass
         #print str(self.aOutput.outputDevice())
-        self.newOkVolume = Phonon.VolumeSlider(self.aOutput, self)
+        self.newOkVolume = Phonon.VolumeSlider()
+        self.newOkVolume.setAudioOutput(self.aOutput)
         self.newOkVolume.setTracking (True)
+        #self.newOkVolume.valueChanged.connect(self.changeVolume)
         #self.newOkVolume.setMaximumVolume(2.0)
         #print str(self.newOkVolume)
 
@@ -2316,6 +2322,10 @@ class VolumeDialog(QtGui.QDialog):
         layout.addWidget(self.OkButton)
         self.setWindowTitle(_(u"Set Ok"))
         self.setLayout(layout)
+
+    def changeVolume(self, value):
+        self.aOutput.setVolume(value)
+
         
     def Ok(self):
         #self.aOutput.setVolumeDecibel(1000)
