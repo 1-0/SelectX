@@ -1,24 +1,28 @@
-#def _(s): return s
-from gettext import gettext as _
-#global _
-#from .. import _
+from selectx import _ as _
+from selectx import SelectX as SelectX
 
-def __plugin_init__(self, gt, params_list=[]):
-    global _
-    _ = gt
+
+
+__plugin_name__ = _(u'SelectX Find Dialog')
+__plugin_menu_caption__ = _(u'SelectX Find Dialog')
+__plugin_menu_key__ = 'F5'
+__plugin_menu_help__ = _(u'SelectX Find Dialog')
+__plugin_menu_icon__ = """edit-find"""
+__plugin_name__ = _(u'SelectX Find Dialog')
+__plugin_version__ = '0.0.4'
+__plugin_about__ = _(u'Enter text to find:')
+
+def __plugin_init__(self, params_list=[]):
     nnn = __plugin_name__+' '+__plugin_version__
     print nnn
     self.statusBar().showMessage(nnn)
-__plugin_name__ = _(u'SelectX Find Dialog')
-__plugin_version__ = '0.0.1'
-__plugin_about__ = _(u'Enter text to find:')
-
-
 
 def __plugin_run_function__(self):
-    return findText
+    findText(self)
 
 def findText(self):
+    from selectx import QtGui as QtGui
+    
     cursor = self.cWidget.edit.textCursor()
     textSelected = cursor.selectedText()
     text_find, find_ok = QtGui.QInputDialog.getText(self, \

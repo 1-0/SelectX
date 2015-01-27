@@ -8,7 +8,7 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.2.10'''
+__version__ = '''0.6.2.12'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
@@ -1112,6 +1112,8 @@ class SelectX(QtGui.QMainWindow):
                 return True
                 #event.ignore()
 
+    def checkPluginsDir(self):
+        return True
 
     def makeMenu(self):
         menubar = self.menuBar()
@@ -1249,14 +1251,38 @@ class SelectX(QtGui.QMainWindow):
                 
 
     def addPlugins(self, menuLink):
-        import imp
-        self.plugins=[]
-        foo = imp.load_source('SelectX_simpley_find', r'SelectX_simpley_find.py')
-        print 'addPlugins'+str(foo)
-        self.plugins.append(foo)
-        self.plugins[0].__plugin_init__(self, _, [_, 0])
+        pluginsDir = self.checkPluginsDir()
+        if pluginsDir:
+            PluginsMenu = menuLink.addMenu(_(u'&Plugins'))
+            self.plugins=[]
+            self.importPlugin('SelectX_simpley_find', r'SelectX_simpley_find.py')
+
+            if self.plugins[-1].__plugin_menu_caption__ and \
+            self.plugins[-1].__plugin_menu_key__ and \
+            self.plugins[-1].__plugin_menu_help__ and \
+            self.plugins[-1].__plugin_run_function__:
+                self.addActionParamX(self.plugins[-1].__plugin_menu_caption__, \
+                self.plugins[-1].__plugin_menu_key__, \
+                self.plugins[-1].__plugin_menu_help__, \
+                #self.plugins[-1].__plugin_run_function__, \
+                lambda: self.plugins[-1].__plugin_run_function__(self), \
+                PluginsMenu, \
+                self.plugins[-1].__plugin_menu_icon__)
+                
+            else:
+                print "import pass %s, %s, %s, %s"% self.plugins[-1].__plugin_menu_caption__, \
+                self.plugins[-1].__plugin_menu_key__, \
+                self.plugins[-1].__plugin_menu_help__, \
+                self.plugins[-1].__plugin_run_function
+        
         pass
 
+    def importPlugin(self, pluginname, pluginpath=''):
+        import imp
+        plug = imp.load_source(pluginname, pluginpath)
+        print 'addPlugins'+str(plug)
+        plug.__plugin_init__(self)
+        self.plugins.append(plug)
 
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
     TopActLevel, IconName=None, toolBar=None, checkAble=False, \
