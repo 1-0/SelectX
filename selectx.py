@@ -8,7 +8,7 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.2.9'''
+__version__ = '''0.6.2.10'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
@@ -1249,7 +1249,12 @@ class SelectX(QtGui.QMainWindow):
                 
 
     def addPlugins(self, menuLink):
-        print 'addPlugins'
+        import imp
+        self.plugins=[]
+        foo = imp.load_source('SelectX_simpley_find', r'SelectX_simpley_find.py')
+        print 'addPlugins'+str(foo)
+        self.plugins.append(foo)
+        self.plugins[0].__plugin_init__(self, _, [_, 0])
         pass
 
 
