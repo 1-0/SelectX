@@ -8,7 +8,7 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.2.12'''
+__version__ = '''0.6.2.13'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
@@ -45,6 +45,31 @@ def getDirsForTranslations(baseDir = None, LocaleName = 'ru_UA'):
     return baseDir, localePath
     
 #print getDirsForTranslations()
+
+RUN_PY = r"""#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
+def py_run(py_name=r'./hi.py', run_params=' '):
+    import os
+    status = os.system(r'xterm  -e "python ' + py_name + run_params+r''' && echo 'Waiting for press Enter key.' && read"''')
+    print 'status - %s'%status
+    return status
+
+py_run()
+"""
+
+HI_PY = r"""#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
+def hi_one(one='All'):
+    nnn = 'Hi ' + one
+    print nnn
+    return nnn
+
+hi_one()
+"""
 
 def localGettextX():
     po_dict = {'ru': r'''# SOME DESCRIPTIVE TITLE.
