@@ -8,34 +8,39 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.2.14'''
+__version__ = '''0.6.2.15'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
 
-def getDirs(baseDir = None, LocaleName = 'ru_UA'):
-    def addPath(pathPart):
-        return pathPart+os.path.sep
     
-    def gluePath(elementsList):
-        return os.path.sep.join(elementsList)
+def gluePath(elementsList):
+    '''gluePath(elementsList) - glue path from elementsList and create if not 
+    exist'''
+    newPath = os.path.sep.join(elementsList)
+    if not os.path.isdir(newPath):
+        os.makedirs(newPath)
+    return newPath
+
+#def getDirs(baseDir = None, LocaleName = 'ru_UA'):
+    #def addPath(pathPart):
+        #return pathPart+os.path.sep
     
-    from os.path import expanduser
-    if not baseDir:
-        baseDir = addPath(expanduser('~'))
-        #print 'baseDir-'+baseDir
-    baseDir = gluePath([baseDir, '.config', 'SelectX', 'locale',''])
-    if not os.path.isdir(baseDir):
-        print baseDir
-        os.makedirs(baseDir)
-    localePath=gluePath([baseDir, LocaleName, 'LC_MESSAGES',''])
-    if not (os.path.isdir(localePath)):
-        os.makedirs(localePath)
-    #print baseDir+'.config/SelectX/locale/ru_UA/LC_MESSAGES/'
-    return baseDir, localePath
+    #from os.path import expanduser
+    #if not baseDir:
+        #baseDir = addPath(expanduser('~'))
+        ##print 'baseDir-'+baseDir
+    #baseDir = gluePath([baseDir, '.config', 'SelectX', 'locale',''])
+    #if not os.path.isdir(baseDir):
+        #print baseDir
+        #os.makedirs(baseDir)
+    #localePath=gluePath([baseDir, LocaleName, 'LC_MESSAGES',''])
+    #if not (os.path.isdir(localePath)):
+        #os.makedirs(localePath)
+    ##print baseDir+'.config/SelectX/locale/ru_UA/LC_MESSAGES/'
+    #return baseDir, localePath
     
-#print getDirs()
 
 RUN_PY = r"""#!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -729,8 +734,14 @@ msgstr "Найти и заменить"
         poString = po_dict[current_locale[:2]]
     else:
         return gettext.gettext
+    
+    from os.path import expanduser
+    baseDir = expanduser('~')
+    
+    baseDirLocale = gluePath([baseDir, '.config', 'SelectX', 'locale',''])
     if poString:
-        baseDirLocale, baseDirPo = getDirs(LocaleName = current_locale)
+        baseDirPo = gluePath([baseDir, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', ''])
+        #baseDirLocale, baseDirPo = getDirs(LocaleName = current_locale)
         filePo = open(baseDirPo+'SelectX.po', "w")
         filePo.write(poString)
         filePo.close()
@@ -739,7 +750,8 @@ msgstr "Найти и заменить"
         t = gettext.translation('SelectX', baseDirLocale, fallback=True, languages=[current_locale])
         #t.install()
     else:
-        t = gettext.translation('SelectX', getDirs()[0], fallback=True)
+        
+        t = gettext.translation('SelectX', baseDirLocale, fallback=True)
     return t.ugettext
 
 def makeMo(filename, outfile, current_locale):
