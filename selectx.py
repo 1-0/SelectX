@@ -8,43 +8,34 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.2.13'''
+__version__ = '''0.6.2.14'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
 
-def getDirsForTranslations(baseDir = None, LocaleName = 'ru_UA'):
+def getDirs(baseDir = None, LocaleName = 'ru_UA'):
     def addPath(pathPart):
         return pathPart+os.path.sep
+    
+    def gluePath(elementsList):
+        return os.path.sep.join(elementsList)
     
     from os.path import expanduser
     if not baseDir:
         baseDir = addPath(expanduser('~'))
         #print 'baseDir-'+baseDir
-    if os.path.isdir(baseDir+addPath('.config')+ addPath('SelectX')+addPath('locale')):
-        baseDir = baseDir+addPath('.config')+ addPath('SelectX')+addPath('locale')
-    else:
+    baseDir = gluePath([baseDir, '.config', 'SelectX', 'locale',''])
+    if not os.path.isdir(baseDir):
         print baseDir
-        baseDir += addPath('.config')
-        if not (os.path.isdir(baseDir)):
-            os.makedirs(baseDir)
-        baseDir += addPath('SelectX')
-        if not (os.path.isdir(baseDir)):
-            os.makedirs(baseDir)
-        baseDir += addPath('locale')
-        if not (os.path.isdir(baseDir)):
-            os.makedirs(baseDir)
-    localePath=baseDir+LocaleName+os.path.sep
-    if not (os.path.isdir(localePath)):
-        os.makedirs(localePath)
-    localePath += addPath('LC_MESSAGES')
+        os.makedirs(baseDir)
+    localePath=gluePath([baseDir, LocaleName, 'LC_MESSAGES',''])
     if not (os.path.isdir(localePath)):
         os.makedirs(localePath)
     #print baseDir+'.config/SelectX/locale/ru_UA/LC_MESSAGES/'
     return baseDir, localePath
     
-#print getDirsForTranslations()
+#print getDirs()
 
 RUN_PY = r"""#!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -739,7 +730,7 @@ msgstr "Найти и заменить"
     else:
         return gettext.gettext
     if poString:
-        baseDirLocale, baseDirPo = getDirsForTranslations(LocaleName = current_locale)
+        baseDirLocale, baseDirPo = getDirs(LocaleName = current_locale)
         filePo = open(baseDirPo+'SelectX.po', "w")
         filePo.write(poString)
         filePo.close()
@@ -748,7 +739,7 @@ msgstr "Найти и заменить"
         t = gettext.translation('SelectX', baseDirLocale, fallback=True, languages=[current_locale])
         #t.install()
     else:
-        t = gettext.translation('SelectX', getDirsForTranslations()[0], fallback=True)
+        t = gettext.translation('SelectX', getDirs()[0], fallback=True)
     return t.ugettext
 
 def makeMo(filename, outfile, current_locale):
@@ -885,7 +876,7 @@ def makeMo(filename, outfile, current_locale):
         print >> sys.stderr, msg
 
 _ = localGettextX()
-#getDirsForTranslations = None
+#getDirs = None
 #localGettextX = None
 #makeMo = None
 
