@@ -8,43 +8,35 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.2.15'''
+__version__ = '''0.6.2.16'''
 #osSep = os.path.sep
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
 
-    
-def gluePath(elementsList):
-    '''gluePath(elementsList) - glue path from elementsList and create if not 
-    exist'''
-    newPath = os.path.sep.join(elementsList)
-    if not os.path.isdir(newPath):
-        os.makedirs(newPath)
-    return newPath
-
-#def getDirs(baseDir = None, LocaleName = 'ru_UA'):
-    #def addPath(pathPart):
-        #return pathPart+os.path.sep
-    
-    #from os.path import expanduser
-    #if not baseDir:
-        #baseDir = addPath(expanduser('~'))
-        ##print 'baseDir-'+baseDir
-    #baseDir = gluePath([baseDir, '.config', 'SelectX', 'locale',''])
-    #if not os.path.isdir(baseDir):
-        #print baseDir
-        #os.makedirs(baseDir)
-    #localePath=gluePath([baseDir, LocaleName, 'LC_MESSAGES',''])
-    #if not (os.path.isdir(localePath)):
-        #os.makedirs(localePath)
-    ##print baseDir+'.config/SelectX/locale/ru_UA/LC_MESSAGES/'
-    #return baseDir, localePath
-    
 
 RUN_PY = r"""#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from selectx import _ as _
+
+
+__plugin_name__ = _(u'SelectX Run Python')
+__plugin_menu_caption__ = _(u'SelectX Run Python')
+__plugin_menu_key__ = 'F6'
+__plugin_menu_help__ = _(u'SelectX Run Python Script')
+__plugin_menu_icon__ = '''system-run'''
+__plugin_name__ = _(u'SelectX Find Dialog')
+__plugin_version__ = '0.0.4'
+__plugin_about__ = _(u'Enter text to find:')
+
+def __plugin_init__(self, params_list=[]):
+    nnn = __plugin_name__+' '+__plugin_version__
+    print nnn
+    self.statusBar().showMessage(nnn)
+
+def __plugin_run_function__(self):
+    py_run(self)
 
 def py_run(py_name=r'./hi.py', run_params=' '):
     import os
@@ -66,15 +58,23 @@ def hi_one(one='All'):
 
 hi_one()
 """
+    
+def gluePath(elementsList):
+    '''gluePath(elementsList) - glue path from elementsList and create if not 
+    exist'''
+    newPath = os.path.sep.join(elementsList)
+    if not os.path.isdir(newPath):
+        os.makedirs(newPath)
+    return newPath
 
 def localGettextX():
-    po_dict = {'ru': r'''# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+    po_dict = {'ru': r'''# SelectX.
+# Copyright (C) 2014 10
+# This file is distributed under the same license as the PACKAGE package (GPL3).
 # 10 <1_0@usa.com>, 2014.
 msgid ""
 msgstr ""
-"Project-Id-Version: SelectX 0.6.2.7\n"
+"Project-Id-Version: SelectX 0.6.2.16\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-22 16:22+0200\n"
 "PO-Revision-Date: 2014-12-22 16:28+0300\n"
@@ -741,7 +741,6 @@ msgstr "Найти и заменить"
     baseDirLocale = gluePath([baseDir, '.config', 'SelectX', 'locale',''])
     if poString:
         baseDirPo = gluePath([baseDir, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', ''])
-        #baseDirLocale, baseDirPo = getDirs(LocaleName = current_locale)
         filePo = open(baseDirPo+'SelectX.po', "w")
         filePo.write(poString)
         filePo.close()
@@ -888,9 +887,6 @@ def makeMo(filename, outfile, current_locale):
         print >> sys.stderr, msg
 
 _ = localGettextX()
-#getDirs = None
-#localGettextX = None
-#makeMo = None
 
 #from PySide import QtGui, QtCore
 #LIB_USE = "PySide"

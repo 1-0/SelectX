@@ -1,7 +1,5 @@
 from selectx import _ as _
-from selectx import SelectX as SelectX
-
-
+from selectx import QtGui as QtGui
 
 __plugin_name__ = _(u'SelectX Find Dialog')
 __plugin_menu_caption__ = _(u'SelectX Find Dialog')
@@ -21,8 +19,6 @@ def __plugin_run_function__(self):
     findText(self)
 
 def findText(self):
-    from selectx import QtGui as QtGui
-    
     cursor = self.cWidget.edit.textCursor()
     textSelected = cursor.selectedText()
     text_find, find_ok = QtGui.QInputDialog.getText(self, \
