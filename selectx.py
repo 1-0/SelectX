@@ -8,8 +8,11 @@ import codecs
 
 import gettext, locale
 
-__version__ = '''0.6.2.16'''
-#osSep = os.path.sep
+    
+from os.path import expanduser
+__baseDir__ = expanduser('~')
+
+__version__ = '''0.6.2.18'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
@@ -22,13 +25,13 @@ from selectx import _ as _
 
 
 __plugin_name__ = _(u'SelectX Run Python')
-__plugin_menu_caption__ = _(u'SelectX Run Python')
-__plugin_menu_key__ = 'F6'
-__plugin_menu_help__ = _(u'SelectX Run Python Script')
-__plugin_menu_icon__ = '''system-run'''
+__plugin_menu_caption__ = _(u'Run Python')
+__plugin_menu_key__ = 'F5'
+__plugin_menu_help__ = _(u'SelectX Run Python Script from current tab')
+__plugin_menu_icon__ = '''applications_system'''
 __plugin_name__ = _(u'SelectX Find Dialog')
-__plugin_version__ = '0.0.4'
-__plugin_about__ = _(u'Enter text to find:')
+__plugin_version__ = '0.0.3'
+__plugin_about__ = _(u'Run Python Script from current tab')
 
 def __plugin_init__(self, params_list=[]):
     nnn = __plugin_name__+' '+__plugin_version__
@@ -40,7 +43,10 @@ def __plugin_run_function__(self):
 
 def py_run(py_name=r'./hi.py', run_params=' '):
     import os
-    status = os.system(r'xterm  -e "python ' + py_name + run_params+r''' && echo 'Waiting for press Enter key.' && read"''')
+    if os.name in ['nt',]:
+        status = os.system(r'start cmd /C "python ' + py_name + run_params+r''' &&  pause"''')
+    else:
+        status = os.system(r'xterm  -e "python ' + py_name + run_params+r''' && echo 'Waiting for press Enter key.' && read"''')
     print 'status - %s'%status
     return status
 
@@ -735,12 +741,9 @@ msgstr "Найти и заменить"
     else:
         return gettext.gettext
     
-    from os.path import expanduser
-    baseDir = expanduser('~')
-    
-    baseDirLocale = gluePath([baseDir, '.config', 'SelectX', 'locale',''])
-    if poString:
-        baseDirPo = gluePath([baseDir, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', ''])
+    baseDirLocale = gluePath([__baseDir__, '.config', 'SelectX', 'locale',''])
+    if poString and (not os.path.isdir(baseDirLocale)):
+        baseDirPo = gluePath([__baseDir__, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', ''])
         filePo = open(baseDirPo+'SelectX.po', "w")
         filePo.write(poString)
         filePo.close()
@@ -749,8 +752,8 @@ msgstr "Найти и заменить"
         t = gettext.translation('SelectX', baseDirLocale, fallback=True, languages=[current_locale])
         #t.install()
     else:
-        
-        t = gettext.translation('SelectX', baseDirLocale, fallback=True)
+        #print 'po ok'
+        t = gettext.translation('SelectX', baseDirLocale, fallback=True, languages=[current_locale])
     return t.ugettext
 
 def makeMo(filename, outfile, current_locale):
@@ -947,7 +950,11 @@ Keys:
 VERSION_INFO = _(u"SelectX. Text editor licensed by GPL3. Ver. %s")
 
 #icon theme for very soft and very micro os ;) (based on http://tango.freedesktop.org/Tango_Icon_Library)
-TANGO_ICONS = {'office_calendar':"""/* XPM */
+TANGO_ICONS = {'applications_system':"""/* XPM */
+static char * applications_system_xpm[] = {
+"16 16 17 1", "     c None", ". c #457ABE", "+  c #BCCDE3", "@  c #86A7D2", "#  c #6490C7", "$  c #9DB8DA", "%  c #7CA1CF", "&  c #467ABA", "*  c #5686C3", "=  c #82A5D1", "-  c #426B9C", ";  c #3F638F", ">  c #497CBA", ",  c #4C7FBD", "'  c #5682B7", ")  c #436FA5", "!  c #8FAED5", "                ", "      ...       ", "   .. .+. ..    ", "  .+@.#$#.@+.   ", "  .@$$$$$$$@.   ", "   .$%&*&=$.    ", " ..#$&- ;>$#..  ", " .+$$*   *$$+.  ", " ..#$,' )&$#..  ", "   .+%,*&!$.    ", "  .@$$$$$$$@.   ", "  .+@.#$#.@+.   ", "   .. .+. ..    ", "      ...       ", "                ", "                "};
+""",
+'office_calendar':"""/* XPM */
 static char * office_calendar_xpm[] = {
 "16 16 79 1","  c None",".  c #555753","+   c #BCBCBC","@   c #C7C7C7","#   c #8D8D8D","$   c #8E8E8E","%   c #D3D3D3","&   c #BBBBBB","*   c #BDBDBD","=   c #BEBEBE","-   c #BFBFBF",";   c #C3C3C3",">   c #C5C5C5",",   c #888887","'   c #FFFFFF",")   c #E2E2E2","!   c #E3E3E3","~   c #E4E4E4","{   c #E5E5E5","]   c #E6E6E6","^   c #E7E7E7","/   c #EFEFEF","(   c #7F7F7F","_   c #EAEAEA",":   c #F1F1F1","<   c #787877","[   c #7B7B7B","}   c #1C1C1C","|   c #0C0C0C","1   c #525252","2   c #1A1A1A","3   c #000000","4   c #DFDFDF","5   c #EBEBEB","6   c #EEEEEE","7   c #090909","8   c #ADADAD","9   c #B6B6B6","0   c #171717","a   c #6D6D6D","b   c #B3B3B3","c   c #F3F3F3","d   c #F4F4F4","e   c #DADADA","f   c #8C8C8C","g   c #030303","h   c #B5B5B5","i   c #E8E8E8","j   c #F2F2F2","k   c #F9F9F9","l   c #515151","m   c #181818","n   c #111111","o   c #6A6A6A","p   c #ECECEC","q   c #0E0E0E","r   c #3C3C3C","s   c #A1A1A1","t   c #EDEDED","u   c #F6F6F6","v   c #FAFAFA","w   c #FBFBFB","x   c #F7F7F7","y   c #F0F0F0","z   c #808080","A   c #818181","B   c #828282","C   c #838383","D   c #848484","E   c #858585","F   c #868686","G   c #878787","H   c #888888","I   c #B1B1B1","J   c #C4C4C4","K   c #B7B7B7","L   c #B8B8B8","M   c #B9B9B9","N   c #BABABA","................",".+++++++++++++@.",".+##$$$$$$$$$$@.",".%&++++*====-;>.",",'))!!~{{]^^^/'(",",')!~~{]]^^^_:'<",",'![}|1]^23456'<",",'~4{#7~^83!::'<",",'{903a^^b3~cd'<",",'{e]fg~_h3ijk'<",",'{lmnop:qrs6k'<",",']_pt:/jccuvw'<",",'kxxddy:cjccc'<",",:zAABCDDEFGGHI<","BJKKLMNN&&&&**J<"," B<<<<<<<<<<<<< "};""",
 'media_record':"""/* XPM */

@@ -3,7 +3,7 @@ from selectx import QtGui as QtGui
 
 __plugin_name__ = _(u'SelectX Find Dialog')
 __plugin_menu_caption__ = _(u'SelectX Find Dialog')
-__plugin_menu_key__ = 'F5'
+__plugin_menu_key__ = 'F7'
 __plugin_menu_help__ = _(u'SelectX Find Dialog')
 __plugin_menu_icon__ = """edit-find"""
 __plugin_name__ = _(u'SelectX Find Dialog')
