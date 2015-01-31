@@ -12,7 +12,7 @@ import gettext, locale
 from os.path import expanduser
 __baseDir__ = expanduser('~')
 
-__version__ = '''0.6.2.18'''
+__version__ = '''0.7.0.1'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
@@ -29,8 +29,7 @@ __plugin_menu_caption__ = _(u'Run Python')
 __plugin_menu_key__ = 'F5'
 __plugin_menu_help__ = _(u'SelectX Run Python Script from current tab')
 __plugin_menu_icon__ = '''applications_system'''
-__plugin_name__ = _(u'SelectX Find Dialog')
-__plugin_version__ = '0.0.3'
+__plugin_version__ = '0.1.1'
 __plugin_about__ = _(u'Run Python Script from current tab')
 
 def __plugin_init__(self, params_list=[]):
@@ -41,8 +40,10 @@ def __plugin_init__(self, params_list=[]):
 def __plugin_run_function__(self):
     py_run(self)
 
-def py_run(py_name=r'./hi.py', run_params=' '):
+def py_run(self, py_name=r'./hi.py', run_params=' '):
     import os
+    if self:
+        py_name = self.cWidget.edit.filePath
     if os.name in ['nt',]:
         status = os.system(r'start cmd /C "python ' + py_name + run_params+r''' &&  pause"''')
     else:
@@ -50,7 +51,8 @@ def py_run(py_name=r'./hi.py', run_params=' '):
     print 'status - %s'%status
     return status
 
-py_run()
+if __name__ == "__main__":
+    py_run(0)
 """
 
 HI_PY = r"""#!/usr/bin/env python
@@ -1286,34 +1288,33 @@ class SelectX(QtGui.QMainWindow):
         if pluginsDir:
             PluginsMenu = menuLink.addMenu(_(u'&Plugins'))
             self.plugins=[]
-            self.importPlugin('SelectX_simpley_find', r'SelectX_simpley_find.py')
+            self.importPlugin('SelectX_simpley_find', PluginsMenu, r'')
+            self.importPlugin('SelectX_run_py', PluginsMenu, r'')
 
-            if self.plugins[-1].__plugin_menu_caption__ and \
-            self.plugins[-1].__plugin_menu_key__ and \
-            self.plugins[-1].__plugin_menu_help__ and \
-            self.plugins[-1].__plugin_run_function__:
-                self.addActionParamX(self.plugins[-1].__plugin_menu_caption__, \
-                self.plugins[-1].__plugin_menu_key__, \
-                self.plugins[-1].__plugin_menu_help__, \
-                #self.plugins[-1].__plugin_run_function__, \
-                lambda: self.plugins[-1].__plugin_run_function__(self), \
-                PluginsMenu, \
-                self.plugins[-1].__plugin_menu_icon__)
-                
-            else:
-                print "import pass %s, %s, %s, %s"% self.plugins[-1].__plugin_menu_caption__, \
-                self.plugins[-1].__plugin_menu_key__, \
-                self.plugins[-1].__plugin_menu_help__, \
-                self.plugins[-1].__plugin_run_function
-        
-        pass
-
-    def importPlugin(self, pluginname, pluginpath=''):
+    def importPlugin(self, pluginname, plugMenu, pluginpath='', pluginType='.py'):
         import imp
-        plug = imp.load_source(pluginname, pluginpath)
-        print 'addPlugins'+str(plug)
+        plug = imp.load_source(pluginname, pluginpath+pluginname+pluginType)
+        #print 'addPlugins'+str(plug)
         plug.__plugin_init__(self)
         self.plugins.append(plug)
+
+        if self.plugins[-1].__plugin_menu_caption__ and \
+        self.plugins[-1].__plugin_menu_key__ and \
+        self.plugins[-1].__plugin_menu_help__ and \
+        self.plugins[-1].__plugin_run_function__:
+            self.addActionParamX(self.plugins[-1].__plugin_menu_caption__, \
+            self.plugins[-1].__plugin_menu_key__, \
+            self.plugins[-1].__plugin_menu_help__, \
+            #self.plugins[-1].__plugin_run_function__, \
+            lambda: self.plugins[-1].__plugin_run_function__(self), \
+            plugMenu, \
+            self.plugins[-1].__plugin_menu_icon__)
+            
+        else:
+            print "import pass %s, %s, %s, %s"% self.plugins[-1].__plugin_menu_caption__, \
+            self.plugins[-1].__plugin_menu_key__, \
+            self.plugins[-1].__plugin_menu_help__, \
+            self.plugins[-1].__plugin_run_function
 
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
     TopActLevel, IconName=None, toolBar=None, checkAble=False, \
@@ -1517,6 +1518,7 @@ class SelectX(QtGui.QMainWindow):
             newFileName =  getFileName(self.path)
             self.mainTab.setTabText(curtabind, '%s' % newFileName)
             self.setHighlighter()
+            self.cWidget.edit.filePath = newFileName
         else:
             self.statusBar().showMessage(_(u'Stop Save Text'))
 
@@ -1609,6 +1611,7 @@ class SelectX(QtGui.QMainWindow):
             self.mainTab.setTabToolTip (curtabind, '%s' % self.path)
             self.mainTab.setTabText(curtabind, '%s' % getFileName(self.path))
             self.setWindowTitle(_(u'SelectX - %s') % self.path)
+            self.cWidget.edit.filePath = self.path
         #else:
             #print 'Can Not Open This File -> %s' % self.path
             #self.path = None
@@ -1663,24 +1666,13 @@ class SelectX(QtGui.QMainWindow):
         cursor = self.cWidget.edit.textCursor()
         if cursor.hasSelection():
             if self.selectForCopyByWords:
-                #spinnerQ =  QtGui.QSpinBox()
-                #spinnerQ.setValue(self.wordsForSelect)
-                #spinnerQ.setMinimum(1)
-                #wordsCount, wordsCount_ok = QtGui.QInputDialog.getText(self, \
-                #_(u'Enter words number'), _(u'Enter words number for copy:'), QtGui.QLineEdit.Normal,  str(self.wordsForSelect))
-                ##_(u'Enter words number'), _(u'Enter words number for copy:'),spinnerQ)
-                #if wordsCount_ok:
-                    #self.wordsForSelect = int(wordsCount)
                 wordsCount = self.wordsForSelect
                 wordsSpliter = ' '
                 if u'\u2029' in cursor.selectedText():
                     selectedRows=cursor.selectedText().split(u'\u2029')
                 else:
                     selectedRows=cursor.selectedText().split('\n')
-                #selectedRows=cursor.selectedText().split('\n')
-                #selectedRows=cursor.selectedText().split(u'\u2029')
                 resultString = ''
-                #print 'selectedRows-'+str(selectedRows)
                 for rrr in selectedRows:
                     wordsInRow = rrr.split(wordsSpliter)
                     if len(wordsInRow)>wordsCount:
@@ -1692,27 +1684,9 @@ class SelectX(QtGui.QMainWindow):
                     else:
                         resultString += rrr+'\n'
                     
-                #print 'resultString-'+resultString
                 clipQ = QtGui.QClipboard()
                 clipQ.setText(resultString)
     
-                #self.cursorMain = self.cWidget.edit.cursorRect()
-                #currentDoc = self.cWidget.edit.document()
-                #line = cursor.blockNumber() + 1
-                #col = cursor.columnNumber()
-                #currentText = currentWidget.toPlainText()
-                #symb = len(currentText)
-                #symb = currentDoc.characterCount()-1
-                #rows = currentDoc.lineCount()
-                #tb = cursor.block()
-                #print 'tb.text()-'+ tb.text()
-                #print 'currentDoc.blockCount()-'+str(currentDoc.blockCount())
-                #print 'cursor.selectedText()-'+ cursor.selectedText()
-                #print 'cursor.selectionStart()-'+str(cursor.selectionStart())
-                #print 'cursor.selectionEnd()-'+str(cursor.selectionEnd())
-                #print self.cursorMain
-                #print 'self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()'
-                #print self.cursorMain.height(), self.cursorMain.width(), self.cursorMain.top(), self.cursorMain.bottom(), self.cursorMain.left(), self.cursorMain.right(), self.cursorMain.x(), self.cursorMain.y()
             else:
                 self.cWidget.edit.copy()
             self.statusBar().showMessage(_(u'Copy Text'))
@@ -1856,6 +1830,7 @@ class TextEditBaseX(QtGui.QTextEdit):
     def __init__(self, parent = None):
         super(TextEditBaseX, self).__init__()
 
+        self.filePath = None
         self.setStyleSheet("QTextEdit {background-color: #EEFFEE;}")
         self.parentControl = parent
         self.qFont = QtGui.QFont()
