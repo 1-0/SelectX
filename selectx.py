@@ -12,7 +12,7 @@ import gettext, locale
 from os.path import expanduser
 __baseDir__ = expanduser('~')
 
-__version__ = '''0.7.1.5'''
+__version__ = '''0.7.1.6'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
@@ -695,7 +695,6 @@ msgstr "Найти и заменить"
         poString = po_dict[current_locale[:2]]
     else:
         return gettext.gettext
-    #print poString
     baseDirLocale = gluePath([__baseDir__, '.config', 'SelectX', 'locale',''])
     if poString and (not os.path.isfile(gluePath([__baseDir__, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', '']))):
         baseDirPo = gluePath([__baseDir__, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', ''])
@@ -705,9 +704,7 @@ msgstr "Найти и заменить"
         makeMo(baseDirPo + 'SelectX.po', baseDirPo + 'SelectX.mo', current_locale)
         #print 'baseDirPo '+str(baseDirPo)
         t = gettext.translation('SelectX', baseDirLocale, fallback=True, languages=[current_locale])
-        #t.install()
     else:
-        #print 'po ok'
         t = gettext.translation('SelectX', baseDirLocale, fallback=True, languages=[current_locale])
     return t.ugettext
 
@@ -721,7 +718,6 @@ def makeMo(filename, outfile, current_locale):
     MESSAGES = {}
     ID = 1
     STR = 2
-    # Compute .mo name from .po name and arguments
     if filename.endswith('.po'):
         infile = filename
     else:
@@ -735,22 +731,17 @@ def makeMo(filename, outfile, current_locale):
         sys.exit(1)
     section = None
     fuzzy = 0
-    # Parse the catalog
     lno = 0
     for l in lines:
         lno += 1
-        # If we get a comment line after a msgstr, this is a new entry
         if l[0] == '#' and section == STR:
             addToMo(msgid, msgstr, fuzzy, MESSAGES)
             section = None
             fuzzy = 0
-        # Record a fuzzy mark
         if l[:2] == '#,' and 'fuzzy' in l:
             fuzzy = 1
-        # Skip comments
         if l[0] == '#':
             continue
-        # Now we are in a msgid section, output previous section
         if l.startswith('msgid') and not l.startswith('msgid_plural'):
             if section == STR:
                 addToMo(msgid, msgstr, fuzzy, MESSAGES)
@@ -758,16 +749,14 @@ def makeMo(filename, outfile, current_locale):
             l = l[5:]
             msgid = msgstr = ''
             is_plural = False
-        # This is a message with plural forms
         elif l.startswith('msgid_plural'):
             if section != ID:
                 print >> sys.stderr, 'msgid_plural not preceded by msgid on %s:%d' %\
                     (infile, lno)
                 sys.exit(1)
             l = l[12:]
-            msgid += '\0' # separator of singular and plural
+            msgid += '\0'
             is_plural = True
-        # Now we are in a msgstr section
         elif l.startswith('msgstr'):
             section = STR
             if l.startswith('msgstr['):
@@ -777,14 +766,13 @@ def makeMo(filename, outfile, current_locale):
                     sys.exit(1)
                 l = l.split(']', 1)[1]
                 if msgstr:
-                    msgstr += '\0' # Separator of the various plural forms
+                    msgstr += '\0'
             else:
                 if is_plural:
                     print >> sys.stderr, 'indexed msgstr required for plural on  %s:%d' %\
                         (infile, lno)
                     sys.exit(1)
                 l = l[6:]
-        # Skip empty lines
         l = l.strip()
         if not l:
             continue
@@ -798,43 +786,32 @@ def makeMo(filename, outfile, current_locale):
                   'before:'
             print >> sys.stderr, l
             sys.exit(1)
-    # Add last entry
     if section == STR:
         addToMo(msgid, msgstr, fuzzy, MESSAGES)
-    # Compute output
     keys = MESSAGES.keys()
-    # the keys are sorted in the .mo file
     keys.sort()
     offsets = []
     ids = strs = ''
     for id in keys:
-        # For each string, we need size and file offset.  Each string is NUL
-        # terminated; the NUL does not count into the size.
         offsets.append((len(ids), len(id), len(strs), len(MESSAGES[id])))
         ids += id + '\0'
         strs += MESSAGES[id] + '\0'
     output = ''
-    # The header is 7 32-bit unsigned integers.  We don't use hash tables, so
-    # the keys start right after the index tables.
-    # translated string.
     keystart = 7*4+16*len(keys)
-    # and the values start after the keys
     valuestart = keystart + len(ids)
     koffsets = []
     voffsets = []
-    # The string table first has the list of keys, then the list of values.
-    # Each entry has first the size of the string, then the file offset.
     for o1, l1, o2, l2 in offsets:
         koffsets += [l1, o1+keystart]
         voffsets += [l2, o2+valuestart]
     offsets = koffsets + voffsets
     output = struct.pack("Iiiiiii",
-                         0x950412deL,       # Magic
-                         0,                 # Version
-                         len(keys),         # # of entries
-                         7*4,               # start of key index
-                         7*4+len(keys)*8,   # start of value index
-                         0, 0)              # size and offset of hash table
+                         0x950412deL,
+                         0,
+                         len(keys),
+                         7*4,
+                         7*4+len(keys)*8,
+                         0, 0)
     output += array.array("i", offsets).tostring()
     output += ids
     output += strs
@@ -843,7 +820,6 @@ def makeMo(filename, outfile, current_locale):
         open(outfile,"wb").write(output)
     except IOError,msg:
         print >> sys.stderr, msg
-
 _ = localGettextX()
 
 #from PySide import QtGui, QtCore
@@ -1099,7 +1075,6 @@ class SelectX(QtGui.QMainWindow):
                 #event.ignore()
 
     def checkPluginsDir(self, plugDir):
-        #print 'plugDir-'+plugDir
         if not  os.path.isfile(plugDir+'SelectX_simpley_find.py'):
             FIND_PY = r"""from selectx import _ as _
 from selectx import QtGui as QtGui
@@ -1109,7 +1084,6 @@ __plugin_menu_caption__ = _(u'SelectX Find Dialog')
 __plugin_menu_key__ = 'F7'
 __plugin_menu_help__ = _(u'SelectX Find Dialog')
 __plugin_menu_icon__ = 'edit-find'
-__plugin_name__ = _(u'SelectX Find Dialog')
 __plugin_version__ = '0.0.4'
 __plugin_about__ = _(u'Enter text to find:')
 
@@ -1166,7 +1140,11 @@ def __plugin_run_function__(self):
 def py_run(self, py_name=r'./hi.py', run_params=' '):
     import os
     if self:
-        py_name = self.cWidget.edit.filePath
+        if self.cWidget.edit.filePath:
+            py_name = self.cWidget.edit.filePath
+        else:
+            print _(u'You try to run not saved code. Saved code 1st.')
+            return False
     if os.name in ['nt',]:
         status = os.system(r'start cmd /C "python ' + py_name + run_params+r''' &&  pause"''')
     else:
@@ -1320,7 +1298,6 @@ if __name__ == "__main__":
         pluginsDir = gluePath([__baseDir__, '.config', 'SelectX', 'Plugins', ''])
         self.checkPluginsDir(pluginsDir)
         dictPlugs = {}
-        #print(os.listdir(pluginsDir))
         for fff in os.listdir(pluginsDir):
             if  os.path.isfile(pluginsDir+fff):
                 plugName, plugExt = fff.split('.')
@@ -1333,7 +1310,6 @@ if __name__ == "__main__":
                 elif plugExt == 'dll' or plugExt == 'so':
                     dictPlugs[plugName] = plugExt
                     
-        #print dictPlugs
         if dictPlugs:
             PluginsMenu = menuLink.addMenu(_(u'&Plugins'))
             self.plugins=[]
@@ -1345,7 +1321,6 @@ if __name__ == "__main__":
     def importPlugin(self, pluginname, plugMenu, pluginpath='', pluginType='.py'):
         import imp
         plug = imp.load_source(pluginname, pluginpath+pluginname+'.'+pluginType)
-        #print 'addPlugins'+str(plug)
         plug.__plugin_init__(self)
         
         self.plugins.append(plug)
@@ -1672,7 +1647,6 @@ if __name__ == "__main__":
     def filePreview(self):
         '''Open preview dialog'''
         preview = QtGui.QPrintPreviewDialog()
-        # If a print is requested, open print dialog
         preview.paintRequested.connect(lambda p: self.cWidget.edit.print_(p))
         preview.exec_()
 
@@ -1877,7 +1851,6 @@ if __name__ == "__main__":
     def keyHelp(self):
         ok = QtGui.QMessageBox.information(self, _(u'Keys SelectX'), KEYS_HELP, \
         QtGui.QMessageBox.Ok)
-        #print ok
 
 class TextEditBaseX(QtGui.QTextEdit):
     def __init__(self, parent = None):
@@ -2318,7 +2291,6 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
             while index >= 0:
                 # We actually want the index of the nth match
                 index = expression.pos(nth)
-                #print 'index - '+str(index)
                 #length = expression.cap(nth).length() # pyside fix
                 length = len(expression.cap(nth))
                 self.setFormat(index, length, format)
@@ -2607,7 +2579,6 @@ def main():
     runWindow()
 
 def getFileName(pathName, separatorSymbol=None):
-    #print 'path-'+str(pathName)
     if separatorSymbol:
         try:
             return pathName.split(separatorSymbol)[-1]
@@ -2629,26 +2600,21 @@ def getQtCodecsList():
 
 def getCodecsList(newlist = []):
     encodings_aliases=encodings._aliases
-    #print encodings_aliases
     for kkk in encodings_aliases.keys():
-        #print encodings_aliases[kkk]
         if not kkk in newlist and not kkk[0] in ('0','1','2','3','4','5','6','7','8','9'):
             newlist.append(kkk)
     #for kkk in encodings_aliases.keys():
-        ##print encodings_aliases[kkk]
         #if not encodings_aliases[kkk] in newlist:
             #newlist.append(encodings_aliases[kkk])
     return sorted(newlist)
 
 def getCodecsAliasesList(newlist = []):
     encodings_aliases=encodings._aliases
-    #print encodings_aliases
     #for kkk in encodings_aliases.keys():
         ##print encodings_aliases[kkk]
         #if not kkk in newlist and not kkk[0] in ('0','1','2','3','4','5','6','7','8','9'):
             #newlist.append(kkk)
     for kkk in encodings_aliases.keys():
-        #print encodings_aliases[kkk]
         if not encodings_aliases[kkk] in newlist:
             newlist.append(encodings_aliases[kkk])
     return sorted(newlist)
