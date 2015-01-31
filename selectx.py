@@ -12,60 +12,13 @@ import gettext, locale
 from os.path import expanduser
 __baseDir__ = expanduser('~')
 
-__version__ = '''0.7.0.1'''
+__version__ = '''0.7.1.5'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
 
 
-RUN_PY = r"""#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-from selectx import _ as _
-
-
-__plugin_name__ = _(u'SelectX Run Python')
-__plugin_menu_caption__ = _(u'Run Python')
-__plugin_menu_key__ = 'F5'
-__plugin_menu_help__ = _(u'SelectX Run Python Script from current tab')
-__plugin_menu_icon__ = '''applications_system'''
-__plugin_version__ = '0.1.1'
-__plugin_about__ = _(u'Run Python Script from current tab')
-
-def __plugin_init__(self, params_list=[]):
-    nnn = __plugin_name__+' '+__plugin_version__
-    print nnn
-    self.statusBar().showMessage(nnn)
-
-def __plugin_run_function__(self):
-    py_run(self)
-
-def py_run(self, py_name=r'./hi.py', run_params=' '):
-    import os
-    if self:
-        py_name = self.cWidget.edit.filePath
-    if os.name in ['nt',]:
-        status = os.system(r'start cmd /C "python ' + py_name + run_params+r''' &&  pause"''')
-    else:
-        status = os.system(r'xterm  -e "python ' + py_name + run_params+r''' && echo 'Waiting for press Enter key.' && read"''')
-    print 'status - %s'%status
-    return status
-
-if __name__ == "__main__":
-    py_run(0)
-"""
-
-HI_PY = r"""#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-
-def hi_one(one='All'):
-    nnn = 'Hi ' + one
-    print nnn
-    return nnn
-
-hi_one()
-"""
     
 def gluePath(elementsList):
     '''gluePath(elementsList) - glue path from elementsList and create if not 
@@ -737,14 +690,14 @@ msgstr "Найти и заменить"
     #print 'current_locale, encoding '+str((current_locale, encoding ))
     poString = None
     if current_locale and current_locale.lower() in po_dict.keys():
-        poString = po_dict[current_locale]
+        poString = po_dict[current_locale[:2]]
     elif current_locale and current_locale[:2].lower() in po_dict.keys():
         poString = po_dict[current_locale[:2]]
     else:
         return gettext.gettext
-    
+    #print poString
     baseDirLocale = gluePath([__baseDir__, '.config', 'SelectX', 'locale',''])
-    if poString and (not os.path.isdir(baseDirLocale)):
+    if poString and (not os.path.isfile(gluePath([__baseDir__, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', '']))):
         baseDirPo = gluePath([__baseDir__, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', ''])
         filePo = open(baseDirPo+'SelectX.po', "w")
         filePo.write(poString)
@@ -760,7 +713,7 @@ msgstr "Найти и заменить"
 
 def makeMo(filename, outfile, current_locale):
 # based on msgfmt.py Written by Martin v. Löwis <loewis@informatik.hu-berlin.de>
-    def add(id, str, fuzzy, MESSAGES):
+    def addToMo(id, str, fuzzy, MESSAGES):
         "Add a non-fuzzy translation to the dictionary."
         if not fuzzy and str:
             MESSAGES[id] = str
@@ -788,7 +741,7 @@ def makeMo(filename, outfile, current_locale):
         lno += 1
         # If we get a comment line after a msgstr, this is a new entry
         if l[0] == '#' and section == STR:
-            add(msgid, msgstr, fuzzy, MESSAGES)
+            addToMo(msgid, msgstr, fuzzy, MESSAGES)
             section = None
             fuzzy = 0
         # Record a fuzzy mark
@@ -800,7 +753,7 @@ def makeMo(filename, outfile, current_locale):
         # Now we are in a msgid section, output previous section
         if l.startswith('msgid') and not l.startswith('msgid_plural'):
             if section == STR:
-                add(msgid, msgstr, fuzzy, MESSAGES)
+                addToMo(msgid, msgstr, fuzzy, MESSAGES)
             section = ID
             l = l[5:]
             msgid = msgstr = ''
@@ -847,7 +800,7 @@ def makeMo(filename, outfile, current_locale):
             sys.exit(1)
     # Add last entry
     if section == STR:
-        add(msgid, msgstr, fuzzy, MESSAGES)
+        addToMo(msgid, msgstr, fuzzy, MESSAGES)
     # Compute output
     keys = MESSAGES.keys()
     # the keys are sorted in the .mo file
@@ -1145,8 +1098,88 @@ class SelectX(QtGui.QMainWindow):
                 return True
                 #event.ignore()
 
-    def checkPluginsDir(self):
-        return True
+    def checkPluginsDir(self, plugDir):
+        #print 'plugDir-'+plugDir
+        if not  os.path.isfile(plugDir+'SelectX_simpley_find.py'):
+            FIND_PY = r"""from selectx import _ as _
+from selectx import QtGui as QtGui
+
+__plugin_name__ = _(u'SelectX Find Dialog')
+__plugin_menu_caption__ = _(u'SelectX Find Dialog')
+__plugin_menu_key__ = 'F7'
+__plugin_menu_help__ = _(u'SelectX Find Dialog')
+__plugin_menu_icon__ = 'edit-find'
+__plugin_name__ = _(u'SelectX Find Dialog')
+__plugin_version__ = '0.0.4'
+__plugin_about__ = _(u'Enter text to find:')
+
+def __plugin_init__(self, params_list=[]):
+    nnn = __plugin_name__+' '+__plugin_version__
+    #print nnn
+    self.statusBar().showMessage(nnn)
+
+def __plugin_run_function__(self):
+    findText(self)
+
+def findText(self):
+    cursor = self.cWidget.edit.textCursor()
+    textSelected = cursor.selectedText()
+    text_find, find_ok = QtGui.QInputDialog.getText(self, \
+    _(u'SelectX Find Dialog'), _(u'Enter text to find:'), QtGui.QLineEdit.Normal,  textSelected)
+    if find_ok:
+        if self.cWidget.edit.find(str(text_find)):
+            self.statusBar().showMessage(_(u'Found: %s') % text_find)
+            return
+        else:
+            self.statusBar().showMessage(_(u'Not found: %s') % text_find)
+            return
+        return
+    self.statusBar().showMessage(_(u'Find Canceled'))
+
+"""
+            fileP = open(plugDir+'SelectX_simpley_find.py', "w")
+            fileP.write(FIND_PY)
+            fileP.close()
+        if not  os.path.isfile(plugDir+'SelectX_run_py.py'):
+            RUN_PY = r"""#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from selectx import _ as _
+
+
+__plugin_name__ = _(u'SelectX Run Python')
+__plugin_menu_caption__ = _(u'Run Python')
+__plugin_menu_key__ = 'F5'
+__plugin_menu_help__ = _(u'SelectX Run Python Script from current tab')
+__plugin_menu_icon__ = '''applications_system'''
+__plugin_version__ = '0.1.1'
+__plugin_about__ = _(u'Run Python Script from current tab')
+
+def __plugin_init__(self, params_list=[]):
+    nnn = __plugin_name__+' '+__plugin_version__
+    #print nnn
+    self.statusBar().showMessage(nnn)
+
+def __plugin_run_function__(self):
+    py_run(self)
+
+def py_run(self, py_name=r'./hi.py', run_params=' '):
+    import os
+    if self:
+        py_name = self.cWidget.edit.filePath
+    if os.name in ['nt',]:
+        status = os.system(r'start cmd /C "python ' + py_name + run_params+r''' &&  pause"''')
+    else:
+        status = os.system(r'xterm  -e "python ' + py_name + run_params+r''' && echo 'Waiting for press Enter key.' && read"''')
+    #print 'status - %s'%status
+    return status
+
+if __name__ == "__main__":
+    py_run(0)
+"""
+            fileP = open(plugDir+'SelectX_run_py.py', "w")
+            fileP.write(RUN_PY)
+            fileP.close()
 
     def makeMenu(self):
         menubar = self.menuBar()
@@ -1284,18 +1317,37 @@ class SelectX(QtGui.QMainWindow):
                 
 
     def addPlugins(self, menuLink):
-        pluginsDir = self.checkPluginsDir()
-        if pluginsDir:
+        pluginsDir = gluePath([__baseDir__, '.config', 'SelectX', 'Plugins', ''])
+        self.checkPluginsDir(pluginsDir)
+        dictPlugs = {}
+        #print(os.listdir(pluginsDir))
+        for fff in os.listdir(pluginsDir):
+            if  os.path.isfile(pluginsDir+fff):
+                plugName, plugExt = fff.split('.')
+                #print plugName, plugExt
+                if plugExt == 'py':
+                    dictPlugs[plugName] = plugExt
+                elif plugExt == 'pyc':
+                    if not plugName in dictPlugs.keys():
+                        dictPlugs[plugName] = plugExt
+                elif plugExt == 'dll' or plugExt == 'so':
+                    dictPlugs[plugName] = plugExt
+                    
+        #print dictPlugs
+        if dictPlugs:
             PluginsMenu = menuLink.addMenu(_(u'&Plugins'))
             self.plugins=[]
-            self.importPlugin('SelectX_simpley_find', PluginsMenu, r'')
-            self.importPlugin('SelectX_run_py', PluginsMenu, r'')
+            
+        for ppp in dictPlugs.keys():
+            if dictPlugs[ppp] in ['py', 'pyc']:
+                self.importPlugin(ppp, PluginsMenu, pluginsDir, dictPlugs[ppp])
 
     def importPlugin(self, pluginname, plugMenu, pluginpath='', pluginType='.py'):
         import imp
-        plug = imp.load_source(pluginname, pluginpath+pluginname+pluginType)
+        plug = imp.load_source(pluginname, pluginpath+pluginname+'.'+pluginType)
         #print 'addPlugins'+str(plug)
         plug.__plugin_init__(self)
+        
         self.plugins.append(plug)
 
         if self.plugins[-1].__plugin_menu_caption__ and \
@@ -1376,8 +1428,9 @@ class SelectX(QtGui.QMainWindow):
 
 
     def setHighlighter(self):
-        extention = str(getFileName(self.path, '.')).lower()
-        self.putHighlighter(extention)
+        if self.path:
+            extention = getFileName(self.path, '.').lower()
+            self.putHighlighter(extention)
         
     def putHighlighter(self, extention = None):
         if extention in ['c', 'cc','cpp', 'c++', 'cxx', 'h', 'hh', 'hpp', 'hxx']:
