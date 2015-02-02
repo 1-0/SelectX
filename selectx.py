@@ -12,7 +12,7 @@ import gettext, locale
 from os.path import expanduser
 __baseDir__ = expanduser('~')
 
-__version__ = '''0.7.1.8'''
+__version__ = '''0.7.1.9'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
@@ -35,7 +35,7 @@ def writeStringToFile(fileName, writeString):
     return True
     
 
-def writeIfNotSame (fileName, writeString):
+def writeIfNotSame(fileName, writeString):
     if os.path.isfile(fileName):
         size_string = len(writeString)
         size_file = os.path.getsize(fileName)
@@ -723,12 +723,8 @@ msgstr "Найти и заменить"
     #if poString and (not os.path.isfile(gluePath([__baseDir__, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', '']))):
     if poString:
         baseDirPo = gluePath([__baseDir__, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', ''])
-        writeIfNotSame (baseDirPo+'SelectX.po', poString)
-        #filePo = open(baseDirPo+'SelectX.po', "w")
-        #filePo.write(poString)
-        #filePo.close()
-        makeMo(baseDirPo + 'SelectX.po', baseDirPo + 'SelectX.mo', current_locale)
-        #print 'baseDirPo '+str(baseDirPo)
+        if writeIfNotSame(baseDirPo+'SelectX.po', poString):
+            makeMo(baseDirPo + 'SelectX.po', baseDirPo + 'SelectX.mo', current_locale)
         t = gettext.translation('SelectX', baseDirLocale, fallback=True, languages=[current_locale])
     else:
         t = gettext.translation('SelectX', baseDirLocale, fallback=True, languages=[current_locale])
@@ -1138,10 +1134,6 @@ def findText(self):
 
 """
         writeIfNotSame (plugDir+'SelectX_simpley_find.py', FIND_PY)
-            #fileP = open(plugDir+'SelectX_simpley_find.py', "w")
-            #fileP.write(FIND_PY)
-            #fileP.close()
-        #if not  os.path.isfile(plugDir+'SelectX_run_py.py'):
         RUN_PY = r"""#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -1183,9 +1175,6 @@ if __name__ == "__main__":
     py_run(0)
 """
         writeIfNotSame (plugDir+'SelectX_run_py.py', RUN_PY)
-            #fileP = open(plugDir+'SelectX_run_py.py', "w")
-            #fileP.write(RUN_PY)
-            #fileP.close()
 
     def makeMenu(self):
         menubar = self.menuBar()
