@@ -12,7 +12,7 @@ import gettext, locale
 from os.path import expanduser
 __baseDir__ = expanduser('~')
 
-__version__ = '''0.7.1.6'''
+__version__ = '''0.7.1.8'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
@@ -27,6 +27,30 @@ def gluePath(elementsList):
     if not os.path.isdir(newPath):
         os.makedirs(newPath)
     return newPath
+
+def writeStringToFile(fileName, writeString):
+    fileN = open(fileName, "w")
+    fileN.write(writeString)
+    fileN.close()
+    return True
+    
+
+def writeIfNotSame (fileName, writeString):
+    if os.path.isfile(fileName):
+        size_string = len(writeString)
+        size_file = os.path.getsize(fileName)
+        #print 'size_string='+str(size_string)
+        #print 'size_file='+str(size_file)
+        if size_string<>size_file:
+            writeStringToFile(fileName, writeString)
+            return True
+        #else:
+            #print 'not write - same size'
+    else:
+        writeStringToFile(fileName, writeString)
+        return True
+    return False
+
 
 def localGettextX():
     po_dict = {'ru': r'''# SelectX.
@@ -696,11 +720,13 @@ msgstr "Найти и заменить"
     else:
         return gettext.gettext
     baseDirLocale = gluePath([__baseDir__, '.config', 'SelectX', 'locale',''])
-    if poString and (not os.path.isfile(gluePath([__baseDir__, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', '']))):
+    #if poString and (not os.path.isfile(gluePath([__baseDir__, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', '']))):
+    if poString:
         baseDirPo = gluePath([__baseDir__, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', ''])
-        filePo = open(baseDirPo+'SelectX.po', "w")
-        filePo.write(poString)
-        filePo.close()
+        writeIfNotSame (baseDirPo+'SelectX.po', poString)
+        #filePo = open(baseDirPo+'SelectX.po', "w")
+        #filePo.write(poString)
+        #filePo.close()
         makeMo(baseDirPo + 'SelectX.po', baseDirPo + 'SelectX.mo', current_locale)
         #print 'baseDirPo '+str(baseDirPo)
         t = gettext.translation('SelectX', baseDirLocale, fallback=True, languages=[current_locale])
@@ -1075,8 +1101,8 @@ class SelectX(QtGui.QMainWindow):
                 #event.ignore()
 
     def checkPluginsDir(self, plugDir):
-        if not  os.path.isfile(plugDir+'SelectX_simpley_find.py'):
-            FIND_PY = r"""from selectx import _ as _
+        #if not  os.path.isfile(plugDir+'SelectX_simpley_find.py'):
+        FIND_PY = r"""from selectx import _ as _
 from selectx import QtGui as QtGui
 
 __plugin_name__ = _(u'SelectX Find Dialog')
@@ -1111,11 +1137,12 @@ def findText(self):
     self.statusBar().showMessage(_(u'Find Canceled'))
 
 """
-            fileP = open(plugDir+'SelectX_simpley_find.py', "w")
-            fileP.write(FIND_PY)
-            fileP.close()
-        if not  os.path.isfile(plugDir+'SelectX_run_py.py'):
-            RUN_PY = r"""#!/usr/bin/env python
+        writeIfNotSame (plugDir+'SelectX_simpley_find.py', FIND_PY)
+            #fileP = open(plugDir+'SelectX_simpley_find.py', "w")
+            #fileP.write(FIND_PY)
+            #fileP.close()
+        #if not  os.path.isfile(plugDir+'SelectX_run_py.py'):
+        RUN_PY = r"""#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from selectx import _ as _
@@ -1155,9 +1182,10 @@ def py_run(self, py_name=r'./hi.py', run_params=' '):
 if __name__ == "__main__":
     py_run(0)
 """
-            fileP = open(plugDir+'SelectX_run_py.py', "w")
-            fileP.write(RUN_PY)
-            fileP.close()
+        writeIfNotSame (plugDir+'SelectX_run_py.py', RUN_PY)
+            #fileP = open(plugDir+'SelectX_run_py.py', "w")
+            #fileP.write(RUN_PY)
+            #fileP.close()
 
     def makeMenu(self):
         menubar = self.menuBar()
