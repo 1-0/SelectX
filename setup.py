@@ -18,8 +18,8 @@ setup(
     author_email=AUTHOR_EMAIL,
     license="GPL3",
     url=URL,
-    #install_requires = ['PySide'],
-    #scripts = ['selectx.py'],
+    install_requires = ['PySide'],
+    scripts = ['selectx.py'],
     #packages=[PACKAGE,],
     #packages=find_packages(exclude=["tests.*", "tests"]),
     #package_data=find_package_data(

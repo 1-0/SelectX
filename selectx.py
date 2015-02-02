@@ -12,7 +12,7 @@ import gettext, locale
 from os.path import expanduser
 __baseDir__ = expanduser('~')
 
-__version__ = '''0.7.1.12'''
+__version__ = '''0.7.1.15'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
@@ -35,7 +35,6 @@ def writeStringToFile(fileName, writeString):
     
 
 def writeIfNotSame(fileName, writeString):
-    #print 'writeIfNotSame(fileName)-'+str([fileName,])
     if os.path.isfile(fileName):
         fff = open(fileName, "r")
         sssfff = fff.read()
