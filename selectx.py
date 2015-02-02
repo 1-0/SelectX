@@ -12,7 +12,7 @@ import gettext, locale
 from os.path import expanduser
 __baseDir__ = expanduser('~')
 
-__version__ = '''0.7.1.11'''
+__version__ = '''0.7.1.12'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
@@ -1139,7 +1139,9 @@ def findText(self):
     self.statusBar().showMessage(_(u'Find Canceled'))
 
 """
-        writeIfNotSame (plugDir+'SelectX_simpley_find.py', FIND_PY)
+        if writeIfNotSame (plugDir+'SelectX_simpley_find.py', FIND_PY):
+            import py_compile
+            py_compile.compile(plugDir+'SelectX_simpley_find.py')
         RUN_PY = r"""#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -1181,9 +1183,9 @@ def py_run(self, py_name=r'./hi.py', run_params=' '):
 if __name__ == "__main__":
     py_run(0)
 """
-        writeIfNotSame (plugDir+'SelectX_run_py.py', RUN_PY)
-        #writeIfNotSame (plugDir+'SelectX_run_py.py', FIND_PY)
-        
+        if writeIfNotSame (plugDir+'SelectX_run_py.py', RUN_PY):
+            import py_compile
+            py_compile.compile(plugDir+'SelectX_run_py.py')
 
     def makeMenu(self):
         menubar = self.menuBar()
