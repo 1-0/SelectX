@@ -12,11 +12,10 @@ import gettext, locale
 from os.path import expanduser
 __baseDir__ = expanduser('~')
 
-__version__ = '''0.7.1.9'''
+__version__ = '''0.7.1.11'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
-
 
 
     
@@ -36,15 +35,21 @@ def writeStringToFile(fileName, writeString):
     
 
 def writeIfNotSame(fileName, writeString):
+    #print 'writeIfNotSame(fileName)-'+str([fileName,])
     if os.path.isfile(fileName):
-        size_string = len(writeString)
-        size_file = os.path.getsize(fileName)
-        #print 'size_string='+str(size_string)
-        #print 'size_file='+str(size_file)
-        if size_string<>size_file:
+        fff = open(fileName, "r")
+        sssfff = fff.read()
+        fff.close()
+        if sssfff<>writeString:
+        #size_string = len(writeString)
+        #size_file = os.path.getsize(fileName)
+        ##print 'size_string='+str(size_string)
+        ##print 'size_file='+str(size_file)
+        #if size_string<>size_file:
             writeStringToFile(fileName, writeString)
             return True
         #else:
+            #print 'not write - same text'
             #print 'not write - same size'
     else:
         writeStringToFile(fileName, writeString)
@@ -723,7 +728,7 @@ msgstr "Найти и заменить"
     #if poString and (not os.path.isfile(gluePath([__baseDir__, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', '']))):
     if poString:
         baseDirPo = gluePath([__baseDir__, '.config', 'SelectX', 'locale', current_locale, 'LC_MESSAGES', ''])
-        if writeIfNotSame(baseDirPo+'SelectX.po', poString):
+        if writeIfNotSame(baseDirPo+'SelectX.po', poString) or not os.path.isfile(baseDirPo + 'SelectX.mo'):
             makeMo(baseDirPo + 'SelectX.po', baseDirPo + 'SelectX.mo', current_locale)
         t = gettext.translation('SelectX', baseDirLocale, fallback=True, languages=[current_locale])
     else:
@@ -1101,7 +1106,7 @@ class SelectX(QtGui.QMainWindow):
         FIND_PY = r"""from selectx import _ as _
 from selectx import QtGui as QtGui
 
-__plugin_name__ = _(u'SelectX Find Dialog')
+__plugin_name__ = _(u'SelectX_Find_Dialog')
 __plugin_menu_caption__ = _(u'SelectX Find Dialog')
 __plugin_menu_key__ = 'F7'
 __plugin_menu_help__ = _(u'SelectX Find Dialog')
@@ -1118,6 +1123,7 @@ def __plugin_run_function__(self):
     findText(self)
 
 def findText(self):
+    #print 'findText(self-'+str(self)
     cursor = self.cWidget.edit.textCursor()
     textSelected = cursor.selectedText()
     text_find, find_ok = QtGui.QInputDialog.getText(self, \
@@ -1140,7 +1146,7 @@ def findText(self):
 from selectx import _ as _
 
 
-__plugin_name__ = _(u'SelectX Run Python')
+__plugin_name__ = _(u'SelectX_Run_Python')
 __plugin_menu_caption__ = _(u'Run Python')
 __plugin_menu_key__ = 'F5'
 __plugin_menu_help__ = _(u'SelectX Run Python Script from current tab')
@@ -1159,6 +1165,7 @@ def __plugin_run_function__(self):
 def py_run(self, py_name=r'./hi.py', run_params=' '):
     import os
     if self:
+        #print 'py_run(self-'+str(self)
         if self.cWidget.edit.filePath:
             py_name = self.cWidget.edit.filePath
         else:
@@ -1175,6 +1182,8 @@ if __name__ == "__main__":
     py_run(0)
 """
         writeIfNotSame (plugDir+'SelectX_run_py.py', RUN_PY)
+        #writeIfNotSame (plugDir+'SelectX_run_py.py', FIND_PY)
+        
 
     def makeMenu(self):
         menubar = self.menuBar()
@@ -1221,8 +1230,6 @@ if __name__ == "__main__":
         self.addActionParamX(_(u'Paste'), 'Ctrl+V', _(u'Paste text'), self.pasteText, \
         editMenu, 'edit-paste', self.toolbar)
         editMenu.addSeparator()
-        #self.addActionParamX(_(u'Find'), 'Ctrl+Shift+F', _(u'Find text'), self.findText, \
-        #editMenu, 'edit-find', self.toolbar)
         self.addActionParamX(_(u'Find and replace'), 'Ctrl+F', _(u'Find and replace words in your document'), FindDialog(self).show, \
         editMenu, 'edit-find-replace', self.toolbar)
 
@@ -1316,16 +1323,16 @@ if __name__ == "__main__":
         self.checkPluginsDir(pluginsDir)
         dictPlugs = {}
         for fff in os.listdir(pluginsDir):
-            if  os.path.isfile(pluginsDir+fff):
-                plugName, plugExt = fff.split('.')
-                #print plugName, plugExt
-                if plugExt == 'py':
+            plugExt = fff.split('.')[-1]
+            plugName= fff[:-len(plugExt)-1]
+            #print plugName, plugExt
+            if plugExt == 'py':
+                dictPlugs[plugName] = plugExt
+            elif plugExt == 'pyc':
+                if not plugName in dictPlugs.keys():
                     dictPlugs[plugName] = plugExt
-                elif plugExt == 'pyc':
-                    if not plugName in dictPlugs.keys():
-                        dictPlugs[plugName] = plugExt
-                elif plugExt == 'dll' or plugExt == 'so':
-                    dictPlugs[plugName] = plugExt
+            elif plugExt == 'dll' or plugExt == 'so':
+                dictPlugs[plugName] = plugExt
                     
         if dictPlugs:
             PluginsMenu = menuLink.addMenu(_(u'&Plugins'))
@@ -1340,25 +1347,25 @@ if __name__ == "__main__":
         plug = imp.load_source(pluginname, pluginpath+pluginname+'.'+pluginType)
         plug.__plugin_init__(self)
         
+        
         self.plugins.append(plug)
 
-        if self.plugins[-1].__plugin_menu_caption__ and \
-        self.plugins[-1].__plugin_menu_key__ and \
-        self.plugins[-1].__plugin_menu_help__ and \
-        self.plugins[-1].__plugin_run_function__:
-            self.addActionParamX(self.plugins[-1].__plugin_menu_caption__, \
-            self.plugins[-1].__plugin_menu_key__, \
-            self.plugins[-1].__plugin_menu_help__, \
-            #self.plugins[-1].__plugin_run_function__, \
-            lambda: self.plugins[-1].__plugin_run_function__(self), \
+        if plug.__plugin_menu_caption__ and \
+        plug.__plugin_menu_key__ and \
+        plug.__plugin_menu_help__ and \
+        plug.__plugin_run_function__:
+            self.addActionParamX(plug.__plugin_menu_caption__, \
+            plug.__plugin_menu_key__, \
+            plug.__plugin_menu_help__, \
+            lambda: plug.__plugin_run_function__(self), \
             plugMenu, \
-            self.plugins[-1].__plugin_menu_icon__)
+            plug.__plugin_menu_icon__)
             
         else:
-            print "import pass %s, %s, %s, %s"% self.plugins[-1].__plugin_menu_caption__, \
-            self.plugins[-1].__plugin_menu_key__, \
-            self.plugins[-1].__plugin_menu_help__, \
-            self.plugins[-1].__plugin_run_function
+            print "import pass %s, %s, %s, %s"% plug.__plugin_menu_caption__, \
+            plug.__plugin_menu_key__, \
+            plug.__plugin_menu_help__, \
+            plug.__plugin_run_function
 
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
     TopActLevel, IconName=None, toolBar=None, checkAble=False, \
@@ -1763,21 +1770,6 @@ if __name__ == "__main__":
         else:
             self.statusBar().showMessage(_(u'Hide Line Numbers'))
         bar.update()
-
-    def findText(self):
-        cursor = self.cWidget.edit.textCursor()
-        textSelected = cursor.selectedText()
-        text_find, find_ok = QtGui.QInputDialog.getText(self, \
-        _(u'SelectX Find Dialog'), _(u'Enter text to find:'), QtGui.QLineEdit.Normal,  textSelected)
-        if find_ok:
-            if self.cWidget.edit.find(str(text_find)):
-                self.statusBar().showMessage(_(u'Found: %s') % text_find)
-                return
-            else:
-                self.statusBar().showMessage(_(u'Not found: %s') % text_find)
-                return
-            return
-        self.statusBar().showMessage(_(u'Find Canceled'))
 
     def selectAll(self):
         self.cWidget.edit.selectAll()
@@ -2434,11 +2426,9 @@ class FindDialog(QtGui.QDialog):
         self.regexRadio.toggled.connect(self.regexMode)
         self.findField = QtGui.QTextEdit(self)
         self.findField.setAcceptRichText(False)
-        #self.findField.resize(250,50)
 
         self.replaceField = QtGui.QTextEdit(self)
         self.replaceField.setAcceptRichText(False)
-        #self.replaceField.resize(250,50)
 
         optionsLabel = QtGui.QLabel(_(u"Options: "),self)
         self.caseSens = QtGui.QCheckBox(_(u"Case sensitive"),self)
@@ -2457,56 +2447,27 @@ class FindDialog(QtGui.QDialog):
 
         spacer.setFixedSize(0,1)
 
-        #spacer.setFixedSize(0,10)
-
         layout.addWidget(spacer,5,0)
 
         layout.addWidget(optionsLabel,6,0)
         layout.addWidget(self.caseSens,6,1)
         layout.addWidget(self.wholeWords,6,2)
-
-        #self.setGeometry(300,300,360,250)
         self.setWindowTitle(_(u"Find and Replace"))
         self.setLayout(layout)
-
-        # By default the normal mode is activated
         self.normalRadio.setChecked(True)
 
     def find(self):
-
-        # Grab the parent's text
         text = self.parent.mainTab.currentWidget().edit.toPlainText()
-
-        # And the text to find
         query = self.findField.toPlainText()
-
-        # If the 'Whole Words' checkbox is checked, we need to append
-        # and prepend a non-alphanumeric character
         if self.wholeWords.isChecked():
             query = r'\W' + query + r'\W'
-
-        # By default regexes are case sensitive but usually a search isn't
-        # case sensitive by default, so we need to switch this around here
         flags = 0 if self.caseSens.isChecked() else re.I
-
-        # Compile the pattern
         pattern = re.compile(query,flags)
-
-        # If the last match was successful, start at position after the last
-        # match's start, else at 0
         start = self.lastMatch.start() + 1 if self.lastMatch else 0
-
-        # The actual search
         self.lastMatch = pattern.search(text,start)
-
         if self.lastMatch:
-
             start = self.lastMatch.start()
             end = self.lastMatch.end()
-
-            # If 'Whole words' is checked, the selection would include the two
-            # non-alphanumeric characters we included in the search, which need
-            # to be removed before marking them.
             if self.wholeWords.isChecked():
                 start += 1
                 end -= 1
@@ -2514,69 +2475,35 @@ class FindDialog(QtGui.QDialog):
             self.moveCursor(start,end)
 
         else:
-
-            # We set the cursor to the end if the search was unsuccessful
             self.parent.mainTab.currentWidget().edit.moveCursor(QtGui.QTextCursor.End)
 
     def replace(self):
-
-        # Grab the text cursor
         cursor = self.parent.mainTab.currentWidget().edit.textCursor()
-
-        # Security
         if self.lastMatch and cursor.hasSelection():
-
-            # We insert the new text, which will override the selected
-            # text
             cursor.insertText(self.replaceField.toPlainText())
-
-            # And set the new cursor
             self.parent.mainTab.currentWidget().edit.setTextCursor(cursor)
 
     def replaceAll(self):
-
-        # Set lastMatch to None so that the search
-        # starts from the beginning of the document
         self.lastMatch = None
-
-        # Initial find() call so that lastMatch is
-        # potentially not None anymore
         self.find()
-
-        # Replace and find until find is None again
         while self.lastMatch:
             self.replace()
             self.find()
 
     def regexMode(self):
-
-        # First uncheck the checkboxes
         self.caseSens.setChecked(False)
         self.wholeWords.setChecked(False)
-
-        # Then disable them (gray them out)
         self.caseSens.setEnabled(False)
         self.wholeWords.setEnabled(False)
 
     def normalMode(self):
-
-        # Enable checkboxes (un-gray them)
         self.caseSens.setEnabled(True)
         self.wholeWords.setEnabled(True)
 
     def moveCursor(self,start,end):
-
-        # We retrieve the QTextCursor object from the parent's QTextEdit
         cursor = self.parent.mainTab.currentWidget().edit.textCursor()
-
-        # Then we set the position to the beginning of the last match
         cursor.setPosition(start)
-
-        # Next we move the Cursor by over the match and pass the KeepAnchor parameter
-        # which will make the cursor select the the match's text
         cursor.movePosition(QtGui.QTextCursor.Right,QtGui.QTextCursor.KeepAnchor,end - start)
-
-        # And finally we set this new cursor as the parent's
         self.parent.mainTab.currentWidget().edit.setTextCursor(cursor)
 
 
