@@ -12,7 +12,7 @@ import gettext, locale
 from os.path import expanduser
 __baseDir__ = expanduser('~')
 
-__version__ = '''0.7.1.15'''
+__version__ = '''0.7.1.16'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
@@ -36,17 +36,16 @@ def writeStringToFile(fileName, writeString):
 
 def writeIfNotSame(fileName, writeString):
     if os.path.isfile(fileName):
-        fff = open(fileName, "r")
-        sssfff = fff.read()
-        fff.close()
-        if sssfff<>writeString:
-        #size_string = len(writeString)
-        #size_file = os.path.getsize(fileName)
-        ##print 'size_string='+str(size_string)
-        ##print 'size_file='+str(size_file)
-        #if size_string<>size_file:
-            writeStringToFile(fileName, writeString)
-            return True
+        if os.path.getsize(fileName)<>len(writeString):
+            fff = open(fileName, "rw")
+            sssfff = fff.read()
+            if sssfff<>writeString:
+                writeStringToFile(fileName, writeString)
+                fff.close()
+                return True
+            else:
+                fff.close()
+                return False
         #else:
             #print 'not write - same text'
             #print 'not write - same size'
@@ -1148,11 +1147,11 @@ from selectx import _ as _
 
 
 __plugin_name__ = _(u'SelectX_Run_Python')
-__plugin_menu_caption__ = _(u'Run Python')
+__plugin_menu_caption__ = _(u'Run Python Script')
 __plugin_menu_key__ = 'F5'
 __plugin_menu_help__ = _(u'SelectX Run Python Script from current tab')
 __plugin_menu_icon__ = '''applications_system'''
-__plugin_version__ = '0.1.1'
+__plugin_version__ = '0.1.2'
 __plugin_about__ = _(u'Run Python Script from current tab')
 
 def __plugin_init__(self, params_list=[]):
