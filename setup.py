@@ -18,7 +18,7 @@ setup(
     author_email=AUTHOR_EMAIL,
     license="GPL3",
     url=URL,
-    install_requires = ['PySide>=1.0'],
+    #install_requires = ['PySide>=1.0'],
     scripts = ['selectx.py'],
     #packages=[PACKAGE,],
     #packages=find_packages(exclude=["tests.*", "tests"]),

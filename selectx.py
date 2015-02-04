@@ -12,7 +12,7 @@ import gettext, locale
 from os.path import expanduser
 __baseDir__ = expanduser('~')
 
-__version__ = '''0.7.1.16'''
+__version__ = '''0.7.1.18'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
@@ -1341,6 +1341,8 @@ if __name__ == "__main__":
         for ppp in dictPlugs.keys():
             if dictPlugs[ppp] in ['py', 'pyc']:
                 self.importPlugin(ppp, PluginsMenu, pluginsDir, dictPlugs[ppp])
+            elif dictPlugs[ppp] in ['so', 'dll']:
+                self.importBinPlugin(ppp, PluginsMenu, pluginsDir, dictPlugs[ppp])
 
     def importPlugin(self, pluginname, plugMenu, pluginpath='', pluginType='.py'):
         import imp
@@ -1366,6 +1368,27 @@ if __name__ == "__main__":
             plug.__plugin_menu_key__, \
             plug.__plugin_menu_help__, \
             plug.__plugin_run_function
+
+    def importBinPlugin(self, pluginname, plugMenu, pluginpath='', pluginType='.so'):
+        from ctypes import CDLL, c_char_p
+        get_lib = CDLL(pluginpath+pluginname+'.'+pluginType)
+        
+        sss=c_char_p('hi from python\n')
+        kk10=get_lib.plugin_init(sss)
+        print 'python plugin_init='+str(kk10)
+        sss=c_char_p('run from python\n')
+        ppp=get_lib.plugin_run_function(sss)
+        self.plugins.append(ppp)
+        ppp=get_lib.plugin_run_function
+        #print 'python plugin_init='+str(ppp)
+    
+        self.addActionParamX("Bin plugin#"+str(len(self.plugins)), \
+            "", \
+            "SelectX bin plugin#"+str(len(self.plugins)), \
+            lambda: self.statusBar().showMessage(str(ppp(c_char_p(str(self))))), \
+            plugMenu, \
+            'applications_system')
+            
 
     def addActionParamX(self, ActText, ActSortcut, ActTip, ActConnect, \
     TopActLevel, IconName=None, toolBar=None, checkAble=False, \
