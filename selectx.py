@@ -12,7 +12,7 @@ import gettext, locale
 from os.path import expanduser
 __baseDir__ = expanduser('~')
 
-__version__ = '''0.7.1.18'''
+__version__ = '''0.7.1.19'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
@@ -37,8 +37,10 @@ def writeStringToFile(fileName, writeString):
 def writeIfNotSame(fileName, writeString):
     if os.path.isfile(fileName):
         if os.path.getsize(fileName)<>len(writeString):
-            fff = open(fileName, "rw")
-            sssfff = fff.read()
+            fff1 = open(fileName, "r")
+            sssfff = fff1.read()
+            fff1.close()
+            fff = open(fileName, "w")
             if sssfff<>writeString:
                 writeStringToFile(fileName, writeString)
                 fff.close()
@@ -1347,6 +1349,7 @@ if __name__ == "__main__":
     def importPlugin(self, pluginname, plugMenu, pluginpath='', pluginType='.py'):
         import imp
         plug = imp.load_source(pluginname, pluginpath+pluginname+'.'+pluginType)
+        print plug
         plug.__plugin_init__(self)
         
         
