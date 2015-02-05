@@ -12,7 +12,7 @@ import gettext, locale
 from os.path import expanduser
 __baseDir__ = expanduser('~')
 
-__version__ = '''0.7.1.21'''
+__version__ = '''0.7.1.22'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
@@ -847,7 +847,9 @@ def makeMo(filename, outfile, current_locale):
         open(outfile,"wb").write(output)
     except IOError,msg:
         print >> sys.stderr, msg
-_ = localGettextX()
+
+_ = gettext.gettext
+#_ = localGettextX()
 
 #from PySide import QtGui, QtCore
 #LIB_USE = "PySide"
@@ -906,6 +908,7 @@ Keys:
 ''')
 
 VERSION_INFO = _(u"SelectX. Text editor licensed by GPL3. Ver. %s")
+#VERSION_INFO = _(u"SelectX. Text editor licensed by GPL3. Ver. %s")
 
 #icon theme for very soft and very micro os ;) (based on http://tango.freedesktop.org/Tango_Icon_Library)
 TANGO_ICONS = {'applications_system':"""/* XPM */
@@ -1103,8 +1106,10 @@ class SelectX(QtGui.QMainWindow):
 
     def checkPluginsDir(self, plugDir):
         #if not  os.path.isfile(plugDir+'SelectX_simpley_find.py'):
-        FIND_PY = r"""from selectx import _ as _
+        FIND_PY = r"""from selectx import localGettextX as localGettextX
 from selectx import QtGui as QtGui
+
+_ = localGettextX()
 
 __plugin_name__ = _(u'SelectX_Find_Dialog')
 __plugin_menu_caption__ = _(u'SelectX Find Dialog')
@@ -1145,8 +1150,9 @@ def findText(self):
         RUN_PY = r"""#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from selectx import _ as _
+from selectx import localGettextX as localGettextX
 
+_ = localGettextX()
 
 __plugin_name__ = _(u'SelectX_Run_Python')
 __plugin_menu_caption__ = _(u'Run Python Script')
@@ -2605,5 +2611,7 @@ def runWindow(ForceIcons = None, ok=0):
 
 
 if __name__ == "__main__":
+    _ = localGettextX()
+    VERSION_INFO = _(u"SelectX. Text editor licensed by GPL3. Ver. %s")
     main()
 
