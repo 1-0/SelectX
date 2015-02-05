@@ -24,12 +24,20 @@ int plugin_init(char *params_list)
     return (10);
     }
 
-int plugin_run_function(char *params_list)
+int plugin_run_function1(char *params_list)
 {
     printf("plugin_run_function = %s", params_list);
     return (11);
     }
 
+char * eee = "hi all";
+char * plugin_run_function(char *params_list)
+{
+    printf("return4_string = %s", params_list);
+    
+    //printf("eee = %s", eee);
+    return params_list;
+    }
 
 
 int main()

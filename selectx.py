@@ -12,7 +12,7 @@ import gettext, locale
 from os.path import expanduser
 __baseDir__ = expanduser('~')
 
-__version__ = '''0.7.1.19'''
+__version__ = '''0.7.1.20'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
@@ -1349,7 +1349,7 @@ if __name__ == "__main__":
     def importPlugin(self, pluginname, plugMenu, pluginpath='', pluginType='.py'):
         import imp
         plug = imp.load_source(pluginname, pluginpath+pluginname+'.'+pluginType)
-        print plug
+        #print plug
         plug.__plugin_init__(self)
         
         
@@ -1378,17 +1378,19 @@ if __name__ == "__main__":
         
         sss=c_char_p('hi from python\n')
         kk10=get_lib.plugin_init(sss)
-        print 'python plugin_init='+str(kk10)
+        #print 'python plugin_init='+str(kk10)
         sss=c_char_p('run from python\n')
-        ppp=get_lib.plugin_run_function(sss)
-        self.plugins.append(ppp)
-        ppp=get_lib.plugin_run_function
-        #print 'python plugin_init='+str(ppp)
+        init_function=get_lib.plugin_run_function(sss)
+        self.plugins.append(init_function)
+        
+        run_function = get_lib.plugin_run_function
+        run_function.restype = c_char_p
+        #print 'python plugin_init='+str(run_function)
     
-        self.addActionParamX("Bin plugin#"+str(len(self.plugins)), \
+        self.addActionParamX("Bin plugin#"+str(len(self.plugins))+'-'+pluginname, \
             "", \
             "SelectX bin plugin#"+str(len(self.plugins)), \
-            lambda: self.statusBar().showMessage(str(ppp(c_char_p(str(self))))), \
+            lambda: self.statusBar().showMessage(str(run_function(c_char_p(str(self))))), \
             plugMenu, \
             'applications_system')
             
