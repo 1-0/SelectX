@@ -12,7 +12,7 @@ import gettext, locale
 from os.path import expanduser
 __baseDir__ = expanduser('~')
 
-__version__ = '''0.7.1.22'''
+__version__ = '''0.7.1.24'''
 
 #msgmerge ./locale/ru_UA/LC_MESSAGES/SelectX.po ./messages.pot     #<<<<po merge
 #python setup.py sdist upload        #<<<<pypi upload
@@ -1848,11 +1848,20 @@ if __name__ == "__main__":
             self.text_url = """http://cast2.retro.ua/retro_romantic"""
                 
         if self.okRun:
-            self.text_url, play_ok = QtGui.QInputDialog.getText(self, \
+            radioList = ["""http://online-radiomelodia.tavrmedia.ua/RadioMelodia""", \
+            """http://cast2.retro.ua/retro_romantic"""]
+            self.text_url, play_ok = QtGui.QInputDialog.getItem(self, \
             _(u'Enter media URL'), \
             _(u'Enter you favorit on-line radio URL:'), \
-            QtGui.QLineEdit.Normal, \
-            self.text_url)
+            radioList, \
+            0, \
+            True)
+            
+            #self.text_url, play_ok = QtGui.QInputDialog.getText(self, \
+            #_(u'Enter media URL'), \
+            #_(u'Enter you favorit on-line radio URL:'), \
+            #QtGui.QLineEdit.Normal, \
+            #self.text_url)
             if play_ok:
                 #from PySide.phonon import Phonon
                 global Phonon
